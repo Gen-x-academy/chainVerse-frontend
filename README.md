@@ -1,1 +1,1 @@
-# chainVerse-frontend
+# chainVerse-backend academy
