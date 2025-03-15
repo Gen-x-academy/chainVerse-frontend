@@ -65,7 +65,7 @@ The template location is at [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQU
 
 ```bash
 git clone https://github.com/your-username/chainVerse-frontend.git
-cd chainVerse-frontend
+cd frontend
 ```
 
 3. In your forked repo, Create a new branch:
