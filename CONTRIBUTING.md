@@ -16,10 +16,19 @@ Instead, provide a **clear explanation of your approach**, which includes:
 - A concise plan outlining how you will address the issue (3–6 lines max).
 - Your estimated completion time (ETA).
 
+## ⚠️ Important Alert: UI Components Built on ShadCN
+
+Before contributing, please note that **all UI components in this project are built using [ShadCN](https://ui.shadcn.com/)**.
+
+- Ensure that any new components align with the existing ShadCN-based structure.
+- Follow the styling and implementation practices already in place.
+- Review the official [ShadCN documentation](https://ui.shadcn.com/docs) for best practices.
+
+---
+
 ## What is chainVerse?
 
 ChainVerse Academy is a decentralized Web3 education platform built on the Stellar blockchain. It offers crypto-based payments, NFT certifications, and DAO governance, allowing students to learn about multiple blockchain ecosystems, earn rewards, and own their learning assets through secure, low-cost transactions.
-
 
 ## chainVerse Academy - Key Points
 
