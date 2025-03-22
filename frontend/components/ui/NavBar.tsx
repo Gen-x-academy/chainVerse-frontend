@@ -1,10 +1,10 @@
-"use client";
-import React, { useState } from "react";
-import Link from "next/link";
-import { Button } from "../../components/ui/button";
+'use client';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Button } from '../../components/ui/button';
 import Image from 'next/image';
-import logo from "../../public/Vector (1).png"
-import { Menu,Wallet } from "lucide-react";
+import logo from '../../public/Vector (1).png';
+import { Menu, Wallet } from 'lucide-react';
 
 const NavBar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,14 +20,20 @@ const NavBar: React.FC = () => {
             href="/"
             className="text-black text-lg font-bold flex items-center"
           >
-           <Image src={logo} alt="Logo" className="h-6" width={24} height={24} />
+            <Image
+              src={logo}
+              alt="Logo"
+              className="h-6"
+              width={24}
+              height={24}
+            />
             <span className="ml-2">ChainVerse Academy</span>
           </Link>
         </div>
 
         {/* Navigation Links (Visible on lg screens only) */}
         <ul className="hidden lg:flex space-x-2">
-          {["Courses", "Instructors", "About"].map((item) => (
+          {['Courses', 'Instructors', 'About'].map((item) => (
             <li key={item} className="p-2 flex items-center">
               <Link
                 href={`/${item.toLowerCase()}`}
@@ -38,7 +44,10 @@ const NavBar: React.FC = () => {
             </li>
           ))}
         </ul>
-        <button onClick={toggleMobileMenu} className=" text-black">
+        <button
+          onClick={toggleMobileMenu}
+          className=" text-black block lg:hidden"
+        >
           <Menu size={24} />
         </button>
 
@@ -52,8 +61,8 @@ const NavBar: React.FC = () => {
           </Link>
           <div className="flex items-center">
             <Button variant="outline" size="sm">
-            <Wallet size={16} /> 
-            <span>Connect Wallet</span> 
+              <Wallet size={16} />
+              <span>Connect Wallet</span>
             </Button>
           </div>
           <Link href="/register" className="flex items-center">
@@ -67,10 +76,10 @@ const NavBar: React.FC = () => {
 
         <div
           className={`${
-            isMobileMenuOpen ? "block" : "hidden"
+            isMobileMenuOpen ? 'block' : 'hidden'
           } lg:hidden absolute top-full left-0 w-full bg-white shadow-md z-50`}
         >
-          {["Courses", "Instructors", "About"].map((item) => (
+          {['Courses', 'Instructors', 'About'].map((item) => (
             <Link
               key={item}
               href={`/${item.toLowerCase()}`}
