@@ -26,10 +26,10 @@ const CourseCard: React.FC<CourseProps> = ({
   return (
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="p-6 flex flex-col h-full">
-        <h3 className="font-bold mb-2">
+        <div className="font-bold mb-2">
           <div className="text-lg">{title.mainText}</div>
           <div className="text-lg">{title.subText}</div>
-        </h3>
+        </div>
         <p className="text-sm text-gray-600 mb-4">{description}</p>
 
         <div className="mt-auto space-y-2">

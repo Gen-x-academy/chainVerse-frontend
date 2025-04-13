@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '../../components/ui/button';
+import { Button } from './button';
 import Image from 'next/image';
 import logo from '../../public/Vector (1).png';
 import { Menu, Wallet } from 'lucide-react';

@@ -11,7 +11,9 @@ const Footer = () => {
         <div className="flex flex-col items-center">
           <FaWallet className="text-blue-500 text-3xl mb-2" />
           <h3 className="font-semibold text-lg">Earn Crypto</h3>
-          <p className="text-sm">Get paid directly in XLM for each student enrollment</p>
+          <p className="text-sm">
+            Get paid directly in XLM for each student enrollment
+          </p>
         </div>
 
         {/* Global Reach */}
@@ -25,16 +27,24 @@ const Footer = () => {
         <div className="flex flex-col items-center">
           <FaCog className="text-blue-500 text-3xl mb-2" />
           <h3 className="font-semibold text-lg">Build Authority</h3>
-          <p className="text-sm">Establish yourself as a thought leader in blockchain</p>
+          <p className="text-sm">
+            Establish yourself as a thought leader in blockchain
+          </p>
         </div>
       </div>
 
       <div className="border-t border-gray-300 mt-8 pt-4 text-center text-sm">
         <p>&copy; 2025 ChainVerse Academy. All rights reserved.</p>
         <div className="mt-2 space-x-4">
-          <Link href="/terms" className="text-blue-500 hover:underline">Terms</Link>
-          <Link href="/privacy" className="text-blue-500 hover:underline">Privacy</Link>
-          <Link href="/faq" className="text-blue-500 hover:underline">FAQ</Link>
+          <Link href="/terms" className="text-blue-500 hover:underline">
+            Terms
+          </Link>
+          <Link href="/privacy" className="text-blue-500 hover:underline">
+            Privacy
+          </Link>
+          <Link href="/faq" className="text-blue-500 hover:underline">
+            FAQ
+          </Link>
         </div>
       </div>
     </footer>
