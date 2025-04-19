@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import { ArrowLeft, Eye, EyeOff, Wallet } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, MoveLeft, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -70,10 +71,13 @@ function App() {
 
         {/* Back to Home button: Aligned to the left at the top */}
         <div className="p-4 self-start">
-          <button className="flex items-center text-black font-bold hover:text-gray-900">
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
-          </button>
+          <Link
+            href="/"
+            className="flex my-6 mx-auto bg-gray-100  p-4 rounded-lg w-fit float-left"
+          >
+            <MoveLeft className="mr-2" />
+            <h2>Back to home</h2>
+          </Link>
         </div>
 
         {/* Card 1: Title section */}
@@ -106,7 +110,7 @@ function App() {
                   onChange={handleInputChange}
                   className={`mt-1 block w-full rounded-sm border ${
                     errors.firstName ? 'border-red-300' : 'border-gray-300'
-                  } px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+                  } px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
                   placeholder="John"
                 />
                 {errors.firstName && (
@@ -131,7 +135,7 @@ function App() {
                   onChange={handleInputChange}
                   className={`mt-1 block w-full rounded-sm border ${
                     errors.lastName ? 'border-red-300' : 'border-gray-300'
-                  } px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+                  } px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
                   placeholder="Doe"
                 />
                 {errors.lastName && (
@@ -156,7 +160,7 @@ function App() {
                 onChange={handleInputChange}
                 className={`mt-1 block w-full rounded-sm border ${
                   errors.email ? 'border-red-300' : 'border-gray-300'
-                } px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+                } px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
                 placeholder="your.email@example.com"
               />
               {errors.email && (
@@ -181,7 +185,7 @@ function App() {
                   onChange={handleInputChange}
                   className={`mt-1 block w-full rounded-sm border ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
-                  } px-3 py-2 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+                  } px-3 py-2 pr-10 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
                   placeholder="••••••••"
                 />
                 <button
@@ -208,7 +212,7 @@ function App() {
             {/* Submit button */}
             <Button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#426ae2] to-[#9470db] hover:from-[#3a5ecc] hover:to-[#8563c4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-primary via-primary to-secondary opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Continue
             </Button>
@@ -217,7 +221,7 @@ function App() {
             <button
               type="button"
               onClick={handleWeb3Registration}
-              className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               <Wallet className="w-5 h-5 mr-2" />
               Register with Web3 Wallet
@@ -228,12 +232,12 @@ function App() {
               <div className="text-sm text-gray-500">OR</div>
               <p className="mt-2 text-sm text-gray-600">
                 Already have an account?{' '}
-                <a
-                  href="/signin"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                <Link
+                  href="/login"
+                  className="font-medium text-primary hover:text-primary"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </form>

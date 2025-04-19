@@ -20,30 +20,27 @@ const config = {
     },
     extend: {
       colors: {
-        border: '--border',
-        input: '--input',
-        ring: '--ring',
-        background: '--background',
-        foreground: '--foreground',
+        background: '#f8fafd',
+        foreground: '#0e1a33',
         primary: {
-          DEFAULT: '--primary',
-          foreground: '--primary-foreground',
+          DEFAULT: '#4361ee',
+          foreground: '#f5f7fa',
         },
         secondary: {
-          DEFAULT: '--secondary',
-          foreground: '--secondary-foreground',
+          DEFAULT: '#a855f7',
+          foreground: '#f5f7fa',
         },
         destructive: {
-          DEFAULT: '--destructive',
-          foreground: '--destructive-foreground',
+          DEFAULT: '#ef4444',
+          foreground: '#f5f7fa',
         },
         muted: {
-          DEFAULT: '--muted',
-          foreground: '--muted-foreground',
+          DEFAULT: '#f1f5fa',
+          foreground: '#6c7793',
         },
         accent: {
-          DEFAULT: '--accent',
-          foreground: '--accent-foreground',
+          DEFAULT: '#06b6d4',
+          foreground: '#f5f7fa',
         },
         popover: {
           DEFAULT: '--popover',
@@ -54,9 +51,16 @@ const config = {
           foreground: '--card-foreground',
         },
         sidebar: {
-          DEFAULT: '--sidebar',
+          DEFAULT: '#f0f4fa',
           foreground: '--sidebar-foreground',
         },
+        border: '#e2e8f0',
+        input: '#e2e8f0',
+        ring: '#4361ee',
+        sidebarForeground: '#394764',
+        sidebarBorder: '#e2e8f0',
+        success: '#16a34a',
+        successForeground: '#f5f7fa',
       },
       borderRadius: {
         lg: 'var(--radius)',

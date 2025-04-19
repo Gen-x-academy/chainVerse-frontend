@@ -65,11 +65,11 @@ const NavBar: React.FC = () => {
               <span>Connect Wallet</span>
             </Button>
           </div>
-          <Link href="/register" className="flex items-center">
-            <Button className="bg-blue-600 text-white" size="sm">
+          <Button className="bg-primary text-white" size="sm">
+            <Link href="/register" className="flex items-center">
               Register
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         {/* Mobile Menu (sm and md) */}
@@ -94,7 +94,7 @@ const NavBar: React.FC = () => {
 
         <div className="flex md:hidden items-center">
           <Link href="/register" className="flex items-center">
-            <Button className="bg-blue-600 text-white" size="sm">
+            <Button className="bg-primary text-white" size="sm">
               Register
             </Button>
           </Link>
