@@ -25,10 +25,17 @@ const config = {
         primary: {
           DEFAULT: '#4361ee',
           foreground: '#f5f7fa',
+          'custom-bg': '#80A5F566',  
+        'custom-text': '#4361EE',   
+        'custom-start': '#4361EE',  
+        'custom-end': '#A855F7',    
         },
         secondary: {
           DEFAULT: '#a855f7',
           foreground: '#f5f7fa',
+        },
+        backgroundImage: {
+          'custom-gradient': 'linear-gradient(to right, #4361EE, #A855F7)',
         },
         destructive: {
           DEFAULT: '#ef4444',
