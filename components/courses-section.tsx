@@ -47,25 +47,19 @@ export function CoursesSection() {
   const [totalPages, setTotalPages] = useState(1);
   const coursesPerPage = 10;
 
-  // Fetch courses data
+  // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-
-        // Simulate API call with delay
-        const response = await new Promise<Response>((resolve) => {
-          setTimeout(() => {
-            resolve(fetch("/data/courses.json"));
-          }, 1000);
-        });
+        const response = await fetch("/data/courses.json");
 
         if (!response.ok) {
           throw new Error("Failed to fetch courses");
         }
 
         const data = await response.json();
-        setCourses(data.courses);
+        setCourses(data.courses || []);
         setError(null);
       } catch (err) {
         console.error("Error fetching courses:", err);
@@ -78,63 +72,48 @@ export function CoursesSection() {
     fetchCourses();
   }, []);
 
-  // Filter and sort courses
+  // Filtering Logic
   useEffect(() => {
     if (!courses.length) return;
 
-    // Apply search filter
     let result = courses.filter((course) => {
       const searchLower = search.toLowerCase();
       return (
         course.title.toLowerCase().includes(searchLower) ||
-        course.description.toLowerCase().includes(searchLower) ||
-        course.instructor.toLowerCase().includes(searchLower) ||
-        course.category.toLowerCase().includes(searchLower)
+        course.category.toLowerCase().includes(searchLower) ||
+        course.instructor.toLowerCase().includes(searchLower)
       );
     });
 
-    // Apply level filter
     if (selectedLevels.length > 0) {
       result = result.filter((course) => selectedLevels.includes(course.level));
     }
 
-    // Apply category filter
     if (selectedCategories.length > 0) {
       result = result.filter((course) =>
         selectedCategories.includes(course.category)
       );
     }
 
-    // Apply sorting
     switch (sortBy) {
       case "newest":
-        result = [...result].sort((a, b) => b.id - a.id);
+        result = result.sort((a, b) => b.id - a.id);
         break;
       case "price-low":
-        result = [...result].sort((a, b) => a.price - b.price);
+        result = result.sort((a, b) => a.price - b.price);
         break;
       case "price-high":
-        result = [...result].sort((a, b) => b.price - a.price);
+        result = result.sort((a, b) => b.price - a.price);
         break;
       case "rating":
-        result = [...result].sort((a, b) => b.rating - a.rating);
-        break;
-      default:
+        result = result.sort((a, b) => b.rating - a.rating);
         break;
     }
 
     setFilteredCourses(result);
     setTotalPages(Math.ceil(result.length / coursesPerPage));
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [courses, search, sortBy, selectedLevels, selectedCategories]);
-
-  // Get unique categories and levels for filters
-  const uniqueCategories = Array.from(
-    new Set(courses.map((course) => course.category))
-  );
-  const uniqueLevels = Array.from(
-    new Set(courses.map((course) => course.level))
-  );
+    setCurrentPage(1);
+  }, [courses, search, selectedLevels, selectedCategories, sortBy]);
 
   // Get current page courses
   const currentCourses = filteredCourses.slice(
@@ -142,14 +121,17 @@ export function CoursesSection() {
     currentPage * coursesPerPage
   );
 
-  // Handle level filter changes
+  // Unique values for filters
+  const uniqueCategories = Array.from(new Set(courses.map((c) => c.category)));
+  const uniqueLevels = Array.from(new Set(courses.map((c) => c.level)));
+
+  // Handle filtering
   const handleLevelChange = (level: string) => {
     setSelectedLevels((prev) =>
       prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
   };
 
-  // Handle category filter changes
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -158,7 +140,6 @@ export function CoursesSection() {
     );
   };
 
-  // Handle pagination
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -178,7 +159,7 @@ export function CoursesSection() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search courses...."
+              placeholder="Search courses..."
               className="pl-10 w-full sm:w-[280px]"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -187,7 +168,7 @@ export function CoursesSection() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => setShowFilters((prev) => !prev)}
             className={
               showFilters ? "bg-muted hover:bg-blue-500" : "hover:bg-blue-500"
             }
@@ -196,8 +177,10 @@ export function CoursesSection() {
             <Filter className="h-4 w-4" />
           </Button>
         </div>
+
         <Select value={sortBy} onValueChange={setSortBy}>
           <SelectTrigger className="w-full sm:w-[200px]">
+            <img src="/3vertical.png" alt="Sort" />
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent className="bg-white">
@@ -211,66 +194,52 @@ export function CoursesSection() {
 
       {showFilters && (
         <div className="mb-8 border rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-card shadow-sm animate-in fade-in-50 duration-300">
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full"
-            defaultValue="levels"
-          >
+          <Accordion type="single" collapsible defaultValue="levels">
             <AccordionItem value="levels" className="border-b">
               <AccordionTrigger className="hover:no-underline hover:bg-muted/50 px-3 rounded-md">
                 Course Levels
               </AccordionTrigger>
-              <AccordionContent className="pt-4 px-2">
-                <div className="space-y-3">
-                  {uniqueLevels.map((level) => (
-                    <div key={level} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={`level-${level}`}
-                        checked={selectedLevels.includes(level)}
-                        onCheckedChange={() => handleLevelChange(level)}
-                      />
-                      <label
-                        htmlFor={`level-${level}`}
-                        className="ml-2 cursor-pointer"
-                      >
-                        {level}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+              <AccordionContent className="pt-4 px-2 space-y-3">
+                {uniqueLevels.map((level) => (
+                  <div key={level} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={`level-${level}`}
+                      checked={selectedLevels.includes(level)}
+                      onCheckedChange={() => handleLevelChange(level)}
+                    />
+                    <label
+                      htmlFor={`level-${level}`}
+                      className="ml-2 cursor-pointer"
+                    >
+                      {level}
+                    </label>
+                  </div>
+                ))}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
 
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full"
-            defaultValue="categories"
-          >
+          <Accordion type="single" collapsible defaultValue="categories">
             <AccordionItem value="categories" className="border-b">
               <AccordionTrigger className="hover:no-underline hover:bg-muted/50 px-3 rounded-md">
                 Categories
               </AccordionTrigger>
-              <AccordionContent className="pt-4 px-2">
-                <div className="space-y-3">
-                  {uniqueCategories.map((category) => (
-                    <div key={category} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={`category-${category}`}
-                        checked={selectedCategories.includes(category)}
-                        onCheckedChange={() => handleCategoryChange(category)}
-                      />
-                      <label
-                        htmlFor={`category-${category}`}
-                        className="ml-2 cursor-pointer"
-                      >
-                        {category}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+              <AccordionContent className="pt-4 px-2 space-y-3">
+                {uniqueCategories.map((category) => (
+                  <div key={category} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={`category-${category}`}
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={() => handleCategoryChange(category)}
+                    />
+                    <label
+                      htmlFor={`category-${category}`}
+                      className="ml-2 cursor-pointer"
+                    >
+                      {category}
+                    </label>
+                  </div>
+                ))}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -294,17 +263,7 @@ export function CoursesSection() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                category={course.category}
-                title={course.title}
-                rating={course.rating}
-                description={course.description}
-                instructor={course.instructor}
-                level={course.level}
-                price={course.price}
-                currency={course.currency}
-              />
+              <CourseCard key={course.id} {...course} />
             ))}
           </div>
 
