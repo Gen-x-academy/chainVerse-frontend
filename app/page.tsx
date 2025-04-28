@@ -3,7 +3,6 @@ import HeroSection from '@/components/ui/HeroSection';
 import FeaturedCourses from '@/components/ui/FeaturedCourses';
 import KeyFeatures from '@/components/ui/KeyFeatures';
 import Footer from '@/components/ui/Footer';
-import InstructorsPage from '@/components/ui/InstructorsPage';
 
 export default function Home() {
   return (
@@ -12,7 +11,6 @@ export default function Home() {
       <KeyFeatures />
       <FeaturedCourses />
       <Footer />
-      <InstructorsPage/>
     </div>
   );
 }
