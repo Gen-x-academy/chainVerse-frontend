@@ -46,11 +46,11 @@ export default function InstructorsPage() {
   }, [searchValue, filter]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl md:text-[36px] font-[500px] mb-2 text-gray-900">Our Instructors</h1>
-      <p className='mb-8 text-[20px] font-[400px] text-[#00000066]'>Learn from the best blockchain experts in the industry</p>
+    <div className="container mx-auto px-10 py-6 md:py-8">
+      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-1 md:mb-2 text-gray-900">Our Instructors</h1>
+      <p className="mb-4 md:mb-8 text-base sm:text-lg md:text-xl text-gray-500">Learn from the best blockchain experts in the industry</p>
       
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 md:mb-8">
         <InstructorSearch 
           searchValue={searchValue} 
           onSearchChange={setSearchValue} 
@@ -62,56 +62,55 @@ export default function InstructorsPage() {
         />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredInstructors.map((instructor) => (
           <InstructorCard key={instructor.id} instructor={instructor} />
         ))}
       </div>
       
-      <div className="mt-16 mb-8">
-        <h2 className="text-[32px] font-bold  text-gray-900">Become an Instructor</h2>
-        <div className="flex flex-col items-start gap-6  bg-gray-50 rounded-lg">
-          <div className="w-full flex">
-            <p className="text-gray-500 flex-1 text-[20px] mb-4">
-            Join our growing community of blockchain educators and share your expertise with students around the world. ChainVerse Academy instructors earn XLM through course purchases and receive ongoing royalties. </p>
-            <div className='flex-1 flex justify-end'>
-            <button className="w-[228px] h-[57px] rounded-[15px] bg-gradient-to-r from-[#4361EE] to-[#C48BFC] text-[20px] font-bold text-white ">
+      <div className="mt-10 md:mt-16 mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4">Become an Instructor</h2>
+        <div className="flex flex-col md:flex-row items-start gap-4 p-4 md:p-0 bg-gray-50 rounded-lg">
+          <div className='md:w-[80%]'>
+          <p className="text-sm sm:text-base md:text-lg text-gray-500 md:flex-1 mb-4 md:mb-0 md:max-w-[60%]">
+            Join our growing community of blockchain educators and share your expertise with students around the world. ChainVerse Academy instructors earn XLM through course purchases and receive ongoing royalties.
+          </p>
+          </div>
+          <div className="w-full md:w-auto flex justify-center md:justify-end">
+            <button className="w-full md:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-[#4361EE] to-[#C48BFC] text-sm sm:text-base md:text-lg font-bold text-white">
               Apply To Teach
             </button>
-            </div>
           </div>
         </div>
 
-{/* Bottom cards */}
-        <div className=" mt-6 md:mt-0 ">
-            <div className="flex gap-6">
-              <div className="flex-1 ">
-              <div className="flex items-center gap-2 mb-2 ">
-              <div className="w-[64px] h-[64px] rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-600">
-              <Star size={35} />
+        {/* Bottom cards */}
+        <div className="mt-6 space-y-6 md:space-y-0">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:flex-1 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                  <Star size={24} className="md:w-8 md:h-8" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 text-lg md:text-xl">Build Your Reputation</h3>
+                  <p className="text-sm md:text-base text-gray-600">Establish yourself as a thought leader</p>
+                </div>
               </div>
-              <div className=''>
-              <h3 className="font-medium text-gray-900 text-[24px]">Build Your Reputation</h3>
-              <p className="text-sm text-gray-600 text-[20px]">Establish yourself as a thought leader</p>
-              </div>
-              </div>
-              </div>
+            </div>
 
-
-              <div className="flex-1 ">
-              <div className="flex items-center gap-2 mb-2 ">
-              <div className="w-[64px] h-[64px] rounded-full bg-[#A855F71A]/80 flex items-center justify-center text-xs font-medium text-[#41047a1a]">
-              <CircleDollarSign size={36} />
-              </div>
-              <div className=''>
-              <h3 className="font-medium text-gray-900 text-[24px]">Earn Crypto</h3>
-              <p className="text-sm text-gray-600 text-[20px]">Get paid in XLM for your courses</p>
-              </div>
-              </div>
+            <div className="w-full md:flex-1 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#A855F71A]/80 flex items-center justify-center text-purple-500">
+                  <CircleDollarSign size={24} className="md:w-8 md:h-8" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 text-lg md:text-xl">Earn Crypto</h3>
+                  <p className="text-sm md:text-base text-gray-600">Get paid in XLM for your courses</p>
+                </div>
               </div>
             </div>
           </div>
-
+        </div>
       </div>
     </div>
   );
