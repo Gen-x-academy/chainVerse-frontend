@@ -1,31 +1,43 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { FaWallet, FaGlobe, FaCog } from 'react-icons/fa';
+import { Badge, Users, Wallet } from "lucide-react";
+import Link from "next/link";
+import { FaWallet, FaGlobe, FaCog } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 text-gray-700 py-8 px-4 md:px-12 text-center md:text-left">
+    <footer className=" text-gray-700 py-8 px-4 md:px-12 text-center md:text-left">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         {/* Earn Crypto */}
-        <div className="flex flex-col items-center">
-          <FaWallet className="text-blue-500 text-3xl mb-2" />
-          <h3 className="font-semibold text-lg">Earn Crypto</h3>
+        <div className="flex flex-col items-center px-8">
+          <div className="border rounded-full  p-4 bg-[#80A5F566] ">
+            <Wallet
+              size={24}
+              strokeWidth={1}
+              className="text-[#053CB5] "
+              // style={{color: acce}}
+            />
+          </div>
+          <h3 className="font-semibold text-lg">Crypto Payments</h3>
           <p className="text-sm">
             Get paid directly in XLM for each student enrollment
           </p>
         </div>
 
         {/* Global Reach */}
-        <div className="flex flex-col items-center">
-          <FaGlobe className="text-blue-500 text-3xl mb-2" />
+        <div className="flex flex-col items-center px-10">
+          <div className="border rounded-full  p-4 bg-[#80A5F566] ">
+            <Users size={24} strokeWidth={1} className="text-[#053CB5]" />
+          </div>
           <h3 className="font-semibold text-lg">Global Reach</h3>
           <p className="text-sm">Connect with students from around the world</p>
         </div>
 
         {/* Build Authority */}
-        <div className="flex flex-col items-center">
-          <FaCog className="text-blue-500 text-3xl mb-2" />
+        <div className="flex flex-col items-center px-8">
+          <div className="border rounded-full  p-4 bg-[#80A5F566] ">
+            <Badge size={28} strokeWidth={1} className="text-[#053CB5]" />
+          </div>
           <h3 className="font-semibold text-lg">Build Authority</h3>
           <p className="text-sm">
             Establish yourself as a thought leader in blockchain
