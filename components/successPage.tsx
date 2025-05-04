@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Wallet, Users, Check, ChartLine } from "lucide-react";
 import { useFormContext } from "@/lib/form-context";
 
-export default function SuccessPageStep() {
+export default function SuccessPage() {
   const router = useRouter();
+
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-20">

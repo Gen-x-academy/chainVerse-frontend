@@ -24,7 +24,7 @@ export const courseProposalSchema = z.object({
   courseTitle: z.string().min(5, "Course title must be at least 5 characters"),
   courseDescription: z
     .string()
-    .min(10, "Description must be at least 50 characters"),
+    .min(10, "Description must be at least 5 characters"),
   courseLevel: z.string().min(1, "Please select a course level"),
   courseOutline: z
     .string()

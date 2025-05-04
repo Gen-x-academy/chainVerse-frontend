@@ -36,7 +36,7 @@ const HeroSection: React.FC = () => {
             className="border-primary text-primary hover:bg-primary/10"
             asChild
           >
-            <Link href="/instructor_register/step1">Become an Instructor</Link>
+            <Link href="/instructor_register">Become an Instructor</Link>
           </Button>
         </div>
       </div>

@@ -12,19 +12,17 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="">
-        <Header />
-        <div className="min-h-screen flex flex-col  bg-[#FCFAF8] ">
-          <FormProvider>
-            <main className="flex-1">
-              <div className="container mx-auto px-4 py-8">{children}</div>
-              <div className="container mx-auto px-4"></div>
-            </main>
-          </FormProvider>
-          <Footer />
-        </div>
-      </body>
-    </html>
+    <>
+      <div className="min-h-screen flex flex-col  bg-[#FCFAF8] ">
+        {/* <Header /> */}
+        <FormProvider>
+          <main className="flex-1">
+            <div className="container mx-auto px-4 py-8">{children}</div>
+            <div className="container mx-auto px-4"></div>
+          </main>
+        </FormProvider>
+        <Footer />
+      </div>
+    </>
   );
 }
