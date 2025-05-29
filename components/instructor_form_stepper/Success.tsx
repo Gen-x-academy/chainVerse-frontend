@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BackButton } from "@/components/back-button";
-import { Button } from "@/components/ui/button";
-import { Wallet, Users, Check, ChartLine } from "lucide-react";
-import { useFormContext } from "@/lib/form-context";
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { BackButton } from '@/components/back-button';
+import { Button } from '@/components/ui/button';
+import { Wallet, Users, Check, ChartLine } from 'lucide-react';
+import { useFormContext } from '@/lib/form-context';
 
 export default function SuccessPageStep() {
   const router = useRouter();
@@ -92,7 +92,7 @@ export default function SuccessPageStep() {
 
         <div className="flex justify-center mt-12">
           <Button
-            onClick={() => router.push("/")}
+            onClick={() => router.push('/')}
             // href="/"
             className="px-6 py-2 text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-md"
           >

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   professionalExpSchema,
   ProfessionalExpFormData,
-} from "@/lib/form-schema";
-import { useFormContext } from "@/lib/form-context";
-import ProfessionalExperienceStep from "@/components/professionalExperienceStep";
-import { useRouter } from "next/router";
+} from '@/lib/form-schema';
+import { useFormContext } from '@/lib/form-context';
+import ProfessionalExperienceStep from '@/components/professionalExperienceStep';
+import { useRouter } from 'next/router';
 
 export default function Step2({
   onNext,
@@ -33,7 +33,7 @@ export default function Step2({
     <ProfessionalExperienceStep
       form={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      onBack={() => router.push("/instructor_register/step1")}
+      onBack={() => router.push('/instructor_register/step1')}
       isSubmitting={form.formState.isSubmitting}
     />
   );

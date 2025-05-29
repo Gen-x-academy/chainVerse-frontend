@@ -1,8 +1,5 @@
-"use client";
-// import { InstructorRegistrationForm } from "@/components/instructor-registration-form";
-import { Header } from "@/components/header";
-import { InstructorRegistrationForm } from "@/components/instructor-registeration-form";
-import Footer from "@/components/ui/Footer";
+'use client';
+import { InstructorRegistrationForm } from '@/components/instructor-registeration-form';
 
 export default function InstructorRegisterPage() {
   return (

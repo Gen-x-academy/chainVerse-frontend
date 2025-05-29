@@ -1,12 +1,12 @@
-"use client";
-import { useState } from "react";
-import { FormProvider } from "@/lib/form-context";
-import PersonalInfoStep from "@/components/personalInfoStep";
-import ProfessionalExperienceStep from "@/components/professionalExperienceStep";
-import CourseProposalStep from "@/components/courseProposalStep";
+'use client';
+import { useState } from 'react';
+import { FormProvider } from '@/lib/form-context';
+import PersonalInfoStep from '@/components/personalInfoStep';
+import ProfessionalExperienceStep from '@/components/professionalExperienceStep';
+import CourseProposalStep from '@/components/courseProposalStep';
 // import SuccessPageStep from "@/components/successPageStep";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   personalInfoSchema,
   professionalExpSchema,
@@ -14,9 +14,9 @@ import {
   type PersonalInfoFormData,
   type ProfessionalExpFormData,
   type CourseProposalFormData,
-} from "@/lib/form-schema";
-import { useFormContext } from "@/lib/form-context";
-import SuccessPageStep from "@/app/instructor_register/success/page";
+} from '@/lib/form-schema';
+import { useFormContext } from '@/lib/form-context';
+import SuccessPageStep from './instructor_form_stepper/Success';
 
 interface InstructorRegistrationFormProps {
   onComplete?: () => void;
@@ -28,7 +28,7 @@ interface InstructorRegistrationFormProps {
 export function InstructorRegistrationForm({
   onComplete,
   initialStep = 1,
-  className = "",
+  className = '',
   showHeader = true,
 }: InstructorRegistrationFormProps) {
   const [step, setStep] = useState(initialStep);
@@ -61,12 +61,12 @@ function Step1Form({ onNext }: { onNext: () => void }) {
   const form = useForm<PersonalInfoFormData>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: personalInfo || {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      location: "",
-      language: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      location: '',
+      language: '',
     },
   });
 
@@ -97,11 +97,11 @@ function Step2Form({
   const form = useForm<ProfessionalExpFormData>({
     resolver: zodResolver(professionalExpSchema),
     defaultValues: professionalExp || {
-      expertise: "",
-      experience: "",
-      currentRole: "",
-      biography: "",
-      linkedin: "",
+      expertise: '',
+      experience: '',
+      currentRole: '',
+      biography: '',
+      linkedin: '',
     },
   });
 
@@ -133,10 +133,10 @@ function Step3Form({
   const form = useForm<CourseProposalFormData>({
     resolver: zodResolver(courseProposalSchema),
     defaultValues: courseProposal || {
-      courseTitle: "",
-      courseDescription: "",
-      courseLevel: "",
-      courseOutline: "",
+      courseTitle: '',
+      courseDescription: '',
+      courseLevel: '',
+      courseOutline: '',
     },
   });
 

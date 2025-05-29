@@ -1,42 +1,46 @@
 'use client';
 import React from 'react';
-import { Button } from './button';
-import CourseCard from './courseCard';
+import { Button } from './ui/button';
+import Link from 'next/link';
+import { CourseCard } from './course-card';
 
 const FeaturedCourses: React.FC = () => {
   const courses = [
     {
-      title: {
-        mainText: 'Stellar Blockchain',
-        subText: 'Fundamentals',
-      },
+      id: 1,
+      category: 'Blockchain basics',
+      title: 'Stellar Blockchain Fundamentals',
+      rating: 4.8,
       description:
         'Learn the basics of Stellar blockchain, its architecture, and use cases.',
       instructor: 'Alex Johnson',
       level: 'Beginner',
       price: 100,
+      currency: 'XLM',
     },
     {
-      title: {
-        mainText: 'Smart Contracts with',
-        subText: 'Soroban',
-      },
+      id: 2,
+      category: 'Smart Contracts',
+      title: 'Smart Contracts with Soroban',
+      rating: 4.6,
       description:
         "Master Stellar's smart contract platform Soroban and build decentralized applications.",
       instructor: 'Maria Garcia',
       level: 'Intermediate',
       price: 250,
+      currency: 'XLM',
     },
     {
-      title: {
-        mainText: 'Web3 Development',
-        subText: 'Masterclass',
-      },
+      id: 3,
+      category: 'Web3 Development',
+      title: 'Web3 Development Masterclass',
+      rating: 4.9,
       description:
-        'Comprehensive guide to building Web3 applications on multiple blockchain platforms.',
+        'Comprehensive guide to building Web3 applications on multiple blockchain platforms',
       instructor: 'David Chen',
       level: 'Advanced',
       price: 400,
+      currency: 'XLM',
     },
   ];
 
@@ -48,25 +52,20 @@ const FeaturedCourses: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {courses.map((course, index) => (
-          <CourseCard
-            key={index}
-            title={course.title}
-            description={course.description}
-            instructor={course.instructor}
-            level={course.level}
-            price={course.price}
-          />
+        {courses.map((course) => (
+          <CourseCard key={course.id} {...course} />
         ))}
       </div>
 
       <div className="text-center mt-10">
-        <Button
-          variant="outline"
-          className="px-6 border border-primary text-primary hover:bg-blue-50"
-        >
-          View All Courses
-        </Button>
+        <Link href="/courses">
+          <Button
+            variant="outline"
+            className="px-6 border border-primary text-primary hover:bg-blue-50"
+          >
+            View All Courses
+          </Button>
+        </Link>
       </div>
     </section>
   );

@@ -1,15 +1,15 @@
 // pages/instructor_register/step3.tsx
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   courseProposalSchema,
   CourseProposalFormData,
-} from "@/lib/form-schema";
-import { useFormContext } from "@/lib/form-context";
-import { useRouter } from "next/navigation";
-import CourseProposalStep from "@/components/courseProposalStep";
+} from '@/lib/form-schema';
+import { useFormContext } from '@/lib/form-context';
+import { useRouter } from 'next/navigation';
+import CourseProposalStep from '@/components/courseProposalStep';
 
 export default function Step3({
   onNext,
@@ -40,7 +40,7 @@ export default function Step3({
       form={form}
       onSubmit={form.handleSubmit(onSubmit)}
       isSubmitting={form.formState.isSubmitting}
-      onBack={() => router.push("/instructor_register/step2")}
+      onBack={() => router.push('/instructor_register/step2')}
     />
   );
 }

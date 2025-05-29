@@ -1,5 +1,5 @@
-import CourseDetailsPage from "@/components/course-detail-screen";
-import React from "react";
+import React from 'react';
+import CourseDetailsPage from '@/components/course-detail-page';
 
 const CourseDetail = () => {
   return (

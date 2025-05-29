@@ -1,10 +1,7 @@
-import type React from "react";
-import { Header } from "@/components/header";
-// import { Footer } from "@/components/ui/Footer";
-// import { FeaturesSection } from "@/components/features-section"
-import { FormProvider } from "@/lib/form-context";
-import Footer from "@/components/ui/Footer";
-import RootLayout from "../layout";
+import type React from 'react';
+import { Header } from '@/components/header';
+import { FormProvider } from '@/lib/form-context';
+import Footer from '@/components/Footer';
 
 export default function RegisterLayout({
   children,

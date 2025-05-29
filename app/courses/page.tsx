@@ -1,8 +1,5 @@
-import Footer from "@/components/ui/Footer";
-import NavBar from "@/components/ui/NavBar";
-import { CoursesSection } from "@/components/courses-section";
-
-import React from "react";
+import React from 'react';
+import { CoursesSection } from '@/components/courses-section';
 
 export default function page() {
   return (

@@ -1,8 +1,10 @@
-import { Star } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Star } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface CourseCardProps {
+  id: number;
   category: string;
   title: string;
   rating: number;
@@ -14,6 +16,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
+  id,
   category,
   title,
   rating,
@@ -59,9 +62,11 @@ export function CourseCard({
         </div>
       </CardContent>
       <CardFooter className="p-6 pt-0">
-        <Button className="w-full" variant="default">
-          Enroll Now
-        </Button>
+        <Link href={`/courses/${id}`}>
+          <Button className="w-full" variant="default">
+            Enroll Now
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
