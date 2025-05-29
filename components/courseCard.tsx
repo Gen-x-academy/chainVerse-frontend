@@ -1,9 +1,12 @@
 'use client';
 import React from 'react';
-import { Button } from './button';
-import { Card } from './card';
+
+import Link from 'next/link';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
 
 interface CourseProps {
+  id: number;
   title: {
     mainText: string;
     subText: string;
@@ -16,6 +19,7 @@ interface CourseProps {
 }
 
 const CourseCard: React.FC<CourseProps> = ({
+  id,
   title,
   description,
   instructor,
@@ -47,14 +51,15 @@ const CourseCard: React.FC<CourseProps> = ({
               {price} {currency}
             </span>
           </div>
-
-          <Button className="w-full mt-4 bg-primary hover:bg-blue-700 text-white">
-            Enroll Now
-          </Button>
+          <Link href={`courses/${id}`}>
+            <Button className="w-full mt-4 bg-primary hover:bg-blue-700 text-white">
+              Enroll Now
+            </Button>
+          </Link>
         </div>
       </div>
     </Card>
   );
 };
 
-export default CourseCard
+export default CourseCard;

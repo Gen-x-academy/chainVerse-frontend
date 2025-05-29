@@ -1,12 +1,14 @@
-import NavBar from '@/components/ui/NavBar';
-import HeroSection from '@/components/ui/HeroSection';
-import FeaturedCourses from '@/components/ui/FeaturedCourses';
-import KeyFeatures from '@/components/ui/KeyFeatures';
-import Footer from '@/components/ui/Footer';
+'use client'; // Add this directive at the top
+
+import * as React from 'react';
+import HeroSection from '@/components/HeroSection';
+import FeaturedCourses from '@/components/FeaturedCourses';
+import KeyFeatures from '@/components/KeyFeatures';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto">
       <HeroSection />
       <KeyFeatures />
       <FeaturedCourses />

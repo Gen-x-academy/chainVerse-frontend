@@ -3,14 +3,7 @@ import {
   CircleDollarSign,
   BadgeIcon as Certificate,
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 export default function KeyFeatures() {
   const keyFeatures = [
@@ -37,7 +30,7 @@ export default function KeyFeatures() {
     },
   ];
   return (
-    <section className="w-full mx-auto  bg-gray-50 ">
+    <section className="w-full  mx-auto  bg-gray-50 ">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold mb-2">Key Features</h2>
         <p className="text-gray-600">
@@ -48,7 +41,7 @@ export default function KeyFeatures() {
         {keyFeatures.map((feature, index) => (
           <Card
             key={index}
-            className=" bg-white cursor-pointer   py-6 px-2 flex flex-col items-center text-center gap-2 hover:border-1 hover:border-blue-600 "
+            className=" bg-white  h-[300px]  py-6 px-2 flex flex-col items-center text-center justify-center gap-2 hover:border-1 hover:border-blue-600 "
           >
             <CardHeader className="w-full flex items-center justify-center m-0  ">
               <CardTitle className="flex items-center justify-center flex-col">

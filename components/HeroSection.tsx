@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 
-import { Button } from './button';
+import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
-import { BlockchainAnimation } from '../animations/blockchain-animation';
+import { BlockchainAnimation } from './animations/blockchain-animation';
 
 const HeroSection: React.FC = () => {
   return (
@@ -25,7 +25,7 @@ const HeroSection: React.FC = () => {
             className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
             asChild
           >
-            <Link href="/">
+            <Link href="/courses">
               Explore Courses
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -36,7 +36,7 @@ const HeroSection: React.FC = () => {
             className="border-primary text-primary hover:bg-primary/10"
             asChild
           >
-            <Link href="/">Become an Instructor</Link>
+            <Link href="/instructor_register">Become an Instructor</Link>
           </Button>
         </div>
       </div>

@@ -1,9 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Button } from './button';
+import { Button } from './ui/button';
 import Image from 'next/image';
-import logo from '../../public/Vector (1).png';
+import logo from '../public/logo.png';
 import { Menu, Wallet } from 'lucide-react';
 
 const NavBar: React.FC = () => {
