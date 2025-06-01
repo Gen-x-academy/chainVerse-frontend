@@ -10,8 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger
+  SidebarProvider
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import logo from "../../../public/logo.png";
@@ -57,8 +56,6 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
-
-                {/* <SidebarTrigger /> */}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarContent>

@@ -96,7 +96,7 @@ export const instructorRoutes = [
         />
       </svg>
     ),
-    route: "/dashboard/instructor",
+    route: "",
     isActive: false
   },
   {
@@ -126,7 +126,7 @@ export const instructorRoutes = [
         />
       </svg>
     ),
-    route: "/dashboard/instructor/account",
+    route: "",
     isActive: false
   },
   {
@@ -170,7 +170,7 @@ export const instructorRoutes = [
         />
       </svg>
     ),
-    route: "/dashboard/instructor/courses",
+    route: "",
     isActive: false
   },
   {
@@ -210,7 +210,7 @@ export const instructorRoutes = [
         />
       </svg>
     ),
-    route: "/dashboard/instructor/sessions",
+    route: "",
     isActive: false
   }
 ];
