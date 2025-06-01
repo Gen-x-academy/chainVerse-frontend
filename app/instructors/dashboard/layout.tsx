@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import NavBar from "@/components/NavBar";
+// import "./globals.css";
+// import NavBar from "@/components/NavBar";
+// import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// import InstructorDashboardHeader from "@/components/dashboard/instructor/header";
+// import InstructorSidebar from "@/components/dashboard/instructor/sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChainVerse",
+  title: "ChainVerse | Instructor Dashboard",
   description: "Learn Blockchain. Earn Crypto"
 };
 
@@ -28,7 +31,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NavBar />
         {children}
       </body>
     </html>
