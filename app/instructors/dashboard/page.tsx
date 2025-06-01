@@ -1,11 +1,11 @@
 "use client";
 
-import InstructorSidebar from "@/components/dashboard/instructor/sidebar";
+import InstructorSidebar from "@/components/instructors/dashboard/sidebar";
 import React, { useEffect, useState } from "react";
-import InstructorDashboardHeader from "@/components/dashboard/instructor/header";
+import InstructorDashboardHeader from "@/components/instructors/dashboard/header";
 import { usePathname } from "next/navigation";
 import Main from "./main";
-import NotificationBar from "@/components/dashboard/instructor/notification-bar";
+import NotificationBar from "@/components/instructors/dashboard/notification-bar";
 import { cn } from "@/lib/utils";
 import { instructorRoutes } from "@/lib/mock-data/instructorsData";
 import { instructor } from "@/lib/mock-data/instructorsData";
