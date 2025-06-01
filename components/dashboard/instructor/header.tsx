@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import Searchbar from "./searchbar";
 import HeaderBadge from "./header-badge";
 import { InstructorProps } from "@/types";
+import { instructorRoutes } from "@/lib/mock-data/instructorsData";
+import MobileMenuPopup from "./mobile-menu-popup";
+import MobileNotificationModal from "./mobile-notification-modal";
 
 type InstructorDashboardHeaderProps = {
   user: InstructorProps;
@@ -14,18 +17,18 @@ const InstructorDashboardHeader = ({
   user,
   handleNotificationToggle
 }: InstructorDashboardHeaderProps) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
   return (
-    <header className={`shadow-md  bg-white h-18 px-4 w-full  pt-6 pb-3`}>
+    <header className={`shadow-md bg-white h-18 px-2 w-full pt-6 pb-3 md:px-4`}>
       <nav className=" flex justify-between items-center h-full w-full ">
-        <Searchbar />
+        <div className="flex items-center gap-1">
+          <MobileMenuPopup routes={instructorRoutes} />
+          <Searchbar />
+        </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-0.5 sm:gap-2 md:gap-3">
           <HeaderBadge instructor={user} />
           <button
-            className="notification-icon cursor-pointer bg-gray-100 rounded-full p-1"
+            className="notification-icon cursor-pointer bg-gray-100  rounded-full p-1 hidden md:block"
             onClick={handleNotificationToggle}
           >
             <svg
@@ -45,6 +48,8 @@ const InstructorDashboardHeader = ({
               />
             </svg>
           </button>
+
+          <MobileNotificationModal />
         </div>
       </nav>
     </header>

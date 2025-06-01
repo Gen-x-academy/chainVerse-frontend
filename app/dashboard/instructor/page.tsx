@@ -31,7 +31,14 @@ const InstructorDashboard = () => {
     <div className="grid grid-cols-5">
       <InstructorSidebar routes={instructorRoutes} />
 
-      <div className={(cn(), showNotification ? "col-span-3" : "col-span-4")}>
+      <div
+        className={
+          (cn(),
+          showNotification
+            ? "col-span-5  md:col-span-3 "
+            : "col-span-5  md:col-span-4")
+        }
+      >
         <InstructorDashboardHeader
           user={instructor}
           handleNotificationToggle={handleNotificationToggle}
@@ -41,9 +48,8 @@ const InstructorDashboard = () => {
         <Main user={instructor} />
       </div>
 
-      {""}
       {showNotification && (
-        <div className="col-span-1">
+        <div className="hidden md:block md:col-span-1">
           <NotificationBar />
         </div>
       )}

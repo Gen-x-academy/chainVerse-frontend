@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from "@/components/ui/select";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Checkbox } from '@/components/ui/checkbox';
-import { CourseCard } from '@/components/course-card';
-import { Spinner } from '@/components/ui/spinner';
+  AccordionTrigger
+} from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CourseCard } from "@/components/course-card";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Course {
   id: number;
@@ -38,8 +38,8 @@ export function CoursesSection() {
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -52,18 +52,18 @@ export function CoursesSection() {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/data/courses.json');
+        const response = await fetch("/data/courses.json");
 
         if (!response.ok) {
-          throw new Error('Failed to fetch courses');
+          throw new Error("Failed to fetch courses");
         }
 
         const data = await response.json();
         setCourses(data.courses || []);
         setError(null);
       } catch (err) {
-        console.error('Error fetching courses:', err);
-        setError('Failed to load courses. Please try again later.');
+        console.error("Error fetching courses:", err);
+        setError("Failed to load courses. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -96,16 +96,16 @@ export function CoursesSection() {
     }
 
     switch (sortBy) {
-      case 'newest':
+      case "newest":
         result = result.sort((a, b) => b.id - a.id);
         break;
-      case 'price-low':
+      case "price-low":
         result = result.sort((a, b) => a.price - b.price);
         break;
-      case 'price-high':
+      case "price-high":
         result = result.sort((a, b) => b.price - a.price);
         break;
-      case 'rating':
+      case "rating":
         result = result.sort((a, b) => b.rating - a.rating);
         break;
     }
@@ -143,7 +143,7 @@ export function CoursesSection() {
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -170,7 +170,7 @@ export function CoursesSection() {
             size="icon"
             onClick={() => setShowFilters((prev) => !prev)}
             className={
-              showFilters ? 'bg-muted hover:bg-blue-500' : 'hover:bg-blue-500'
+              showFilters ? "bg-muted hover:bg-blue-500" : "hover:bg-blue-500"
             }
             title="Show filters"
           >
@@ -283,7 +283,7 @@ export function CoursesSection() {
                 (page) => (
                   <Button
                     key={page}
-                    variant={currentPage === page ? 'default' : 'outline'}
+                    variant={currentPage === page ? "default" : "outline"}
                     size="sm"
                     onClick={() => goToPage(page)}
                     className="w-10 h-10"

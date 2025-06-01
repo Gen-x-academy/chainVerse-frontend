@@ -20,18 +20,18 @@ import { cn } from "@/lib/utils";
 export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
   return (
     <>
-      <SidebarProvider>
-        <Sidebar className="w-1/5">
+      <SidebarProvider className="hidden md:block md:w-1/5">
+        <Sidebar className="sm:w-1/5">
           <SidebarContent className="py-4 pl-2 pr-4 w-full">
             <div className="flex items-center gap-1 pb-4">
               <Image
                 src={logo}
                 alt="Logo"
-                className="h-6 w-6"
+                className="md:h-4 md:w-4 lg:h-6 lg:w-6"
                 width={24}
                 height={24}
               />
-              <span className="font-semibold tracking-[-0.8px] text-xl">
+              <span className="font-semibold tracking-[-0.8px] md:text-base lg:text-xl">
                 ChainVerse Academy
               </span>
             </div>
@@ -47,12 +47,12 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
                         key={route.name}
                         href={route.route}
                         className={cn(
-                          "flex items-center py-5 font-medium",
+                          "flex items-center py-5 font-medium ",
                           route.isActive && "bg-gray-200 "
                         )}
                       >
                         <span className="h-5 w-5"> {route.icon}</span>
-                        <span>{route.name}</span>
+                        <span className="route-name">{route.name}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
