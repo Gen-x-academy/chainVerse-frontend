@@ -7,11 +7,6 @@ import { DashboardContent } from "./dashboard-content"
 
 export function StudentDashboard() {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <StudentSidebar />
         <DashboardContent />
-      </div>
-    </SidebarProvider>
   )
 }

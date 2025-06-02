@@ -8,7 +8,7 @@ const navigationItems: RouteType[] = [
   {
     name: "Dashboard",
     icon: LayoutDashboard,
-    route: "/student/dashboard",
+    route: "/students/dashboard",
   },
   {
     name: "My Courses",
@@ -31,7 +31,7 @@ const accountItems: RouteType[] = [
   {
     name: "Profile",
     icon: User,
-    route: "/student/profile",
+    route: "/students/profile",
   },
   {
     name: "Settings",
