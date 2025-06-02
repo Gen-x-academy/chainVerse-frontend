@@ -9,7 +9,8 @@ import NotificationBar from "@/components/instructors/dashboard/notification-bar
 import { cn } from "@/lib/utils";
 import { instructorRoutes } from "@/lib/mock-data/instructorsData";
 import { instructor } from "@/lib/mock-data/instructorsData";
-
+import OverviewCards from "@/components/Instructor-dashboard/Overview";
+import ChartsSection from "@/components/Instructor-dashboard/ChartSection";
 const InstructorDashboard = () => {
   const pathname = usePathname();
   const [showNotification, setShowNotification] = useState(false);
@@ -46,6 +47,10 @@ const InstructorDashboard = () => {
 
         {/* THIS MAIN COMPONENT DISPLAYS THE GREETING WITH A MOCK USER NAME  */}
         <Main user={instructor} />
+       <div className="p-4">
+        <OverviewCards/>
+        <ChartsSection/>
+       </div>
       </div>
 
       {showNotification && (
@@ -53,6 +58,8 @@ const InstructorDashboard = () => {
           <NotificationBar />
         </div>
       )}
+
+
     </div>
   );
 };
