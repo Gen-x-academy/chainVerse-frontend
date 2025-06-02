@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, Filter, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { CourseCard } from "@/components/course-card"
 import { Spinner } from "@/components/ui/spinner"
+import { useCartStore } from "@/store/cartStore"
+import { toast } from "@/components/ui/use-toast"
 
 interface Course {
   id: number
@@ -33,7 +35,16 @@ export function CoursesSection() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const coursesPerPage = 12
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  const addToCart = useCartStore((state) => state.addToCart)
 
   // Fetch courses
   useEffect(() => {
@@ -125,7 +136,7 @@ export function CoursesSection() {
   }
 
   return (
-    <div className="container px-4 sm:px-8 lg:px-10 mx-auto py-8">
+    <div className="container mt-[99px]  px-4 sm:px-8 lg:px-10 mx-auto py-8">
       
 
       {/* Search Bar */}
@@ -211,7 +222,22 @@ export function CoursesSection() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {currentCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <CourseCard
+                key={course.id}
+                {...course}
+                onAddToCart={() => {
+                  const added = addToCart({
+                    id: course.id,
+                    title: course.title,
+                    price: course.price,
+                    currency: course.currency,
+                    image: undefined,
+                  })
+                  if (!added) {
+                    toast({ title: "Already in cart", description: "This course is already in your cart." })
+                  }
+                }}
+              />
             ))}
           </div>
 
@@ -249,6 +275,15 @@ export function CoursesSection() {
               </Button>
             </div>
           )}
+             {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-14 right-1 z-[100] bg-[#4361EE] text-white rounded-full shadow-lg p-3 hover:bg-[#3551b7] transition-colors"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-6 w-6"/>
+        </button>
+      )}
         </>
       )}
 

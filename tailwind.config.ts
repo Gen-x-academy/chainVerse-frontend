@@ -38,10 +38,10 @@ const config = {
           DEFAULT: "#f1f5fa",
           foreground: "#6c7793"
         },
-        accent: {
-          DEFAULT: "#06b6d4",
-          foreground: "#f5f7fa"
-        },
+        // accent: {
+        //   DEFAULT: "#06b6d4",
+        //   foreground: "#f5f7fa"
+        // },
         popover: {
           DEFAULT: "--popover",
           foreground: "--popover-foreground"

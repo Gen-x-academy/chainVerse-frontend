@@ -100,7 +100,8 @@ export function CourseCard({
   level,
   price,
   currency,
-}: CourseCardProps) {
+  onAddToCart,
+}: CourseCardProps & { onAddToCart?: () => void }) {
   // Generate star rating display
   const renderStars = () => {
     const stars = []
@@ -120,10 +121,10 @@ export function CourseCard({
   }
 
   return (
-    <Card className="bg-white py-0 border-[#808080] hover:shadow-lg transition-shadow duration-200 rounded-lg overflow-hidden">
+    <Card className="bg-white py-0 border-[#808080] hover:shadow-lg transition-shadow duration-200 rounded-2xl overflow-hidden">
       <CardContent className="p-0">
         {/* Course Thumbnail with Gradient */}
-        <div className="relative h-48 bg-gray-100 overflow-hidden">
+        <div className="relative h-52 bg-gray-100 overflow-hidden">
           <div className="absolute inset-0 flex">
             {/* Purple gradient stripe */}
             <div className="flex-1 bg-gradient-to-b from-purple-300 via-purple-500 to-purple-900"></div>
@@ -164,11 +165,12 @@ export function CourseCard({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 text-sm h-9 border-[#4361EE] text-gray-700 hover:bg-gray-50 font-medium"
+              className="flex-1 text-sm h-9 border-[#4361EE] text-[#4361EE] hover:bg-[#F2F6FF] font-medium"
+              onClick={onAddToCart}
             >
-              <span className=" text-gray-700">Add to Cart</span>
+              <span className=" text-[#4361EE]">Add to Cart</span>
             </Button>
-            <Button size="sm" className="flex-1 text-sm h-9 bg-[#4361EE] hover:[#4a65dd] font-medium">
+            <Button size="sm" className="flex-1 text-sm h-9 bg-[#4361EE] hover:bg-[#3551b7] font-medium">
               <span className=" text-white">Buy Now</span>
             </Button>
           </div>
@@ -177,3 +179,5 @@ export function CourseCard({
     </Card>
   )
 }
+
+export default CourseCard;
