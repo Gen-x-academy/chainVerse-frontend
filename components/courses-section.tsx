@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Filter, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { CourseCard } from "@/components/course-card"
 import { Spinner } from "@/components/ui/spinner"
+import { toast } from "./ui/use-toast"
 import { useCartStore } from "@/store/cartStore"
-import { toast } from "@/components/ui/use-toast"
 
 interface Course {
   id: number
@@ -136,7 +136,7 @@ export function CoursesSection() {
   }
 
   return (
-    <div className="container mt-[99px]  px-4 sm:px-8 lg:px-10 mx-auto py-8">
+    <div className="container px-4 sm:px-8 lg:px-10 mx-auto py-8">
       
 
       {/* Search Bar */}
