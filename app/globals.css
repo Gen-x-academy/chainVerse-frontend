@@ -219,6 +219,7 @@
   animation: flow 3s linear infinite;
 }
 
+
 :root {
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
@@ -244,3 +245,11 @@
 .route-name {
   @apply whitespace-normal;
 }
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;}
