@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Search, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -36,14 +36,40 @@ export function CoursesSection() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const coursesPerPage = 12
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      handleScroll(); // Initial check
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
   }, []);
+
   const addToCart = useCartStore((state) => state.addToCart)
 
   // Fetch courses
@@ -137,8 +163,6 @@ export function CoursesSection() {
 
   return (
     <div className="container px-4 sm:px-8 lg:px-10 mx-auto py-8">
-      
-
       {/* Search Bar */}
       <div className="relative flex items-center justify-center mx-auto w-1/2 mb-8">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
@@ -150,28 +174,54 @@ export function CoursesSection() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-
+      
       {/* Category Filter Buttons */}
       <div className="flex items-center flex-col justify-between mb-8">
-        <div className="flex w-full overflow-x-auto hide-scrollbar">
-          <div className="flex gap-2 pb-2">
-            {uniqueCategories.map((category) => (
-              <Badge
-                key={category}
-                variant={selectedCategory === category ? "default" : "secondary"}
-                className={`px-4 py-2 text-sm rounded-full font-medium cursor-pointer whitespace-nowrap ${
-                  selectedCategory === category
-                    ? "bg-[#4361EE] text-white "
-                    : "bg-transparent border border-[#B2B2B2] text-[#B2B2B2] hover:bg-gray-200"
-                }`}
-                onClick={() => handleCategoryChange(category)}
-              >
-                <span className="text-sm">{category}</span>
-              </Badge>
-            ))}
+        <div className="relative w-full">
+          <div 
+            ref={scrollContainerRef}
+            className="flex w-full overflow-x-auto scrollbar-hide"
+          >
+            <div className="flex gap-2 pb-2 px-1">
+              {uniqueCategories.map((category) => (
+                <Badge
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "secondary"}
+                  className={`px-4 py-2 text-sm rounded-full font-medium cursor-pointer whitespace-nowrap ${
+                    selectedCategory === category
+                      ? "bg-[#4361EE] text-white "
+                      : "bg-transparent border border-[#B2B2B2] text-[#B2B2B2] hover:bg-gray-200"
+                  }`}
+                  onClick={() => handleCategoryChange(category)}
+                >
+                  <span className="text-sm">{category}</span>
+                </Badge>
+              ))}
+            </div>
           </div>
+          
+          {/* Left Arrow */}
+          {showLeftArrow && (
+            <button
+              onClick={scrollLeft}
+              className="absolute left-0 top-[40%] -translate-y-1/2 bg-white/80 hover:bg-white shadow-md rounded-full p-2 z-10 transition-opacity duration-200"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-5 h-5 text-[#4361EE]" />
+            </button>
+          )}
+          
+          {/* Right Arrow */}
+          {showRightArrow && (
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-[40%] -translate-y-1/2 bg-white/80 hover:bg-white shadow-md rounded-full p-2 z-10 transition-opacity duration-200"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-5 h-5 text-[#4361EE]" />
+            </button>
+          )}
         </div>
-
 
         {/* Sort Dropdown */}
         <div className="flex items-center justify-between w-full">
@@ -286,7 +336,6 @@ export function CoursesSection() {
       )}
         </>
       )}
-
       <div className="flex md:flex-row flex-col items-center justify-between mt-10">
         <p>© 2025 ChainVerse Academy. All rights reserved.</p>
         <div className="flex items-center gap-10">
