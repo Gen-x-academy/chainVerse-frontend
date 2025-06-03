@@ -13,7 +13,13 @@ const NavBar: React.FC = () => {
   const pathname = usePathname();
   // THE HEADER ON THIS COMPONENT IS OF A DIFFERENT INTERFACE COMPARED TO THAT ON THE dashboard/instructor PAGE,
   //  THEREFORE, THE EXPRESSION WITHIN THIS USESTATE ENSURES THAT THIS HEADER IS ONLY RENDERED WHEN NAVIGATION TO "dashboard" OCCURS
-  const [displayNavbar, _] = useState(pathname.split("/")[2] !== "dashboard");
+  const [displayNavbar, _] = useState(
+    pathname.includes("dashboard")
+      ? false
+      : pathname.includes("student")
+      ? false
+      : true
+  );
 
   return (
     <>
