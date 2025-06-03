@@ -1,8 +1,10 @@
-'use client'
+"use client";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { items, clearCart } = useCartStore();
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
@@ -15,10 +17,15 @@ export default function CheckoutPage() {
         <>
           <div className="space-y-4 mb-8">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between border-b pb-3">
+              <div
+                key={item.id}
+                className="flex items-center justify-between border-b pb-3"
+              >
                 <div>
                   <div className="font-medium">{item.title}</div>
-                  <div className="text-sm text-gray-500">{item.price} {item.currency}</div>
+                  <div className="text-sm text-gray-500">
+                    {item.price} {item.currency}
+                  </div>
                 </div>
                 <div className="text-sm">Qty: {item.quantity}</div>
               </div>
@@ -28,11 +35,19 @@ export default function CheckoutPage() {
             <span>Subtotal</span>
             <span>₦{subtotal.toLocaleString()}</span>
           </div>
-          <Button className="w-full bg-[#4361EE] text-white" onClick={clearCart}>
-            Complete Checkout
+          <Button
+            className="w-full bg-[#4361EE] h-11 text-white"
+            onClick={() => {
+              // Handle checkout logic here
+              alert("Checkout complete!");
+              clearCart();
+              router.push("/courses");
+            }}
+          >
+            <span className="text-base font-medium ">Complete Checkout</span>
           </Button>
         </>
       )}
     </div>
   );
-} 
+}

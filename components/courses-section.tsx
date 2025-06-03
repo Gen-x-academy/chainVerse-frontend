@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CourseCard } from "@/components/course-card"
+import { CourseCard } from "@/components/CourseCard"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "./ui/use-toast"
 import { useCartStore } from "@/store/cartStore"
@@ -22,6 +22,7 @@ interface Course {
   level: string
   price: number
   currency: string
+  image:  string
 }
 
 export function CoursesSection() {
@@ -39,7 +40,8 @@ export function CoursesSection() {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const coursesPerPage = 12
+  const coursesPerPage = 12;
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -70,7 +72,14 @@ export function CoursesSection() {
     }
   }, []);
 
-  const addToCart = useCartStore((state) => state.addToCart)
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
 
   // Fetch courses
   useEffect(() => {
@@ -78,11 +87,9 @@ export function CoursesSection() {
       try {
         setIsLoading(true)
         const response = await fetch("/data/courses.json")
-
         if (!response.ok) {
           throw new Error("Failed to fetch courses")
         }
-
         const data = await response.json()
         setCourses(data.courses || [])
         setError(null)
@@ -281,7 +288,7 @@ export function CoursesSection() {
                     title: course.title,
                     price: course.price,
                     currency: course.currency,
-                    image: undefined,
+                    image: course.image,
                   })
                   if (!added) {
                     toast({ title: "Already in cart", description: "This course is already in your cart." })
