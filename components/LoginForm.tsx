@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Wallet, Eye, EyeOff, MoveLeft } from 'lucide-react';
-import Link from 'next/link';
+
 
 const LoginForm = () => {
   const [role, setRole] = useState<'student' | 'instructor'>('student');
@@ -10,16 +10,6 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
       <div className="flex flex-col px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-        {/* Toggle Switch */}
-        <div className="p-4 self-start">
-          <Link
-            href="/"
-            className="flex my-6 mx-auto bg-gray-100  p-4 rounded-lg w-fit float-left"
-          >
-            <MoveLeft className="mr-2" />
-            <h2>Back to home</h2>
-          </Link>
-        </div>
         <div className="flex bg-gray-100 p-2 rounded-lg shadow-md w-full">
           <button
             onClick={() => setRole('student')}

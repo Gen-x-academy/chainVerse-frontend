@@ -8,6 +8,9 @@ import Image from "next/image";
 import logo from "../public/logo.png";
 import { useCartStore } from "@/store/cartStore";
 import CartModal from "./CartModal";
+import { Button } from "./ui/button";
+import AuthPrompt from "./AuthPrompt";
+import { useAuthStore } from "@/store/authStore";
 
 const NAV_ITEMS = [
   { label: "Courses", href: "/courses" },
@@ -23,6 +26,7 @@ const NavBar: React.FC = () => {
   const [displayNavbar] = useState(pathname.split("/")[2] !== "dashboard");
   const cartCount = useCartStore((state) => state.items.length);
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -89,12 +93,27 @@ const NavBar: React.FC = () => {
               {/* card Modal */}
               <CartModal cartCount={cartCount} />
               
-              <Badge
-                variant="secondary"
-                className="bg-[#D9DFFC] text-[#627BF1] px-4 py-2 rounded-full text-base font-medium"
-              >
-                {WALLET_ADDRESS}
-              </Badge>
+              {isAuthenticated ? (
+                <>
+                  <Badge
+                    variant="secondary"
+                    className="bg-[#D9DFFC] text-[#627BF1] px-4 py-2 rounded-full text-base font-medium"
+                  >
+                    {user?.walletAddress || WALLET_ADDRESS}
+                  </Badge>
+                  <Button variant="outline" size="sm" onClick={logout}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <div className="hidden md:flex items-center space-x-4">
+                  <Link href="/login" className="flex items-center">
+                    <Button variant="outline" size="lg" className="bg-[#D9DFFC] text-[#4361EE]">
+                      Login
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               {/* Mobile menu button */}
               <button
@@ -142,6 +161,7 @@ const NavBar: React.FC = () => {
           </nav>
         </header>
       )}
+      <AuthPrompt />
     </>
   );
 };

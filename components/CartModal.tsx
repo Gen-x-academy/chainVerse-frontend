@@ -8,12 +8,19 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthStore } from "@/store/authStore";
 export default function CartModal({ cartCount }: { cartCount: number }) {
   const router = useRouter();
-
+  const {setRequiresAuth } = useCartStore()
+  const isAuthenticated = useAuthStore.getState().isAuthenticated;
   const handleCheckout = () => {
-    router.push("/checkout");
+    if(!isAuthenticated){
+      setRequiresAuth(true)
+    }else{
+    router.push("/checkout");}
   };
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -125,7 +132,7 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
               </svg>
 
               <span className="text-base font-medium ">
-                Proceed to Checkout{" "}
+                Proceed to Checkout
               </span>
             </button>
           </div>

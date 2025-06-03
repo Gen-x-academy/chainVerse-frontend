@@ -1,5 +1,4 @@
 import { create } from "zustand";
-
 export interface CartItem {
   id: number;
   title: string;
@@ -14,10 +13,14 @@ interface CartState {
   addToCart: (item: Omit<CartItem, "quantity">) => boolean;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
+  requiresAuth: boolean;
+  setRequiresAuth: (value: boolean) => void;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
+  requiresAuth: false,
+  setRequiresAuth: (value) => set({ requiresAuth: value }),
   addToCart: (item) => {
     const exists = get().items.find((i) => i.id === item.id);
     if (exists) return false;
