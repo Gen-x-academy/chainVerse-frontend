@@ -17,6 +17,7 @@ const FeaturedCourses: React.FC = () => {
       level: 'Beginner',
       price: 100,
       currency: 'XLM',
+      image: "/cart.svg"
     },
     {
       id: 2,
@@ -29,6 +30,7 @@ const FeaturedCourses: React.FC = () => {
       level: 'Intermediate',
       price: 250,
       currency: 'XLM',
+      image: "/cart.svg"
     },
     {
       id: 3,
@@ -41,6 +43,7 @@ const FeaturedCourses: React.FC = () => {
       level: 'Advanced',
       price: 400,
       currency: 'XLM',
+      image: "/cart.svg"
     },
   ];
 

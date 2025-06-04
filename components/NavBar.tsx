@@ -92,7 +92,7 @@ const NavBar: React.FC = () => {
             <div className="flex items-center gap-4 min-w-max">
               {/* card Modal */}
               <CartModal cartCount={cartCount} />
-              
+
               {isAuthenticated ? (
                 <>
                   <Badge
@@ -108,7 +108,11 @@ const NavBar: React.FC = () => {
               ) : (
                 <div className="hidden md:flex items-center space-x-4">
                   <Link href="/login" className="flex items-center">
-                    <Button variant="outline" size="lg" className="bg-[#D9DFFC] text-[#4361EE]">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="bg-[#D9DFFC] text-[#4361EE]"
+                    >
                       Login
                     </Button>
                   </Link>
