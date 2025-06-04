@@ -12,7 +12,7 @@ import CartModal from "./CartModal";
 const NAV_ITEMS = [
   { label: "Courses", href: "/courses" },
   { label: "Instructors", href: "/instructors" },
-  { label: "About", href: "/about" },
+  { label: "About", href: "/about" }
 ];
 
 const WALLET_ADDRESS = "0xfcf2....9a56";
@@ -20,7 +20,7 @@ const WALLET_ADDRESS = "0xfcf2....9a56";
 const NavBar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const [displayNavbar] = useState(pathname.split("/")[2] !== "dashboard");
+
   const cartCount = useCartStore((state) => state.items.length);
   const [scrolled, setScrolled] = useState(false);
 
@@ -31,6 +31,15 @@ const NavBar: React.FC = () => {
   }, []);
 
   const isActive = (href: string) => pathname === href;
+  // THE HEADER ON THIS COMPONENT IS OF A DIFFERENT INTERFACE COMPARED TO THAT ON THE dashboard/instructor PAGE,
+  //  THEREFORE, THE EXPRESSION WITHIN THIS USESTATE ENSURES THAT THIS HEADER IS ONLY RENDERED WHEN NAVIGATION TO "dashboard" OCCURS
+  const [displayNavbar, _] = useState(
+    pathname.includes("dashboard")
+      ? false
+      : pathname.includes("student")
+      ? false
+      : true
+  );
 
   return (
     <>
@@ -88,7 +97,7 @@ const NavBar: React.FC = () => {
             <div className="flex items-center gap-4 min-w-max">
               {/* card Modal */}
               <CartModal cartCount={cartCount} />
-              
+
               <Badge
                 variant="secondary"
                 className="bg-[#D9DFFC] text-[#627BF1] px-4 py-2 rounded-full text-base font-medium"
