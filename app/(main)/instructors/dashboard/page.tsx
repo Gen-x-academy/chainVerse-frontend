@@ -19,7 +19,7 @@ const InstructorDashboard = () => {
     setShowNotification((prev) => !prev);
   };
 
-  // THIS TOGGLES THE ACTIVE STATE OF EACH LINK ON THE SIDEBAR BASED ON THE URL ON EACH REFREASH OR NAVIGATION
+  // THIS TOGGLES THE ACTIVE STATE OF EACH LINK ON THE SIDEBAR BASED ON THE URL ON EACH REFRESH OR NAVIGATION
   // useEffect(() => {
   //   instructorRoutes.forEach((menu) =>
   //     pathname.includes(menu.route)
@@ -29,15 +29,15 @@ const InstructorDashboard = () => {
   // }, []);
 
   return (
-    <div className="grid grid-cols-5">
+    <div className="grid grid-cols-6">
       <InstructorSidebar routes={instructorRoutes} />
 
       <div
         className={
           (cn(),
           showNotification
-            ? "col-span-5  md:col-span-3 "
-            : "col-span-5  md:col-span-4")
+            ? "col-span-6  md:col-span-4 "
+            : "col-span-6  md:col-span-5")
         }
       >
         <InstructorDashboardHeader
@@ -47,10 +47,10 @@ const InstructorDashboard = () => {
 
         {/* THIS MAIN COMPONENT DISPLAYS THE GREETING WITH A MOCK USER NAME  */}
         <Main user={instructor} />
-       <div className="p-4">
-        <OverviewCards/>
-        <ChartsSection/>
-       </div>
+        <div className="p-4">
+          <OverviewCards />
+          <ChartsSection />
+        </div>
       </div>
 
       {showNotification && (
@@ -58,8 +58,6 @@ const InstructorDashboard = () => {
           <NotificationBar />
         </div>
       )}
-
-
     </div>
   );
 };
