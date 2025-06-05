@@ -42,11 +42,3 @@ export interface InstructorProps {
   img: string;
   wallletAddress: string;
 }
-
-export interface StudentProps {
-  name: string;
-  date: string;
-  courseTitle: string;
-  blockchain: string;
-  transactionId: string;
-}
