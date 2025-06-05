@@ -3,14 +3,17 @@ import React from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { CourseCard } from './CourseCard';
+import { toast } from './ui/use-toast';
+import { useCartStore } from '@/store/cartStore';
 
 const FeaturedCourses: React.FC = () => {
+  const addToCart = useCartStore((state) => state.addToCart);
   const courses = [
     {
       id: 1,
       category: 'Blockchain basics',
       title: 'Stellar Blockchain Fundamentals',
-      rating: 4.8,
+      rating: 2.8,
       description:
         'Learn the basics of Stellar blockchain, its architecture, and use cases.',
       instructor: 'Alex Johnson',
@@ -53,10 +56,20 @@ const FeaturedCourses: React.FC = () => {
         <h2 className="text-3xl font-bold mb-2">Featured Courses</h2>
         <p className="text-gray-600">Start your blockchain journey today</p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <CourseCard key={course.id} {...course} />
+          <CourseCard key={course.id} {...course} onAddToCart={() => {
+            const added = addToCart({
+              id: course.id,
+              title: course.title,
+              price: course.price,
+              currency: course.currency,
+              image: course.image,
+            })
+            if (!added) {
+              toast({ title: "Already in cart", description: "This course is already in your cart." })
+            }
+          }} />
         ))}
       </div>
 

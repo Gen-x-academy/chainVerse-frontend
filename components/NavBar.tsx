@@ -107,11 +107,11 @@ const NavBar: React.FC = () => {
                 </>
               ) : (
                 <div className="hidden md:flex items-center space-x-4">
-                  <Link href="/login" className="flex items-center">
+                  <Link href="/login" className="flex  items-center">
                     <Button
                       variant="outline"
                       size="lg"
-                      className="bg-[#D9DFFC] text-[#4361EE]"
+                      className="bg-[#D9DFFC] cursor-pointer  text-[#4361EE]"
                     >
                       Login
                     </Button>

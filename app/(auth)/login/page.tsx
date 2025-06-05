@@ -17,12 +17,13 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically make an API call to authenticate
+    // Task to be done
+    //  API call to authenticate
     setUser({
       id: "1",
       email,
       role,
-      walletAddress: "0xfcf2....9a56"
+      walletAddress: "0xfcf2....9a56",
     });
     router.push("/");
   };
@@ -30,7 +31,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex  flex-col justify-center">
       <div className="flex flex-col px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-      
         <div className="flex bg-gray-100 p-2  shadow-md w-full">
           <button
             onClick={() => setRole("student")}
@@ -55,24 +55,24 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-[#F9F8FD] text-left max-w-md w-full p-6 shadow-xl">
-        <div className="sm:mx-auto sm:w-full py-6 sm:max-w-md">
-        <Link
+          <div className="sm:mx-auto sm:w-full py-6 sm:max-w-md">
+            <Link
               href="/"
               className="flex flex-col items-center gap-2 justify-center"
               aria-label="Home"
             >
-          <Image
-            className="mx-auto h-10 w-auto"
-            src="/logo.png"
-            alt="ChainVerse Academy"
-            width={32}
-            height={32}
-          />
-        <span className="text-xl font-medium  tracking-tight select-none">
+              <Image
+                className="mx-auto h-10 w-auto"
+                src="/logo.png"
+                alt="ChainVerse Academy"
+                width={32}
+                height={32}
+              />
+              <span className="text-xl font-medium  tracking-tight select-none">
                 ChainVerse Academy
               </span>
-              </Link>
-        </div>
+            </Link>
+          </div>
           <h2 className="text-xl font-semibold mb-4">
             {role === "student" ? "Student Login" : "Instructor Login"}
           </h2>
@@ -147,7 +147,9 @@ export default function LoginPage() {
 
           <div className="text-center mt-4">
             <span className="text-gray-500 text-sm">
-              {role === "student" ? "Don't have an account?" : "Want to become an instructor?"}{" "}
+              {role === "student"
+                ? "Don't have an account?"
+                : "Want to become an instructor?"}{" "}
               <Link
                 href={role === "student" ? "/register" : "/instructor_register"}
                 className="text-blue-500"
