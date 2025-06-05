@@ -20,7 +20,7 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
   return (
     <>
       <SidebarProvider className="hidden md:block md:w-1/5">
-        <Sidebar className="sm:w-1/6">
+        <Sidebar className="sm:w-1/5">
           <SidebarContent className="py-4 pl-2 pr-4 w-full">
             <div className="flex items-center gap-1 pb-4">
               <Image
@@ -30,7 +30,7 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
                 width={24}
                 height={24}
               />
-              <span className="font-semibold tracking-[-0.8px] md:text-base lg:text-[1.1rem]">
+              <span className="font-semibold tracking-[-0.8px] md:text-base lg:text-xl">
                 ChainVerse Academy
               </span>
             </div>

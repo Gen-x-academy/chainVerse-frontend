@@ -105,7 +105,8 @@
       "instructor": "Daniel Rodriguez",
       "level": "Intermediate",
       "price": 220,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 10,
@@ -116,7 +117,8 @@
       "instructor": "Sophia Chang",
       "level": "Advanced",
       "price": 380,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 11,
@@ -127,7 +129,8 @@
       "instructor": "James Wilson",
       "level": "Intermediate",
       "price": 280,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 12,
@@ -138,7 +141,8 @@
       "instructor": "Olivia Martinez",
       "level": "Intermediate",
       "price": 230,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 13,
@@ -149,7 +153,8 @@
       "instructor": "Noah Taylor",
       "level": "Advanced",
       "price": 320,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 14,
@@ -160,7 +165,8 @@
       "instructor": "Isabella Johnson",
       "level": "Beginner",
       "price": 180,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 15,
@@ -171,7 +177,8 @@
       "instructor": "William Davis",
       "level": "Intermediate",
       "price": 240,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 16,
@@ -182,7 +189,8 @@
       "instructor": "Ava Robinson",
       "level": "Advanced",
       "price": 360,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 17,
@@ -193,7 +201,8 @@
       "instructor": "Ethan Miller",
       "level": "Advanced",
       "price": 340,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 18,
@@ -204,7 +213,8 @@
       "instructor": "Zoe Harris",
       "level": "Intermediate",
       "price": 260,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 19,
@@ -215,7 +225,8 @@
       "instructor": "Lucas Wright",
       "level": "Intermediate",
       "price": 270,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 20,
@@ -226,7 +237,8 @@
       "instructor": "Sophia Mitchell",
       "level": "Intermediate",
       "price": 290,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 21,
@@ -237,7 +249,8 @@
       "instructor": "Benjamin Clark",
       "level": "Beginner",
       "price": 120,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 22,
@@ -248,7 +261,8 @@
       "instructor": "Lily Adams",
       "level": "Advanced",
       "price": 390,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 23,
@@ -259,7 +273,8 @@
       "instructor": "Henry Moore",
       "level": "Advanced",
       "price": 370,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 24,
@@ -270,7 +285,8 @@
       "instructor": "Amelia Turner",
       "level": "Intermediate",
       "price": 280,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 25,
@@ -281,7 +297,8 @@
       "instructor": "Felix Martinez",
       "level": "Advanced",
       "price": 310,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 26,
@@ -292,7 +309,8 @@
       "instructor": "Natalie Peterson",
       "level": "Beginner",
       "price": 90,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 27,
@@ -303,7 +321,8 @@
       "instructor": "Gabriel Cooper",
       "level": "Intermediate",
       "price": 250,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 28,
@@ -314,7 +333,8 @@
       "instructor": "Victoria Reed",
       "level": "Intermediate",
       "price": 240,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 29,
@@ -325,7 +345,8 @@
       "instructor": "Oscar Sullivan",
       "level": "Intermediate",
       "price": 270,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     },
     {
       "id": 30,
@@ -336,7 +357,8 @@
       "instructor": "Charlotte Morgan",
       "level": "Beginner",
       "price": 190,
-      "currency": "XLM"
+      "currency": "XLM",
+      "image": "/cart.svg"
     }
   ]
 }
