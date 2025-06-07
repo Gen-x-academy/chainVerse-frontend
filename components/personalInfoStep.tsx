@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { PersonalInfoFormData } from "@/lib/form-schema";
 import { UseFormReturn } from "react-hook-form";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   form: UseFormReturn<PersonalInfoFormData>;
@@ -28,7 +30,26 @@ export default function PersonalInfoStep({
 }: Props) {
   return (
     <div className="max-w-3xl mx-auto">
-      <BackButton href="/" />
+     
+        
+      <div className="sm:mx-auto flex flex-col justify-center items-center sm:w-full py-6 sm:max-w-md">
+        <Link
+              href="/"
+              className="flex flex-col items-center gap-2 justify-center"
+              aria-label="Home"
+            >
+          <Image
+            className="mx-auto h-10 w-auto"
+            src="/logo.png"
+            alt="ChainVerse Academy"
+            width={32}
+            height={32}
+          />
+        <span className="text-xl font-medium  tracking-tight select-none">
+                ChainVerse Academy
+              </span>
+              </Link>
+        </div>
       <div className="bg-white rounded-lg border py-6 px-20 mt-4">
         <div className="text-center my-8">
           <h1 className="text-3xl font-medium">Become an Instructor</h1>

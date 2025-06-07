@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-// import NavBar from "@/components/NavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,22 +12,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChainVerse",
-  description: "Learn Blockchain. Earn Crypto"
+  title: "ChainVerse - Authentication",
+  description: "Login or Sign up to ChainVerse Academy"
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <main className="">{children}</main>
-      </body>
-    </html>
+    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gray-50`}>
+      <div className="flex min-h-screen flex-col items-center py-5 justify-center sm:px-6 lg:px-8">
+        {children}
+      </div>
+    </div>
   );
-}
+} 

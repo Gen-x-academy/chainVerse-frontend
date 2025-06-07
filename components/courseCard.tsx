@@ -96,14 +96,14 @@ export function CourseCard({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 text-sm h-9 border-[#4361EE] text-[#4361EE] hover:bg-[#F2F6FF] font-medium"
+              className="flex-1 text-sm h-9 cursor-pointer border-[#4361EE] text-[#4361EE] hover:bg-[#F2F6FF] font-medium"
               onClick={onAddToCart}
             >
               <span className=" text-[#4361EE]">Add to Cart</span>
             </Button>
             <Button
               size="sm"
-              className="flex-1 text-sm h-9 bg-[#4361EE] hover:bg-[#3551b7] font-medium"
+              className="flex-1 text-sm h-9 cursor-pointer bg-[#4361EE] hover:bg-[#3551b7] font-medium"
             >
               <span className=" text-white">Buy Now</span>
             </Button>

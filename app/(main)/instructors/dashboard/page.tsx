@@ -4,7 +4,7 @@ import InstructorSidebar from "@/components/instructors/dashboard/sidebar";
 import React, { useEffect, useState } from "react";
 import InstructorDashboardHeader from "@/components/instructors/dashboard/header";
 import { usePathname } from "next/navigation";
-import Main from "../../../components/instructors/dashboard/main";
+import Main from "../../../../components/instructors/dashboard/main";
 import NotificationBar from "@/components/instructors/dashboard/notification-bar";
 import { cn } from "@/lib/utils";
 import { instructorRoutes } from "@/lib/mock-data/instructorsData";
