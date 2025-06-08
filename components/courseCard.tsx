@@ -1,6 +1,8 @@
+"use client";
+
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 
 interface CourseCardProps {
@@ -17,6 +19,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
+  id,
   title,
   rating,
   description,
@@ -26,7 +29,13 @@ export function CourseCard({
   currency,
   image,
   onAddToCart,
-}: CourseCardProps & { onAddToCart?: () => void }) {
+  onEdit,
+  onDelete,
+}: CourseCardProps & {
+  onAddToCart?: () => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
   // Generate star rating display
   const renderStars = () => {
     const stars = [];
@@ -52,11 +61,8 @@ export function CourseCard({
   };
 
   return (
-    <Card
-      key={title}
-      className="bg-white py-0 border-[#808080] hover:shadow-lg transition-shadow duration-200 rounded-2xl overflow-hidden"
-    >
-      <CardContent className="p-0">
+    <Card className="flex flex-col h-full">
+      <CardContent className="flex flex-col items-center">
         <div className="relative h-48 bg-gray-100 overflow-hidden">
           <Image
             src={image}
@@ -110,8 +116,29 @@ export function CourseCard({
           </div>
         </div>
       </CardContent>
+      <CardFooter className="flex justify-between gap-2 mt-auto">
+        <Button variant="outline" onClick={() => onDelete(id.toString())}>Delete</Button>
+        <Button onClick={() => onEdit(id.toString())}>Edit</Button>
+      </CardFooter>
     </Card>
   );
 }
 
-export default CourseCard;
+export default function InstructorCourseCard({ course, onEdit, onDelete }: {
+  course: { id: string, title: string, thumbnail: string },
+  onEdit: (id: string) => void,
+  onDelete: (id: string) => void
+}) {
+  return (
+    <Card className="flex flex-col h-full">
+      <CardContent className="flex flex-col items-center">
+        <img src={course.thumbnail} alt={course.title} className="w-32 h-32 object-cover rounded mt-4" />
+        <h3 className="mt-4 font-semibold text-center">{course.title}</h3>
+      </CardContent>
+      <CardFooter className="flex justify-between gap-2 mt-auto">
+        <Button variant="outline" onClick={() => onDelete(course.id)}>Delete</Button>
+        <Button onClick={() => onEdit(course.id)}>Edit</Button>
+      </CardFooter>
+    </Card>
+  );
+}
