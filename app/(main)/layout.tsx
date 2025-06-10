@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <>
       <NavBar />
-      <main className="mt-25 min-h-screen">
+      <main className="min-h-screen">
           {children}
         </main>
     </>

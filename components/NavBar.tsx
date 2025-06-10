@@ -39,6 +39,7 @@ const NavBar: React.FC = () => {
   return (
     <>
       {displayNavbar && (
+        <>
         <header
           className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
             scrolled
@@ -164,6 +165,8 @@ const NavBar: React.FC = () => {
             </div>
           </nav>
         </header>
+        <div className="h-24"></div>
+        </>
       )}
       <AuthPrompt />
     </>
