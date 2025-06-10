@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export type RouteType = {
   name: string;
@@ -72,7 +73,13 @@ export function SidebarComponent({
       >
         <SidebarHeader className="p-6">
           <div className="flex items-center gap-2">
-            {logo}
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              className="md:h-4 md:w-4 lg:h-6 lg:w-6"
+              width={24}
+              height={24}
+            />
             {title && <span className="text-lg font-semibold">{title}</span>}
           </div>
         </SidebarHeader>
@@ -82,7 +89,7 @@ export function SidebarComponent({
             <div key={index} className="mb-6">
               {section.title && (
                 <div className="mb-2">
-                  <p className="px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <p className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {section.title}
                   </p>
                 </div>

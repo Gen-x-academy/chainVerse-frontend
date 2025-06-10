@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { SortDesc } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,18 @@ import StudentWalletBalance from "@/components/dashboard/student/TransactionHist
 import TransactionHistoryTable from "@/components/dashboard/student/TransactionHistory/TransactionHistoryTable";
 
 const TransactionHistoryContent = () => {
+  const [searchTransactions, setSearchTransactions] = useState("");
+  const [transactions, setTransactions] = useState(walletData.transactions);
+
+  useEffect(() => {
+    setTransactions(
+      walletData.transactions.filter((transaction) =>
+        transaction.description
+          .toLowerCase()
+          .includes(searchTransactions.toLowerCase())
+      )
+    );
+  }, [searchTransactions]);
   return (
     <>
       <div className="p-4 pt-6 pb-8">
@@ -31,6 +43,7 @@ const TransactionHistoryContent = () => {
                   type="text"
                   placeholder="Search courses..."
                   className="border-none w-full pl-0 focus-visible:ring-0 text-[13px] p-1 sm:text-[15px]"
+                  onChange={(e) => setSearchTransactions(e.target.value)}
                 />
               </div>
               <div className="flex border border-[#CBC7C7] bg-white items-center px-2 rounded-sm">
@@ -55,14 +68,14 @@ const TransactionHistoryContent = () => {
                 </select>
               </div>
 
-              <Button className="border border-[#808080] cursor-pointer bg-white hover:bg-gray-200  text-[#808080]">
+              <Button className="border border-[#808080] cursor-pointer bg-white hover:bg-gray-200 hover:text-gray-700  text-[#808080]">
                 <ArrowUpFromLineIcon size={16} /> Export
               </Button>
             </div>
           </div>
 
           <StudentWalletBalance walBalance={walletData.walletBalance} />
-          <TransactionHistoryTable transactions={walletData.transactions} />
+          <TransactionHistoryTable transactions={transactions} />
         </div>
       </div>
 
