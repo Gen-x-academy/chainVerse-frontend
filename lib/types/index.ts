@@ -59,6 +59,14 @@ export interface UserData {
   walletConnected: boolean;
 }
 
+export interface StudentProps {
+  name: string;
+  date: string;
+  courseTitle: string;
+  blockchain: string;
+  transactionId: string;
+}
+
 export interface WalletBalance {
   xlmBalance: number;
   totalSpent: number;

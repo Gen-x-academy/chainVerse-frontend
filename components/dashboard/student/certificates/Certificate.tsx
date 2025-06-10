@@ -2,7 +2,7 @@ import React from "react";
 import { StellerIcon } from "@/lib/mock-data/studentCertificate";
 import { BookIcon } from "@/lib/mock-data/studentCertificate";
 import { SendIcon } from "@/lib/mock-data/studentCertificate";
-import { StudentProps } from "@/types";
+import { StudentProps } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import { DownLoadIcon } from "@/lib/mock-data/studentCertificate";
