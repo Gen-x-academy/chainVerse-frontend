@@ -2,7 +2,8 @@ import React from "react";
 import { StellerIcon } from "@/lib/mock-data/studentCertificate";
 import { BookIcon } from "@/lib/mock-data/studentCertificate";
 import { SendIcon } from "@/lib/mock-data/studentCertificate";
-import { StudentProps } from "@/types";
+import { StudentProps } from "@/lib/types";
+
 import { Button } from "@/components/ui/button";
 import { DownLoadIcon } from "@/lib/mock-data/studentCertificate";
 import { ShareIcon } from "@/lib/mock-data/studentCertificate";
@@ -54,10 +55,10 @@ const Certificate = ({ student }: { student: StudentProps }) => {
       </div>
 
       <div className="flex justify-between px-4 md:px-16 pt-6 pb-10 border border-b-0 border-t-[#D9D9D9]">
-        <Button className="bg-[#D9D9D94D] border border-[#808080] hover:bg-[#D9D9D99f] hover:border-[#000000] transition-all ease-in-out duration-300 text-black">
+        <Button className="bg-[#D9D9D94D] border border-[#808080] hover:bg-[#D9D9D99f] hover:border-[#000000] hover:text-gray-900 cursor-pointer transition-all ease-in-out duration-300 text-black">
           {DownLoadIcon} Download
         </Button>
-        <Button className="bg-[#D9D9D94D] border border-[#808080] hover:bg-[#D9D9D99f] hover:border-[#000000] transition-all ease-in-out duration-300 text-black">
+        <Button className="bg-[#D9D9D94D] border border-[#808080] hover:bg-[#D9D9D99f] hover:border-[#000000] hover:text-gray-900 cursor-pointer transition-all ease-in-out duration-300 text-black">
           {ShareIcon} Share
         </Button>
       </div>

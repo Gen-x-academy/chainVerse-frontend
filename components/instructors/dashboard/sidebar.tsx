@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils";
 
 export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
   return (
-    <SidebarProvider className="w-full md:w-56">
-      <Sidebar className="w-full md:w-56">
+    <SidebarProvider className="w-full md:w-56 ">
+      <Sidebar className="w-full md:w-56 lg:w-80">
         <SidebarContent className="py-4 pl-2 pr-4 w-full">
           <div className="flex items-center gap-1 pb-4">
             <Image

@@ -1,4 +1,4 @@
-import { StudentProps } from "@/types";
+import { StudentProps } from "../types";
 
 export const student: StudentProps = {
   name: "John Doe",
