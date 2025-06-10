@@ -1,10 +1,6 @@
-import type { Metadata } from "next";
+import DashboardShell from "@/components/instructors/dashboard/DashboardShell";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";
-// import NavBar from "@/components/NavBar";
-// import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-// import InstructorDashboardHeader from "@/components/dashboard/instructor/header";
-// import InstructorSidebar from "@/components/dashboard/instructor/sidebar";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,23 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"]
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "ChainVerse | Instructor Dashboard",
   description: "Learn Blockchain. Earn Crypto"
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <DashboardShell>{children}</DashboardShell>
+    </div>
   );
 }

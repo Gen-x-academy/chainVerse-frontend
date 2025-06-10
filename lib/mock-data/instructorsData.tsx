@@ -170,7 +170,7 @@ export const instructorRoutes = [
         />
       </svg>
     ),
-    route: "",
+    route: "/instructors/dashboard/courses",
     isActive: false
   },
   {
