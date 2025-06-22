@@ -1,65 +1,116 @@
 'use client';
-import React from 'react';
 
-import Link from 'next/link';
-import { Button } from './ui/button';
-import { Card } from './ui/card';
+import { Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import Image from 'next/image';
 
-interface CourseProps {
+interface CourseCardProps {
   id: number;
-  title: {
-    mainText: string;
-    subText: string;
-  };
+  category: string;
+  title: string;
+  rating: number;
   description: string;
   instructor: string;
   level: string;
   price: number;
-  currency?: string;
+  currency: string;
+  image: string;
 }
 
-const CourseCard: React.FC<CourseProps> = ({
-  id,
+export function CourseCard({
   title,
+  rating,
   description,
   instructor,
   level,
   price,
-  currency = 'XLM',
-}) => {
-  return (
-    <Card className="overflow-hidden flex flex-col h-full">
-      <div className="p-6 flex flex-col h-full">
-        <div className="font-bold mb-2">
-          <div className="text-lg">{title.mainText}</div>
-          <div className="text-lg">{title.subText}</div>
-        </div>
-        <p className="text-sm text-gray-600 mb-4">{description}</p>
+  currency,
+  image,
+  onAddToCart,
+}: CourseCardProps & {
+  onAddToCart?: () => void;
+}) {
+  // Generate star rating display
+  const renderStars = () => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
 
-        <div className="mt-auto space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="font-semibold">Instructor:</span>
-            <span>{instructor}</span>
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(
+          <Star key={i} className="w-4 h-4 fill-[#FEA780] text-[#FEA780]" />
+        );
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push(
+          <Star key={i} className="w-4 h-4 fill-[#D9D9D9] text-[#D9D9D9]" />
+        );
+      } else {
+        stars.push(
+          <Star key={i} className="w-4 h-4 fill-[#D9D9D9] text-[#D9D9D9]" />
+        );
+      }
+    }
+    return stars;
+  };
+
+  return (
+    <Card className="flex flex-col h-full">
+      <CardContent className="flex flex-col items-center">
+        <div className="relative h-48 bg-gray-100 overflow-hidden">
+          <Image
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover"
+            width={400}
+            height={200}
+          />
+        </div>
+
+        {/* Course Content */}
+        <div className="p-4">
+          <div className="flex items-center gap-1 mb-2">
+            {renderStars()}
+            <span className="text-sm text- ml-1">{rating}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="font-semibold">Level:</span>
-            <span>{level}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="font-semibold">Price:</span>
-            <span className="text-primary font-semibold">
+
+          <h3 className="font-semibold text-[#333333] mb-2 text-base leading-tight">
+            {title}
+          </h3>
+
+          <p className="text-[#666666] text-sm mb-3 line-clamp-2 leading-relaxed">
+            {description}
+          </p>
+
+          <p className="text-[#999999] font-light text-sm mb-3">{instructor}</p>
+
+          <div className="flex items-center gap-4 mb-4 text-sm text-[#666666]">
+            <span className="font-medium text-base">{level}</span>
+            <span className="font-medium text-sm">
               {price} {currency}
             </span>
           </div>
-          <Link href={`courses/${id}`}>
-            <Button className="w-full mt-4 bg-primary hover:bg-blue-700 text-white">
-              Enroll Now
+
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 text-sm h-9 cursor-pointer border-[#4361EE] text-[#4361EE] hover:bg-[#F2F6FF] font-medium"
+              onClick={onAddToCart}
+            >
+              <span className=" text-[#4361EE]">Add to Cart</span>
             </Button>
-          </Link>
+            <Button
+              size="sm"
+              className="flex-1 text-sm h-9 cursor-pointer bg-[#4361EE] hover:bg-[#3551b7] font-medium"
+            >
+              <span className=" text-white">Buy Now</span>
+            </Button>
+          </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
-};
-
-export default CourseCard;
+}

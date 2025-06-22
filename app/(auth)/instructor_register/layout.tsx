@@ -18,7 +18,7 @@ export default function RegisterLayout({
             <div className="container mx-auto px-4"></div>
           </main>
         </FormProvider>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </>
   );
