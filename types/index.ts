@@ -17,7 +17,7 @@ export interface WhyChooseItem {
   id: number;
   title: string;
   description: string;
-  icon: "globe" | "book" | "users";
+  icon: 'globe' | 'book' | 'users';
 }
 
 export interface AboutContent {
@@ -42,3 +42,41 @@ export interface InstructorProps {
   img: string;
   wallletAddress: string;
 }
+export interface StudentProps {
+  courseTitle: string;
+  name: string;
+  date: string;
+  blockchain: string;
+  transactionId: string;
+}
+export interface Instructor {
+  id: number;
+  name: string;
+  title: string;
+  description: string;
+  rating: number;
+  courses: number;
+  students: number;
+  initials: string;
+  reviews?: number;
+}
+
+export interface NotificationData {}
+export interface UserData {
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  bio: string;
+}
+export interface UserProfilData {
+  name: string;
+  avatar: string;
+  role: string;
+  memberSince: string;
+  coursesCompleted: string;
+  certificatesEarned: string;
+  walletConnected: boolean;
+}
+
+export interface WalletData {}

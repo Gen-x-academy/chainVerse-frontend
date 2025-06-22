@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
-import { Instructor } from '@/lib/types';
+import { Instructor } from '@/types';
 import AboutProfile from './about-profile';
 import CoursesProfile from './courses-profile';
 import ReviewProfile from './review-profile';

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import InstructorProfile from "@/components/Instructor-profiles/InstructorProfile";
-import { Instructor } from "@/lib/types";
-import { instructorsData } from "@/lib/mock-data/instructorsData";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import InstructorProfile from '@/components/Instructor-profiles/InstructorProfile';
+import { instructorsData } from '@/lib/mock-data/instructorsData';
+import { Instructor } from '@/types';
 
 export default function InstructorPage() {
   const [instructor, setInstructor] = useState<Instructor | null>(null);

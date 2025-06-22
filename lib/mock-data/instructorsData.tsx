@@ -1,6 +1,7 @@
 // Export the instructors data properly
 // File: data/instructorsData.ts
-import { Instructor } from '../types';
+
+import { Instructor } from '@/types';
 
 export const instructorsData: Instructor[] = [
   {

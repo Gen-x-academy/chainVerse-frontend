@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { UserData } from "@/lib/types";
+import { useState } from 'react';
+import { UserData } from '@/types';
 
 // Tab Content Components
 const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
@@ -9,23 +9,25 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
     return {
       ...userData,
       firstName: nameParts[0] || '',
-      lastName: nameParts.slice(1).join(' ') || ''
+      lastName: nameParts.slice(1).join(' ') || '',
     };
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleUpdateProfile = () => {
     const updatedUserData = {
       ...formData,
-      name: `${formData.firstName} ${formData.lastName}`.trim()
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
     };
-    
+
     // Handle update logic here
     console.log('Profile updated:', updatedUserData);
     setIsEditing(false);
@@ -36,7 +38,9 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
       <div className="bg-white rounded-2xl border border-gray-200 p-8">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Personal Information</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Personal Information
+          </h2>
           <p className="text-gray-500 text-sm">Update your personal details</p>
         </div>
 
@@ -45,7 +49,9 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
           {/* First Name and Last Name Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">First name</label>
+              <label className="block text-sm font-medium text-gray-900 mb-3">
+                First name
+              </label>
               <input
                 type="text"
                 name="firstName"
@@ -56,7 +62,9 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">Last name</label>
+              <label className="block text-sm font-medium text-gray-900 mb-3">
+                Last name
+              </label>
               <input
                 type="text"
                 name="lastName"
@@ -70,7 +78,9 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-3">Email</label>
+            <label className="block text-sm font-medium text-gray-900 mb-3">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -83,7 +93,9 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
 
           {/* Bio */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-3">Bio</label>
+            <label className="block text-sm font-medium text-gray-900 mb-3">
+              Bio
+            </label>
             <textarea
               name="bio"
               value={formData.bio}
@@ -100,17 +112,17 @@ const PersonalInfoTab: React.FC<{ userData: UserData }> = ({ userData }) => {
               onClick={handleUpdateProfile}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-xl transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
               </svg>
               Update Profile
