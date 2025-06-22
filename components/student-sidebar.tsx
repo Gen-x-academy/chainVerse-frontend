@@ -1,71 +1,89 @@
-"use client"
+'use client';
 
-import { BookOpen, LayoutDashboard, Award, CreditCard, User, Settings, Home, LogOut } from "lucide-react"
-import { type RouteType, SidebarComponent, type SidebarSectionType } from "./dashboard/student/sidebar"
-
+import {
+  BookOpen,
+  LayoutDashboard,
+  Award,
+  CreditCard,
+  User,
+  Settings,
+  Home,
+  LogOut,
+} from 'lucide-react';
+import {
+  type RouteType,
+  SidebarComponent,
+  type SidebarSectionType,
+} from './dashboard/student/sidebar';
 
 const navigationItems: RouteType[] = [
   {
-    name: "Dashboard",
+    name: 'Dashboard',
     icon: LayoutDashboard,
-    route: "/student/dashboard",
+    route: '/students/dashboard',
   },
   {
-    name: "My Courses",
+    name: 'My Courses',
     icon: BookOpen,
-    route: "/student/courses",
+    route: '/students/courses',
   },
   {
-    name: "Certificates",
+    name: 'Certificates',
     icon: Award,
-    route: "/student/certificates",
+    route: '/students/certificates',
   },
   {
-    name: "Transactions",
+    name: 'Transactions',
     icon: CreditCard,
-    route: "/student/transactions",
+    route: '/students/transactions',
   },
-]
+];
 
 const accountItems: RouteType[] = [
   {
-    name: "Profile",
+    name: 'Profile',
     icon: User,
-    route: "/student/profile",
+    route: '/students/profile',
   },
   {
-    name: "Settings",
+    name: 'Settings',
     icon: Settings,
-    route: "/student/settings",
+    route: '/students/settings',
   },
   {
-    name: "Back to Home",
+    name: 'Back to Home',
     icon: Home,
-    route: "/",
+    route: '/',
   },
   {
-    name: "Disconnect Wallet",
+    name: 'Disconnect Wallet',
     icon: LogOut,
-    route: "/disconnect",
+    route: '/students/disconnect',
   },
-]
+];
 
 const sidebarSections: SidebarSectionType[] = [
   {
     routes: navigationItems,
   },
   {
-    title: "ACCOUNT",
+    title: 'ACCOUNT',
     routes: accountItems,
   },
-]
+];
 
 export function StudentSidebar() {
   const logo = (
     <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600">
       <BookOpen className="h-4 w-4 text-white" />
     </div>
-  )
+  );
 
-  return <SidebarComponent logo={logo} title="ChainVerse Academy" sections={sidebarSections} />
+  return (
+    <SidebarComponent
+      logo={logo}
+      title="ChainVerse Academy"
+      sections={sidebarSections}
+    />
+  );
 }
