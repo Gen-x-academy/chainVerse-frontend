@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { RouteType } from "@/types";
+import Link from 'next/link';
+import { RouteType } from '@/types';
 import {
   Sidebar,
   SidebarContent,
@@ -10,17 +10,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider
-} from "@/components/ui/sidebar";
-import Image from "next/image";
-import logo from "../../../public/logo.png";
-import { cn } from "@/lib/utils";
+  SidebarProvider,
+} from '@/components/ui/sidebar';
+import Image from 'next/image';
+import logo from '../public/logo.png';
+import { cn } from '@/lib/utils';
 
 export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
   return (
-    <SidebarProvider className="w-full md:w-56">
-      <Sidebar className="w-full md:w-56">
-        <SidebarContent className="py-4 pl-2 pr-4 w-full">
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarContent className="p-4 w-full">
           <div className="flex items-center gap-1 pb-4">
             <Image
               src={logo}
@@ -29,7 +29,7 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
               width={24}
               height={24}
             />
-            <span className="font-semibold tracking-[-0.8px] md:text-[20px]">
+            <span className="font-semibold tracking-[-0.8px] md:text-[18px]">
               ChainVerse Academy
             </span>
           </div>
@@ -45,8 +45,8 @@ export default function InstructorSidebar({ routes }: { routes: RouteType[] }) {
                       key={route.name}
                       href={route.route}
                       className={cn(
-                        "flex items-center py-5 font-medium ",
-                        route.isActive && "bg-gray-200 "
+                        'flex items-center py-5 font-medium ',
+                        route.isActive && 'bg-gray-200 '
                       )}
                     >
                       <span className="h-5 w-5"> {route.icon}</span>

@@ -1,13 +1,33 @@
-"use client";
-import { alerts } from "@/lib/mock-data/notification-data";
-import { activities } from "@/lib/mock-data/notification-data";
-import Image from "next/image";
+'use client';
+import { Button } from '@/components/ui/button';
 
-const NotificationBar = () => {
+import Image from 'next/image';
+
+type NotificationBarProps = {
+  activities: Array<{
+    title: string;
+    time: string;
+    img?: string;
+  }>;
+  alerts: Array<{
+    title: string;
+    time: string;
+  }>;
+  setShowNotification?: () => void;
+};
+
+const NotificationBar = ({
+  activities,
+  setShowNotification,
+  alerts,
+}: NotificationBarProps) => {
   return (
     <>
-      <div className="pl-4 pr-2 pt-7 bg-background shadow-sm h-screen overflow-y-scroll">
-        <h3 className="text-xl pb-5 font-medium">Notification</h3>
+      <div className="pl-4 pr-2 pt-7 bg-background shadow-sm h-fit pb-6 overflow-y-scroll">
+        <div className="flex justify-between">
+          <h3 className="text-xl pb-5 font-medium">Notification</h3>
+          <Button onClick={setShowNotification}>X</Button>
+        </div>
 
         <div className="grid gap-7">
           <div className="grid gap-3">

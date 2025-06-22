@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Searchbar from "./searchbar";
-import HeaderBadge from "./header-badge";
-import { InstructorProps } from "@/types";
-import { instructorRoutes } from "@/lib/mock-data/instructorsData";
-import MobileMenuPopup from "./mobile-menu-popup";
-import MobileNotificationModal from "./mobile-notification-modal";
+import React, { useState } from 'react';
+import Searchbar from './searchbar';
+import HeaderBadge from './header-badge';
+import { InstructorProps } from '@/types';
+import { instructorRoutes } from '@/lib/mock-data/instructorsData';
+import MobileMenuPopup from './mobile-menu-popup';
+import MobileNotificationModal from './mobile-notification-modal';
 
 type InstructorDashboardHeaderProps = {
   user: InstructorProps;
@@ -15,7 +15,7 @@ type InstructorDashboardHeaderProps = {
 
 const InstructorDashboardHeader = ({
   user,
-  handleNotificationToggle
+  handleNotificationToggle,
 }: InstructorDashboardHeaderProps) => {
   return (
     <header className={`shadow-md bg-white h-18 px-2 w-full pt-6 pb-3 md:px-4`}>
