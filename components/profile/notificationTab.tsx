@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { NotificationData } from "@/lib/types";
+import { NotificationData } from '@/types';
+import { useState } from 'react';
 
-const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ notificationData }) => {
+const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({
+  notificationData,
+}) => {
   const [preferences, setPreferences] = useState({
     courseUpdates: true,
     newLessons: true,
@@ -12,9 +14,9 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
   });
 
   const handlePreferenceChange = (key: keyof typeof preferences) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
@@ -28,15 +30,21 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
       {/* Notification Preferences */}
       <div className="bg-white rounded-xl shadow-sm border p-8">
         <div className="mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Notification Preferences</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            Notification Preferences
+          </h3>
           <p className="text-gray-500">Choose how you want to be notified</p>
         </div>
-        
+
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">Course updates</p>
-              <p className="text-sm text-gray-500">Get notified when a course you're enrolled in is updated</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                Course updates
+              </p>
+              <p className="text-sm text-gray-500">
+                Get notified when a course you're enrolled in is updated
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('courseUpdates')}
@@ -54,8 +62,12 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">New lessons</p>
-              <p className="text-sm text-gray-500">Get notified when new lessons are available in your courses</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                New lessons
+              </p>
+              <p className="text-sm text-gray-500">
+                Get notified when new lessons are available in your courses
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('newLessons')}
@@ -73,8 +85,12 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">Assignment deadlines</p>
-              <p className="text-sm text-gray-500">Receive reminders about upcoming assignment deadlines</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                Assignment deadlines
+              </p>
+              <p className="text-sm text-gray-500">
+                Receive reminders about upcoming assignment deadlines
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('assignmentDeadlines')}
@@ -84,7 +100,9 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm ${
-                  preferences.assignmentDeadlines ? 'translate-x-6' : 'translate-x-1'
+                  preferences.assignmentDeadlines
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -92,8 +110,12 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">Instructor messages</p>
-              <p className="text-sm text-gray-500">Get notified when an instructor sends you a message</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                Instructor messages
+              </p>
+              <p className="text-sm text-gray-500">
+                Get notified when an instructor sends you a message
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('instructorMessages')}
@@ -103,7 +125,9 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm ${
-                  preferences.instructorMessages ? 'translate-x-6' : 'translate-x-1'
+                  preferences.instructorMessages
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -111,8 +135,12 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">Certificate issuance</p>
-              <p className="text-sm text-gray-500">Get notified when a certificate is issued to your wallet</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                Certificate issuance
+              </p>
+              <p className="text-sm text-gray-500">
+                Get notified when a certificate is issued to your wallet
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('certificateIssuance')}
@@ -122,7 +150,9 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm ${
-                  preferences.certificateIssuance ? 'translate-x-6' : 'translate-x-1'
+                  preferences.certificateIssuance
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -130,8 +160,12 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-900 text-lg mb-1">Marketing emails</p>
-              <p className="text-sm text-gray-500">Receive updates about new courses and promotions</p>
+              <p className="font-semibold text-gray-900 text-lg mb-1">
+                Marketing emails
+              </p>
+              <p className="text-sm text-gray-500">
+                Receive updates about new courses and promotions
+              </p>
             </div>
             <button
               onClick={() => handlePreferenceChange('marketingEmails')}
@@ -141,7 +175,9 @@ const NotificationTab: React.FC<{ notificationData: NotificationData }> = ({ not
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm ${
-                  preferences.marketingEmails ? 'translate-x-6' : 'translate-x-1'
+                  preferences.marketingEmails
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
