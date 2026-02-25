@@ -1,9 +1,10 @@
 'use client';
 
-import { Star } from 'lucide-react';
+import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
+import { useState } from 'react';
 
 interface CourseCardProps {
   id: number;
@@ -27,28 +28,25 @@ export function CourseCard({
   price,
   currency,
   image,
+  category,
   onAddToCart,
 }: CourseCardProps & {
   onAddToCart?: () => void;
 }) {
-  // Generate star rating display
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
   const renderStars = () => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
         stars.push(
-          <Star key={i} className="w-4 h-4 fill-[#FEA780] text-[#FEA780]" />
-        );
-      } else if (i === fullStars && hasHalfStar) {
-        stars.push(
-          <Star key={i} className="w-4 h-4 fill-[#D9D9D9] text-[#D9D9D9]" />
+          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
         );
       } else {
         stars.push(
-          <Star key={i} className="w-4 h-4 fill-[#D9D9D9] text-[#D9D9D9]" />
+          <Star key={i} className="w-4 h-4 fill-gray-200 text-gray-300" />
         );
       }
     }
@@ -56,59 +54,86 @@ export function CourseCard({
   };
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardContent className="flex flex-col items-center">
-        <div className="relative h-48 bg-gray-100 overflow-hidden">
+    <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-indigo-200 group">
+      {/* Image Container */}
+      <div className="relative h-40 bg-gradient-to-br from-blue-400 to-indigo-600 overflow-hidden">
+        {image ? (
           <Image
             src={image}
             alt={title}
-            className="w-full h-full object-cover"
-            width={400}
-            height={200}
+            fill
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-        </div>
-
-        {/* Course Content */}
-        <div className="p-4">
-          <div className="flex items-center gap-1 mb-2">
-            {renderStars()}
-            <span className="text-sm text- ml-1">{rating}</span>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">{category}</span>
           </div>
+        )}
+        {/* Wishlist Button */}
+        <button
+          onClick={() => setIsWishlisted(!isWishlisted)}
+          className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all hover:scale-110"
+        >
+          <Heart
+            size={18}
+            className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}
+          />
+        </button>
+        {/* Category Badge */}
+        <div className="absolute top-3 left-3 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+          {category}
+        </div>
+      </div>
 
-          <h3 className="font-semibold text-[#333333] mb-2 text-base leading-tight">
+      {/* Content */}
+      <CardContent className="flex flex-col flex-1 p-5 space-y-4">
+        {/* Title */}
+        <div>
+          <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
             {title}
           </h3>
+        </div>
 
-          <p className="text-[#666666] text-sm mb-3 line-clamp-2 leading-relaxed">
-            {description}
-          </p>
-
-          <p className="text-[#999999] font-light text-sm mb-3">{instructor}</p>
-
-          <div className="flex items-center gap-4 mb-4 text-sm text-[#666666]">
-            <span className="font-medium text-base">{level}</span>
-            <span className="font-medium text-sm">
-              {price} {currency}
-            </span>
+        {/* Instructor & Rating */}
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-gray-600">By {instructor}</p>
+          <div className="flex items-center gap-1">
+            <div className="flex gap-0.5">{renderStars()}</div>
+            <span className="text-xs font-semibold text-gray-700 ml-1">{rating}</span>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 text-sm h-9 cursor-pointer border-[#4361EE] text-[#4361EE] hover:bg-[#F2F6FF] font-medium"
-              onClick={onAddToCart}
-            >
-              <span className=" text-[#4361EE]">Add to Cart</span>
-            </Button>
-            <Button
-              size="sm"
-              className="flex-1 text-sm h-9 cursor-pointer bg-[#4361EE] hover:bg-[#3551b7] font-medium"
-            >
-              <span className=" text-white">Buy Now</span>
-            </Button>
-          </div>
+        {/* Description */}
+        <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
+
+        {/* Level Badge */}
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+              level === 'beginner'
+                ? 'bg-green-100 text-green-700'
+                : level === 'intermediate'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-purple-100 text-purple-700'
+            }`}
+          >
+            {level.charAt(0).toUpperCase() + level.slice(1)}
+          </span>
+        </div>
+
+        {/* Price & Button */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+          <span className="text-xl font-bold text-indigo-600">
+            ${price.toFixed(2)}
+          </span>
+          <Button
+            onClick={onAddToCart}
+            size="sm"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 group/btn"
+          >
+            <ShoppingCart size={16} className="group-hover/btn:scale-110 transition-transform" />
+            <span className="hidden sm:inline">Add</span>
+          </Button>
         </div>
       </CardContent>
     </Card>
