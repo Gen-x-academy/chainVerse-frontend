@@ -48,13 +48,13 @@ export const LoginPage: React.FC = () => {
 
     setLoading(true);
     try {
-      // In a real app: const response = await api.post('/login', credentials);
-      // authService.saveToken(response.token);
-      console.log('Logging in with:', credentials);
-      authService.saveToken('dummy-token');
-      window.location.href = '/dashboard';
+      await authService.login({
+        email: credentials.email,
+        password: credentials.password,
+      });
+      window.location.href = '/courses';
     } catch (err) {
-      setError('Invalid email or password');
+      setError(err instanceof Error ? err.message : 'Invalid email or password');
     } finally {
       setLoading(false);
     }
