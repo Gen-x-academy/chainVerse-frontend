@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { CourseFilters } from '../components/CourseFilters';
 import { CourseList } from '../components/CourseList';
+import { SectionContainer } from '@/shared/components/layout/SectionContainer';
 
 const MOCK_COURSES = [
   { id: '1', title: 'Introduction to Blockchain', instructor: 'Jane Doe', category: 'Blockchain', level: 'Beginner', price: 49.99, rating: 4.8, students: 1234, image: '' },
@@ -34,7 +35,7 @@ export const CoursesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <SectionContainer className="py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Explore Courses</h1>
@@ -103,7 +104,7 @@ export const CoursesPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </SectionContainer>
     </div>
   );
 };
