@@ -13,12 +13,13 @@ export interface CourseCardProps {
 
 export function CourseCard({ title, description, instructor, duration, category }: CourseCardProps) {
   return (
-    <article 
+    <article
+      aria-label={`Course: ${title} by ${instructor}`}
       className="
-        relative flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden 
-        cursor-pointer 
-        transition-all duration-200 ease-in-out 
-        hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 
+        relative flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden
+        cursor-pointer
+        transition-all duration-200 ease-in-out
+        hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5
         transform-gpu
         group
       "
@@ -43,12 +44,12 @@ export function CourseCard({ title, description, instructor, duration, category 
         {/* Footer Meta Details */}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 text-sm text-gray-600">
           <div className="flex items-center gap-1.5">
-            <User className="w-4 h-4 text-gray-400" />
+            <User className="w-4 h-4 text-gray-400" aria-hidden="true" />
             <span className="font-medium text-gray-900">{instructor}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-gray-400" />
-            <span>{duration}</span>
+            <Clock className="w-4 h-4 text-gray-400" aria-hidden="true" />
+            <span aria-label={`Duration: ${duration}`}>{duration}</span>
           </div>
         </div>
       </div>
