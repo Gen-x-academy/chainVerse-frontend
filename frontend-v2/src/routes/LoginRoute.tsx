@@ -1,11 +1,10 @@
-import React from 'react';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
+import dynamic from 'next/dynamic';
 
-/**
- * #102 Refactor: Login Route is now a thin wrapper.
- */
-const LoginRoute: React.FC = () => {
-  return <LoginPage />;
-};
+const LoginPage = dynamic(
+  () => import('@/features/auth/pages/LoginPage').then((m) => ({ default: m.LoginPage })),
+  { loading: () => null }
+);
+
+const LoginRoute: React.FC = () => <LoginPage />;
 
 export default LoginRoute;
