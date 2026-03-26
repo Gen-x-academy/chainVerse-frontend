@@ -1,12 +1,13 @@
-import React from 'react';
-import { StudentDashboardPage } from '@/features/students/pages/StudentDashboardPage';
+import dynamic from 'next/dynamic';
 
-/**
- * #99 Refactor: This route file is now a thin wrapper.
- * All dashboard logic is managed within the students feature module.
- */
-const StudentDashboardRoute: React.FC = () => {
-  return <StudentDashboardPage />;
-};
+const StudentDashboardPage = dynamic(
+  () =>
+    import('@/features/students/pages/StudentDashboardPage').then((m) => ({
+      default: m.StudentDashboardPage,
+    })),
+  { loading: () => null }
+);
+
+const StudentDashboardRoute: React.FC = () => <StudentDashboardPage />;
 
 export default StudentDashboardRoute;
