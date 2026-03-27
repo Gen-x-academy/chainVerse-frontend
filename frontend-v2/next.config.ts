@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
-import type  withBundleAnalyzer  from "@next/bundle-analyzer";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
-const withBundleAnalyzer:any= {
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
-};
+});
 
-const nextConfig:NextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -17,4 +17,4 @@ const nextConfig:NextConfig = {
   },
 };
 
-export default  withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer(nextConfig);
