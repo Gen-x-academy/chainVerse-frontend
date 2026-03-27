@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Search, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -251,7 +252,7 @@ export function CoursesSection() {
           <div className="ml-4 flex self-end items-center gap-2">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[200px]">
-                <img src="/3vertical.png" alt="Sort" />
+                <Image src="/3vertical.png" alt="Sort" width={20} height={20} />
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent className="bg-white">

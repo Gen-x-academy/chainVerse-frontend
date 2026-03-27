@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import './Features.css'
 
 const features = [
@@ -42,7 +43,7 @@ export function Features() {
         {features.map((feature) => (
           <article className="feature-card" key={feature.title}>
             <div className="feature-icon">
-              <img src={feature.icon} alt="" aria-hidden="true" />
+              <Image src={feature.icon} alt="" aria-hidden={true} width={48} height={48} />
             </div>
             <h3 className="feature-title">{feature.title}</h3>
             <p className="feature-description">{feature.description}</p>
