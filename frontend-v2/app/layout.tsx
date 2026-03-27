@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cn } from "@/lib"; // Leveraging the new lib/index.ts (#109)
+import Providers from "@/src/shared/utils/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,10 +33,7 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased"
         )}
       >
-        {/* Note: Global Providers (Auth, Theme, Store) 
-            should wrap {children} here as the project grows.
-        */}
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
