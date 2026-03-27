@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Search, Bell, Copy, ChevronDown, Menu } from "lucide-react";
 import { NotificationModal } from "./NotificationModal";
 
@@ -87,10 +88,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                             <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black mt-0.5">Instructor</p>
                         </div>
                         <div className="relative">
-                            <img
+                            <Image
                                 src={instructor.avatar}
                                 alt={instructor.fullName}
-                                className="w-11 h-11 rounded-xl border-2 border-transparent group-hover:border-indigo-500 p-0.5 transition-all duration-300"
+                                width={44}
+                                height={44}
+                                className="rounded-xl border-2 border-transparent group-hover:border-indigo-500 p-0.5 transition-all duration-300"
                             />
                             <div className="absolute -bottom-1 -right-1 p-0.5 bg-white rounded-full shadow-sm border border-gray-100">
                                 <ChevronDown size={10} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
