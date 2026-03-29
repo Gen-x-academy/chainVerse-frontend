@@ -5,7 +5,9 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useRouter } from 'next/navigation';
 import { AuthForm } from '../components/AuthForm';
+import { authService } from '../services/auth.service';
 
 const loginSchema = z.object({
   email: z
@@ -21,7 +23,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginPage: React.FC = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -31,8 +35,14 @@ export const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log('Login form data:', data);
+  const onSubmit = async (data: LoginFormData) => {
+    setApiError(null);
+    try {
+      await authService.login({ email: data.email, password: data.password });
+      router.replace('/dashboard');
+    } catch {
+      setApiError('Invalid email or password. Please try again.');
+    }
   };
 
   return (
@@ -41,6 +51,13 @@ export const LoginPage: React.FC = () => {
       subtitle="Sign in to your ChainVerse account"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* API error */}
+      {apiError && (
+        <div role="alert" className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          {apiError}
+        </div>
+      )}
+
       {/* Email Field */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -88,7 +105,7 @@ export const LoginPage: React.FC = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
-        <a href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <a href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
           Forgot password?
         </a>
       </div>
@@ -112,7 +129,7 @@ export const LoginPage: React.FC = () => {
       {/* Sign Up Link */}
       <p className="text-center text-gray-600 text-sm">
         Don&apos;t have an account?{' '}
-        <a href="/auth/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <a href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold">
           Sign up
         </a>
       </p>
