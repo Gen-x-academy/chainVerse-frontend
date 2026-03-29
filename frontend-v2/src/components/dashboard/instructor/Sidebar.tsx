@@ -14,13 +14,14 @@ export type routeType = {
 interface SidebarProps {
     routes: routeType[];
     isOpen?: boolean;
+    onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => {
     return (
         <aside className={cn(
-            "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-transform duration-300 overflow-y-auto lg:translate-x-0",
-            isOpen ? "translate-x-0" : "-translate-x-full"
+            "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-all duration-300 overflow-y-auto lg:translate-x-0 lg:shadow-none",
+            isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         )}>
             <div className="flex h-full flex-col px-4 py-6">
                 {/* Logo */}
@@ -37,10 +38,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen }) => {
                         <Link
                             key={route.name}
                             href={route.route}
+                            onClick={onClose}
                             className={cn(
-                                "flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
+                                "flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
                                 route.isActive
-                                    ? "bg-indigo-50 text-indigo-600"
+                                    ? "bg-indigo-50 text-indigo-600 shadow-sm"
                                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
