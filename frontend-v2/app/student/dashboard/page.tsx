@@ -1,7 +1,8 @@
 import React from "react";
 import { Clock, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AnalyticsGrid } from "@/src/components/dashboard/instructor/AnalyticsGrid";
+import { BookOpen, Users, Clock, TrendingUp } from "lucide-react";
+import { RevenueChart } from "@/src/features/instructors/components/RevenueChart";
 
 // ─── Empty-state placeholder ──────────────────────────────────────────────────
 
@@ -47,36 +48,28 @@ export default function InstructorDashboardPage() {
       {/* Analytics metric cards */}
       <AnalyticsGrid />
 
-      {/* Secondary content panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border-none shadow-sm h-80">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
-              Recent Enrollments
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-[calc(100%-4rem)]">
-            <EmptyPlaceholder
-              icon={Users}
-              label="No recent enrollments to show."
-            />
-          </CardContent>
-        </Card>
+            {/* Charts + content row */}
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+                {/* Revenue chart — spans 3/5 columns on xl */}
+                <div className="xl:col-span-3">
+                    <RevenueChart />
+                </div>
 
-        <Card className="border-none shadow-sm h-80">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
-              Upcoming Sessions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-[calc(100%-4rem)]">
-            <EmptyPlaceholder
-              icon={Clock}
-              label="No upcoming sessions scheduled."
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+                {/* Recent Enrollments panel — spans 2/5 columns on xl */}
+                <Card className="border-none shadow-sm xl:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="text-base font-semibold text-gray-800">Recent Enrollments</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-center h-52">
+                        <div className="text-center">
+                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Users className="text-gray-300 h-6 w-6" />
+                            </div>
+                            <p className="text-gray-400 text-sm">No recent enrollments to show.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 }
