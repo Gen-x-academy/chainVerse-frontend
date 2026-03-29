@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Users, Clock, TrendingUp } from "lucide-react";
+import { RevenueChart } from "@/src/features/instructors/components/RevenueChart";
 
 export default function InstructorDashboardPage() {
     const stats = [
@@ -65,32 +66,24 @@ export default function InstructorDashboardPage() {
                 ))}
             </div>
 
-            {/* Content Placeholders */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="border-none shadow-sm h-96">
+            {/* Charts + content row */}
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+                {/* Revenue chart — spans 3/5 columns on xl */}
+                <div className="xl:col-span-3">
+                    <RevenueChart />
+                </div>
+
+                {/* Recent Enrollments panel — spans 2/5 columns on xl */}
+                <Card className="border-none shadow-sm xl:col-span-2">
                     <CardHeader>
-                        <CardTitle>Recent Enrollments</CardTitle>
+                        <CardTitle className="text-base font-semibold text-gray-800">Recent Enrollments</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex items-center justify-center h-full -mt-10">
+                    <CardContent className="flex items-center justify-center h-52">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Users className="text-gray-300" />
+                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Users className="text-gray-300 h-6 w-6" />
                             </div>
                             <p className="text-gray-400 text-sm">No recent enrollments to show.</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="border-none shadow-sm h-96">
-                    <CardHeader>
-                        <CardTitle>Upcoming Sessions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-center h-full -mt-10">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Clock className="text-gray-300" />
-                            </div>
-                            <p className="text-gray-400 text-sm">No upcoming sessions scheduled.</p>
                         </div>
                     </CardContent>
                 </Card>
