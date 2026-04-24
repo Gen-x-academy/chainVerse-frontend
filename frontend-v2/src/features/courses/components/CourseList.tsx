@@ -55,7 +55,7 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
               <div className="flex items-center gap-1">
                 <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-semibold text-gray-700">{course.rating}</span>
+                <span className="text-sm font-semibold text-gray-700">{course.rating ?? 0}</span>
               </div>
               <span className="text-xs text-gray-500">{course.students} students</span>
             </div>

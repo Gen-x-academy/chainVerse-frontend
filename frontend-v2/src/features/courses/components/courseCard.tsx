@@ -37,7 +37,7 @@ export function CourseCard({
 
   const renderStars = () => {
     const stars = [];
-    const fullStars = Math.floor(rating);
+    const fullStars = Math.floor(rating ?? 0);
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
