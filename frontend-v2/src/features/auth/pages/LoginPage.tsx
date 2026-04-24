@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
 import { authService } from '../services/auth.service';
 
@@ -107,9 +108,9 @@ export const LoginPage: React.FC = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
-        <a href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <Link href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
           Forgot password?
-        </a>
+        </Link>
       </div>
 
       {/* Submit Button */}
@@ -131,9 +132,9 @@ export const LoginPage: React.FC = () => {
       {/* Sign Up Link */}
       <p className="text-center text-gray-600 text-sm">
         Don&apos;t have an account?{' '}
-        <a href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold">
           Sign up
-        </a>
+        </Link>
       </p>
     </AuthForm>
   );
