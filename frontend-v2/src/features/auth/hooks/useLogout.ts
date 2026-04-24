@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { authService } from "@/src/features/auth/services/auth.service";
+import { authService } from "../services/auth.service";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

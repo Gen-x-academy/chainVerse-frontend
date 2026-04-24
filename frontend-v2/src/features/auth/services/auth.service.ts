@@ -40,10 +40,13 @@ export const authService = {
     return data;
   },
 
-  getToken: (): string | null => localStorage.getItem(TOKEN_KEY),
+  // Token lives in an HttpOnly cookie — not readable from JS.
+  // Use isAuthenticated() to check session presence via middleware.
+  getToken: (): string | null => null,
 
-  setToken: (token: string): void => {
-    localStorage.setItem(TOKEN_KEY, token);
+  setToken: (_token: string): void => {
+    // Token is stored in HttpOnly cookie set by the server at /api/auth/login.
+    // Do NOT write to localStorage — vulnerable to XSS.
   },
 
   /**
@@ -73,5 +76,7 @@ export const authService = {
     return token ? { Authorization: `Bearer ${token}` } : {};
   },
 
-  isAuthenticated: (): boolean => !!authService.getToken(),
+  // Session validity is enforced by middleware.ts checking the 'session' cookie.
+  // Client-side check reads the non-HttpOnly session indicator cookie if present.
+  isAuthenticated: (): boolean => document.cookie.split(';').some(c => c.trim().startsWith('session=')),
 };
