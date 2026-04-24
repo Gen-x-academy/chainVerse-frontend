@@ -60,10 +60,11 @@ export const LoginPage: React.FC = () => {
 
       {/* Email Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
           Email Address
         </label>
         <input
+          id="email"
           type="email"
           placeholder="you@example.com"
           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
@@ -78,11 +79,12 @@ export const LoginPage: React.FC = () => {
 
       {/* Password Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
           Password
         </label>
         <div className="relative">
           <input
+            id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
