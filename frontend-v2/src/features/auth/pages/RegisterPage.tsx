@@ -5,6 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
 
 const registerSchema = z
@@ -170,9 +171,9 @@ export const RegisterPage: React.FC = () => {
       {/* Login Link */}
       <p className="text-center text-gray-600 text-sm">
         Already have an account?{' '}
-        <a href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
           Sign in
-        </a>
+        </Link>
       </p>
     </AuthForm>
   );

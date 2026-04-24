@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
 import { apiClient } from '@/lib/api-client';
 
@@ -64,6 +66,8 @@ export const PasswordResetPage: React.FC = () => {
     }
   };
 
+  const router = useRouter();
+
   const onResetPassword = async (data: ResetFormData) => {
     setApiError(null);
     try {
@@ -72,7 +76,7 @@ export const PasswordResetPage: React.FC = () => {
         code: verifiedCode,
         password: data.password,
       });
-      window.location.href = '/auth/login';
+      router.push('/auth/login');
     } catch {
       setApiError('Failed to reset password. Please try again.');
     }
@@ -233,7 +237,7 @@ export const PasswordResetPage: React.FC = () => {
       </button>
       <p className="text-center text-gray-600 text-sm">
         Remember your password?{' '}
-        <a href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">Sign in</a>
+        <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">Sign in</Link>
       </p>
     </AuthForm>
   );
