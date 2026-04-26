@@ -14,7 +14,7 @@ const emailSchema = z.object({
 });
 
 const codeSchema = z.object({
-  code: z.string().min(6, 'Code must be 6 digits').max(6, 'Code must be 6 digits'),
+  code: z.string().length(6, 'Must be 6 digits').regex(/^\d{6}$/, 'Must be numbers only'),
 });
 
 const resetSchema = z
