@@ -2,17 +2,18 @@
 
 import React from 'react';
 import { Star } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/EmptyState';
 
 interface CourseItem {
   id: string;
   title: string;
-  instructor: string;
-  category: string;
-  level: string;
-  price: number;
-  rating: number;
-  students: number;
-  image: string;
+  instructor?: string;
+  category?: string;
+  level?: string;
+  price?: number;
+  rating?: number;
+  students?: number;
+  image?: string;
 }
 
 interface CourseListProps {
@@ -20,6 +21,15 @@ interface CourseListProps {
 }
 
 export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
+  if (courses.length === 0) {
+    return (
+      <EmptyState
+        title="No courses found"
+        description="Try adjusting your filters."
+      />
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.map((course) => (
@@ -27,12 +37,10 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
           key={course.id}
           className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition"
         >
-          {/* Image */}
           <div className="h-40 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
             <span className="text-white text-sm font-semibold">{course.category}</span>
           </div>
 
-          {/* Content */}
           <div className="p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -45,7 +53,7 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 {course.level}
               </span>
               <span className="text-lg font-bold text-indigo-600">
-                {course.price > 0 ? `$${course.price.toFixed(2)}` : 'Free'}
+                {(course.price ?? 0) > 0 ? `$${(course.price as number).toFixed(2)}` : 'Free'}
               </span>
             </div>
 
