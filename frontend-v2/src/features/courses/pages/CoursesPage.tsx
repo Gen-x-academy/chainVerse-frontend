@@ -30,10 +30,13 @@ export const CoursesPage = () => {
       course.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
       selectedCategories.length === 0 ||
-      selectedCategories.includes(course.instructorId ?? ''); // adjust field when API returns category
+      selectedCategories.includes(course.category ?? '');
+    const matchesLevel =
+      selectedLevel === 'All' ||
+      (course.level ?? '').toLowerCase() === selectedLevel.toLowerCase();
     const matchesPrice =
       course.price == null || course.price <= priceRange;
-    return matchesSearch && matchesCategory && matchesPrice;
+    return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / COURSES_PER_PAGE));
