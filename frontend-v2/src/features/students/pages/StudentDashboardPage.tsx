@@ -174,7 +174,13 @@ export const StudentDashboardPage: React.FC = () => {
                             {course.progress}%
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="w-full bg-gray-200 rounded-full h-2"
+                          role="progressbar"
+                          aria-valuenow={course.progress}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        >
                           <div
                             className="bg-indigo-600 h-2 rounded-full transition-all"
                             style={{ width: `${course.progress}%` }}
