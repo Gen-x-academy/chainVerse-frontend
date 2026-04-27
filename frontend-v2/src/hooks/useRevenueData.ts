@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { apiClient } from "@/lib/api-client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -103,9 +104,8 @@ export function useRevenueData(): UseRevenueDataReturn {
     setIsLoading(true);
     setError(null);
     try {
-      // Replace with: const result = await apiClient.get(`/instructor/revenue?period=${selectedPeriod}`);
-      await new Promise<void>((resolve) => setTimeout(resolve, FETCH_DELAY_MS));
-      setData(MOCK_DATA[selectedPeriod]);
+      const result = await apiClient.get<RevenueChartData>(`/instructor/revenue?period=${selectedPeriod}`);
+      setData(result);
     } catch {
       setError("Failed to load revenue data. Please try again.");
     } finally {

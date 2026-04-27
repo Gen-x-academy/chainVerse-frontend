@@ -126,7 +126,7 @@ export function CourseCard({
         {/* Price & Button */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
           <span className="text-xl font-bold text-indigo-600">
-            ${price.toFixed(2)}
+            {currency}{price.toFixed(2)}
           </span>
           <Button
             onClick={onAddToCart}

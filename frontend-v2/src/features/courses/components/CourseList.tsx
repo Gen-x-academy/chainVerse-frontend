@@ -3,6 +3,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
+import Link from 'next/link';
 
 interface CourseItem {
   id: string;
@@ -33,9 +34,10 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.map((course) => (
-        <div
+        <Link
           key={course.id}
-          className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition"
+          href={`/courses/${course.id}`}
+          className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition block"
         >
           <div className="h-40 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
             <span className="text-white text-sm font-semibold">{course.category}</span>
@@ -68,7 +70,7 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
               <span className="text-xs text-gray-500">{course.students} students</span>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
