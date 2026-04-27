@@ -2,7 +2,10 @@
 
 import React, { ComponentType } from "react";
 import Link from "next/link";
+import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLogout } from "@/src/features/auth/hooks/useLogout";
+import { useSession } from "@/src/features/auth/hooks/useSession";
 
 export type routeType = {
     name: string;
@@ -18,6 +21,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => {
+    const { logout, isLoggingOut } = useLogout();
+    const { isAuthenticated } = useSession();
+
     return (
         <aside className={cn(
             "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-all duration-300 overflow-y-auto lg:translate-x-0 lg:shadow-none",
@@ -57,8 +63,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => 
                     ))}
                 </nav>
 
-                {/* Bottom Section (Optional) */}
-                <div className="mt-auto pt-6 border-t border-gray-100">
+                {/* Bottom Section */}
+                <div className="mt-auto pt-6 border-t border-gray-100 space-y-3">
+                    {isAuthenticated && (
+                        <button
+                            onClick={logout}
+                            disabled={isLoggingOut}
+                            className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-500 rounded-xl hover:bg-red-50 hover:text-red-600 transition disabled:opacity-50"
+                        >
+                            <LogOut className="mr-3 h-5 w-5" />
+                            {isLoggingOut ? 'Signing out…' : 'Sign out'}
+                        </button>
+                    )}
                     <p className="text-xs text-center text-gray-400">© 2026 ChainVerse</p>
                 </div>
             </div>
