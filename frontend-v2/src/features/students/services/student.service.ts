@@ -1,25 +1,10 @@
 
-import { apiClient } from '@/lib/api-client';
-
 type Student = {
-  id: string;
-  name: string;
-  email?: string;
-  avatarUrl?: string;
-  enrolledCourseIds?: string[];
-  completedCourseIds?: string[];
-};
-
 type StudentListResponse = {
-  data: Student[];
-  total: number;
-};
-
 type StudentPayload = {
-  name: string;
-  email?: string;
-  avatarUrl?: string;
-};
+
+import { apiClient } from '@/lib/api-client';
+import type { Student, StudentListResponse, StudentPayload } from '../types/students.types';
 
   list: (page = 1, pageSize = 10) =>
     apiClient.get<StudentListResponse>(`/students?page=${page}&pageSize=${pageSize}`),
