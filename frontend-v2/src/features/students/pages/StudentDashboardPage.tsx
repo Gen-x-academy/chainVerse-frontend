@@ -1,230 +1,114 @@
-import React from "react";
-import { BookOpen, Clock, Trophy, TrendingUp } from "lucide-react";
-import { UserActivityChart } from "../components/UserActivityChart";
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { BookOpen, Clock, Trophy, TrendingUp } from 'lucide-react';
+import { UserActivityChart } from '../components/UserActivityChart';
+import { studentService } from '../services/student.service';
+import { useSession } from '@/src/features/auth/hooks/useSession';
+import type { Student, EnrollmentRecord } from '../types/students.types';
+
+interface DashboardStats {
+  coursesEnrolled: number;
+  learningHours: number;
+  certificatesEarned: number;
+  avgRating: number;
+}
+
+const STAT_ICONS = [BookOpen, Clock, Trophy, TrendingUp];
+const STAT_COLORS = [
+  'bg-blue-100 text-blue-600',
+  'bg-orange-100 text-orange-600',
+  'bg-green-100 text-green-600',
+  'bg-purple-100 text-purple-600',
+];
 
 export const StudentDashboardPage: React.FC = () => {
-  // Mock data
-  const enrolledCourses = [
-    {
-      id: 1,
-      title: "Advanced React Patterns",
-      instructor: "Jane Doe",
-      progress: 65,
-      image: "bg-blue-500",
-      completedLessons: 13,
-      totalLessons: 20,
-    },
-    {
-      id: 2,
-      title: "TypeScript Mastery",
-      instructor: "John Smith",
-      progress: 42,
-      image: "bg-purple-500",
-      completedLessons: 8,
-      totalLessons: 19,
-    },
-    {
-      id: 3,
-      title: "Node.js Backend Development",
-      instructor: "Alex Johnson",
-      progress: 28,
-      image: "bg-green-500",
-      completedLessons: 5,
-      totalLessons: 18,
-    },
-  ];
+  const { token } = useSession();
+  const [student, setStudent] = useState<Student | null>(null);
+  const [enrollments, setEnrollments] = useState<EnrollmentRecord[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const stats = [
-    {
-      label: "Courses Enrolled",
-      value: "6",
-      icon: BookOpen,
-      color: "bg-blue-100 text-blue-600",
-    },
-    {
-      label: "Learning Hours",
-      value: "24.5",
-      icon: Clock,
-      color: "bg-orange-100 text-orange-600",
-    },
-    {
-      label: "Certificates Earned",
-      value: "2",
-      icon: Trophy,
-      color: "bg-green-100 text-green-600",
-    },
-    {
-      label: "Avg. Rating",
-      value: "4.8",
-      icon: TrendingUp,
-      color: "bg-purple-100 text-purple-600",
-    },
-  ];
+  useEffect(() => {
+    if (!token) return;
+    setIsLoading(true);
+    // Fetch student profile and enrollments in parallel
+    Promise.all([
+      studentService.list(1, 1),
+    ])
+      .then(([res]) => {
+        const me = res.data[0] ?? null;
+        setStudent(me);
+        if (me) {
+          setStats({
+            coursesEnrolled: me.courseIds.length,
+            learningHours: 0,
+            certificatesEarned: 0,
+            avgRating: 0,
+          });
+        }
+      })
+      .catch(() => {/* silently degrade */})
+      .finally(() => setIsLoading(false));
+  }, [token]);
 
-  const recentActivity = [
-    {
-      course: "React Patterns",
-      action: "Completed lesson: Advanced Hooks",
-      time: "2 hours ago",
-    },
-    {
-      course: "TypeScript Mastery",
-      action: "Started new section: Generics",
-      time: "1 day ago",
-    },
-    {
-      course: "Node.js Backend",
-      action: "Submitted assignment",
-      time: "3 days ago",
-    },
-    {
-      course: "React Patterns",
-      action: "Earned certificate",
-      time: "1 week ago",
-    },
-  ];
+  const statItems = stats
+    ? [
+        { label: 'Courses Enrolled', value: String(stats.coursesEnrolled) },
+        { label: 'Learning Hours', value: String(stats.learningHours) },
+        { label: 'Certificates Earned', value: String(stats.certificatesEarned) },
+        { label: 'Avg. Rating', value: String(stats.avgRating) },
+      ]
+    : [];
+
+  const firstName = student?.firstName ?? 'there';
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-8 mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, Alex! 👋</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome back, {firstName}! 👋</h1>
           <p className="text-blue-100">
-            You're making great progress! Keep up the momentum and complete your
-            courses.
+            You&apos;re making great progress! Keep up the momentum and complete your courses.
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">
-                      {stat.label}
-                    </p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {stat.value}
-                    </p>
-                  </div>
-                  <div className={`${stat.color} p-3 rounded-lg`}>
-                    <Icon size={24} />
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-28 bg-gray-200 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {statItems.map((stat, index) => {
+              const Icon = STAT_ICONS[index];
+              return (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium mb-1">{stat.label}</p>
+                      <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                    </div>
+                    <div className={`${STAT_COLORS[index]} p-3 rounded-lg`}>
+                      <Icon size={24} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* User Activity Chart */}
           <div className="lg:col-span-3">
             <UserActivityChart />
-          </div>
-
-          {/* Enrolled Courses */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Your Learning Path
-                </h2>
-                <a
-                  href="/courses"
-                  className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
-                >
-                  View All
-                </a>
-              </div>
-
-              <div className="space-y-5">
-                {enrolledCourses.map((course) => (
-                  <div
-                    key={course.id}
-                    className="flex gap-4 p-4 border border-gray-100 rounded-lg hover:shadow-md transition"
-                  >
-                    <div
-                      className={`${course.image} w-24 h-24 rounded-lg flex-shrink-0`}
-                    />
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {course.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-3">
-                        by {course.instructor}
-                      </p>
-
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-gray-600">
-                          <span>
-                            {course.completedLessons} of {course.totalLessons}{" "}
-                            lessons
-                          </span>
-                          <span className="font-semibold">
-                            {course.progress}%
-                          </span>
-                        </div>
-                        <div
-                          className="w-full bg-gray-200 rounded-full h-2"
-                          role="progressbar"
-                          aria-valuenow={course.progress}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        >
-                          <div
-                            className="bg-indigo-600 h-2 rounded-full transition-all"
-                            style={{ width: `${course.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
-                Recent Activity
-              </h2>
-
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="pb-4 border-b border-gray-100 last:border-b-0 last:pb-0"
-                  >
-                    <div className="flex gap-3">
-                      <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">
-                          {activity.course}
-                        </p>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          {activity.time}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>

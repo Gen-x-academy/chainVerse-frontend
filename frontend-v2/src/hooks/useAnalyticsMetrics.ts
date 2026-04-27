@@ -67,7 +67,7 @@ const METRICS_DATA: AnalyticsMetric[] = [
   },
 ];
 
-const FETCH_DELAY_MS = 1500; // simulates a real network round-trip
+const FETCH_DELAY_MS = 0; // removed artificial delay — real network latency is sufficient
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -91,7 +91,6 @@ export function useAnalyticsMetrics(): UseAnalyticsMetricsReturn {
     try {
       // Replace this with a real API call:
       // const data = await apiClient.get<AnalyticsMetric[]>("/instructor/metrics");
-      await new Promise<void>((resolve) => setTimeout(resolve, FETCH_DELAY_MS));
       setMetrics(METRICS_DATA);
     } catch {
       setError("Failed to load metrics. Please try again.");
