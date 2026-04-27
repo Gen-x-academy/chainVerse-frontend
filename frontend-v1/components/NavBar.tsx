@@ -12,10 +12,20 @@ import { Button } from "./ui/button";
 import AuthPrompt from "./AuthPrompt";
 import { useAuthStore } from "@/store/authStore";
 
-const NAV_ITEMS = [
+const PUBLIC_NAV_ITEMS = [
   { label: "Courses", href: "/courses" },
   { label: "Instructors", href: "/instructors" },
   { label: "About", href: "/about" },
+];
+
+const STUDENT_NAV_ITEMS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Courses", href: "/courses" },
+];
+
+const INSTRUCTOR_NAV_ITEMS = [
+  { label: "Dashboard", href: "/instructors/dashboard" },
+  { label: "My Courses", href: "/instructors/courses" },
 ];
 
 const WALLET_ADDRESS = "0xfcf2....9a56";
@@ -28,11 +38,22 @@ const NavBar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated, user, logout } = useAuthStore();
 
+  const navItems = !isAuthenticated
+    ? PUBLIC_NAV_ITEMS
+    : user?.role === 'instructor'
+    ? INSTRUCTOR_NAV_ITEMS
+    : STUDENT_NAV_ITEMS;
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu on route change (#296)
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const isActive = (href: string) => pathname === href;
 
@@ -72,7 +93,7 @@ const NavBar: React.FC = () => {
 
             {/* Desktop Nav */}
             <ul className="hidden md:flex items-center justify-between gap-10">
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -147,7 +168,7 @@ const NavBar: React.FC = () => {
             aria-label="Mobile navigation"
           >
             <div className="flex flex-col gap-2 p-6 pt-24">
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
