@@ -13,7 +13,8 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRevenueData, RevenuePeriod, RevenueDataPoint } from "@/src/hooks/useRevenueData";
+import { useRevenueData, RevenuePeriod, RevenueDataPoint } from "../../../hooks/useRevenueData";
+
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
