@@ -74,6 +74,8 @@ export function CourseCard({
         {/* Wishlist Button */}
         <button
           onClick={() => toggle(String(id))}
+          aria-label={wishlisted ? `Remove ${title} from wishlist` : `Add ${title} to wishlist`}
+          aria-pressed={wishlisted}
           className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all hover:scale-110"
         >
           <Heart
@@ -100,8 +102,9 @@ export function CourseCard({
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-600">By {instructor}</p>
           <div className="flex items-center gap-1">
-            <div className="flex gap-0.5">{renderStars()}</div>
-            <span className="text-xs font-semibold text-gray-700 ml-1">{rating}</span>
+            <div className="flex gap-0.5" aria-hidden="true">{renderStars()}</div>
+            <span className="sr-only">Rating: {rating} out of 5 stars</span>
+            <span className="text-xs font-semibold text-gray-700 ml-1" aria-hidden="true">{rating}</span>
           </div>
         </div>
 

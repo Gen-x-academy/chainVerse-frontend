@@ -10,6 +10,15 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     include: ["**/__tests__/**/*.{ts,tsx}", "**/*.{test,spec}.{ts,tsx}", "test/**/*.{ts,tsx}"],
     exclude: ["node_modules", ".next", "e2e"],
+    coverage: {
+      provider: "v8",
+      thresholds: {
+        lines: 60,
+        functions: 60,
+        branches: 60,
+        statements: 60,
+      },
+    },
   },
   resolve: {
     alias: {
