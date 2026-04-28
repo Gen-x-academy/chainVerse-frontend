@@ -105,7 +105,11 @@ export const CourseTable: React.FC = () => {
           ))}
         </div>
       ) : (
-        <DataTable data={courses} columns={columns} />
+        <DataTable
+          data={courses}
+          columns={columns}
+          onRowClick={(row) => router.push(`/instructor/dashboard/courses/${row.id}`)}
+        />
       )}
 
       {/* Delete confirmation dialog */}
