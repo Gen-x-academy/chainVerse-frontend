@@ -14,8 +14,10 @@ import { useState, useEffect } from "react";
 
 export default function CartModal({ cartCount }: { cartCount: number }) {
   const router = useRouter();
-  const { setRequiresAuth } = useCartStore();
-  const isAuthenticated = useAuthStore.getState().isAuthenticated;
+  const items = useCartStore((state) => state.items);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const setRequiresAuth = useCartStore((state) => state.setRequiresAuth);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isOpen, setIsOpen] = useState(false);
 
   // Add effect to handle body scroll when modal is open
@@ -82,7 +84,7 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
           ) : (
             <div className="flex flex-col h-full">
               <div className="flex-1 overflow-y-auto p-4">
-                {useCartStore.getState().items.map((item) => (
+                {items.map((item) => (
                   <div
                     key={item.id}
                     className="flex items-center justify-between border-b py-4 last:border-b-0"
@@ -105,9 +107,7 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() =>
-                        useCartStore.getState().removeFromCart(item.id)
-                      }
+                      onClick={() => removeFromCart(item.id)}
                       aria-label="Remove"
                       className="hover:bg-gray-100 transition-colors duration-200"
                     >
@@ -121,9 +121,8 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
                   <span className="text-lg">Subtotal</span>
                   <span className="text-[#627BF1] text-lg">
                     $
-                    {useCartStore
-                      .getState()
-                      .items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+                    {items
+                      .reduce((sum: number, i: { price: number; quantity: number }) => sum + i.price * i.quantity, 0)
                       .toLocaleString()}
                   </span>
                 </div>
