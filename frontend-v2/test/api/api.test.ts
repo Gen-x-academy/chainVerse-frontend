@@ -1,26 +1,27 @@
-import { fetchData } from "@/services/api";
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { fetchData } from '@/services/api';
 
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
-describe("API Integration Tests", () => {
+describe('API Integration Tests', () => {
   beforeEach(() => {
-    fetch.mockClear();
+    vi.mocked(fetch).mockClear();
   });
 
-  it("should fetch data successfully", async () => {
-    fetch.mockResolvedValueOnce({
+  it('should fetch data successfully', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
       json: async () => ({ data: [1, 2, 3] }),
-    });
+    } as Response);
 
-    const result = await fetchData("/test");
+    const result = await fetchData('/test');
 
-    expect(fetch).toHaveBeenCalledWith("/test");
+    expect(fetch).toHaveBeenCalledWith('/test');
     expect(result).toEqual({ data: [1, 2, 3] });
   });
 
-  it("should handle API failure", async () => {
-    fetch.mockRejectedValueOnce(new Error("API error"));
+  it('should handle API failure', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('API error'));
 
-    await expect(fetchData("/test")).rejects.toThrow("API error");
+    await expect(fetchData('/test')).rejects.toThrow('API error');
   });
 });

@@ -60,8 +60,7 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="center"
-          className="bg-white w-80 mt-4 p-0 z-50 rounded-lg shadow-lg transition-all duration-300 ease-in-out"
-          style={{ height: "24.375rem" }} // 390px in rem
+          className="bg-white w-80 mt-4 p-0 z-50 rounded-lg shadow-lg transition-all duration-300 ease-in-out max-h-[390px] overflow-y-auto"
         >
           {cartCount === 0 ? (
             <div className="h-full flex flex-col items-center justify-center py-8">

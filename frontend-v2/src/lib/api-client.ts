@@ -25,11 +25,16 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
   const response = await fetch(`${BASE_URL}${path}`, {
     ...init,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    signal: controller.signal,
   });
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     const message = await response.text().catch(() => '');
