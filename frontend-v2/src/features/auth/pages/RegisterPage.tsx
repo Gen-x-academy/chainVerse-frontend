@@ -80,6 +80,7 @@ export const RegisterPage: React.FC = () => {
           id="email"
           type="email"
           placeholder="you@example.com"
+          autoComplete="email"
           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
             errors.email
               ? 'border-red-300 focus-visible:ring-red-500'
@@ -102,6 +103,7 @@ export const RegisterPage: React.FC = () => {
             id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
+            autoComplete="new-password"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
               errors.password
                 ? 'border-red-300 focus-visible:ring-red-500'
