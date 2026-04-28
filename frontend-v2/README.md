@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChainVerse Frontend v2
+
+A Next.js 14 application for the ChainVerse learning platform.
+
+## Prerequisites
+
+- Node.js >= 18.x
+- npm >= 9.x
+- Copy `.env.example` to `.env.local` and fill in the required values:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Base URL for the backend API |
+| `NEXTAUTH_SECRET` | Secret for NextAuth session signing |
+| `NEXTAUTH_URL` | Canonical URL of the app (e.g. `http://localhost:3000`) |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+frontend-v2/
+├── app/              # Next.js App Router pages and layouts
+├── src/
+│   ├── components/   # Reusable UI components
+│   ├── features/     # Feature-scoped modules
+│   ├── store/        # Global state (Zustand)
+│   ├── hooks/        # Custom React hooks
+│   └── shared/       # Shared utilities and types
+├── services/         # API service layer
+├── utils/            # Helper functions and validators
+└── e2e/              # Playwright end-to-end tests
+```
 
-## Learn More
+## Running Tests
 
-To learn more about Next.js, take a look at the following resources:
+Unit tests (Vitest):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+End-to-end tests (Playwright):
 
-## Deploy on Vercel
+```bash
+npm run test:e2e
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Building for Production
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```
+
+Analyze bundle size:
+
+```bash
+ANALYZE=true npm run build
+```
