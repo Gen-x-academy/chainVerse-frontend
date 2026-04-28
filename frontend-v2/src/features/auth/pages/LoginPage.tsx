@@ -5,7 +5,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
+import { authService } from '../services/auth.service';
 
 const loginSchema = z.object({
   email: z
@@ -21,7 +24,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginPage: React.FC = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -31,8 +36,17 @@ export const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log('Login form data:', data);
+  const onSubmit = async (data: LoginFormData) => {
+    setApiError(null);
+    try {
+      const response = await authService.login({ email: data.email, password: data.password });
+      if (response.expiresIn) {
+        sessionStorage.setItem('session_expires_at', String(Date.now() + response.expiresIn * 1000));
+      }
+      router.replace('/dashboard');
+    } catch {
+      setApiError('Invalid email or password. Please try again.');
+    }
   };
 
   return (
@@ -41,14 +55,23 @@ export const LoginPage: React.FC = () => {
       subtitle="Sign in to your ChainVerse account"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* API error */}
+      {apiError && (
+        <div role="alert" className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          {apiError}
+        </div>
+      )}
+
       {/* Email Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
           Email Address
         </label>
         <input
+          id="email"
           type="email"
           placeholder="you@example.com"
+          autoComplete="email"
           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
             errors.email ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300 focus-visible:ring-blue-500'
           }`}
@@ -61,13 +84,15 @@ export const LoginPage: React.FC = () => {
 
       {/* Password Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
           Password
         </label>
         <div className="relative">
           <input
+            id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
+            autoComplete="current-password"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
               errors.password ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300 focus-visible:ring-blue-500'
             }`}
@@ -75,6 +100,7 @@ export const LoginPage: React.FC = () => {
           />
           <button
             type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
           >
@@ -88,9 +114,9 @@ export const LoginPage: React.FC = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
-        <a href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <Link href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
           Forgot password?
-        </a>
+        </Link>
       </div>
 
       {/* Submit Button */}
@@ -112,9 +138,9 @@ export const LoginPage: React.FC = () => {
       {/* Sign Up Link */}
       <p className="text-center text-gray-600 text-sm">
         Don&apos;t have an account?{' '}
-        <a href="/auth/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold">
           Sign up
-        </a>
+        </Link>
       </p>
     </AuthForm>
   );

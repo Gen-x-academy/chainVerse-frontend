@@ -1,4 +1,4 @@
-import { Card } from "@/src/shared/components/ui/Card";
+import { Card } from "@/shared/components/ui/Card";
 
 export const CourseCardSkeleton = () => {
   return (

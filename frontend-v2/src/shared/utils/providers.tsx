@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/lib/query-client";
 import { ToastProvider } from "@/src/context/ToastContext";
+import { WishlistProvider } from "@/src/context/WishlistContext";
 
 export default function Providers({
   children,

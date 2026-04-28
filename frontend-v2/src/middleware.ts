@@ -1,7 +1,11 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-const PUBLIC_PATHS = new Set<string>(['/login', '/signup', '/forgot-password'])
+const PUBLIC_PATHS = new Set<string>([
+  '/auth/login',
+  '/auth/register',
+  '/auth/reset-password',
+])
 
 export function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl
@@ -10,14 +14,17 @@ export function middleware(request: NextRequest) {
 		return NextResponse.next()
 	}
 
-	if (PUBLIC_PATHS.has(pathname)) {
+	// Allow all /auth/* routes through without a session check
+	if (pathname.startsWith('/auth/') || PUBLIC_PATHS.has(pathname)) {
 		return NextResponse.next()
 	}
 
+	// Strategy (a): server sets an HttpOnly 'session' cookie on login.
+	// Middleware reads it here — never touches localStorage.
 	const hasSession = request.cookies.has('session')
 	if (!hasSession) {
 		const url = request.nextUrl.clone()
-		url.pathname = '/login'
+		url.pathname = '/auth/login'
 		url.searchParams.set('redirect', pathname)
 		return NextResponse.redirect(url)
 	}

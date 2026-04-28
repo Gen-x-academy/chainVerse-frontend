@@ -20,7 +20,6 @@ export type StudentPayload = {
   avatarUrl?: string;
 };
 
-export const studentService = {
   list: (page = 1, pageSize = 10) =>
     apiClient.get<StudentListResponse>(
       `/students?page=${page}&pageSize=${pageSize}`

@@ -51,11 +51,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                     <Menu size={20} className="text-gray-500" />
                 </button>
             )}
-            <div className="flex-1 max-w-xl">
-                <h1 className="text-xl font-bold text-gray-900 mb-1 leading-tight">
+            <div className="flex-1 min-w-0 mr-4">
+                <h1 className="text-lg md:text-xl font-bold text-gray-900 mb-1 leading-tight truncate">
                     Good day, {instructor.name}
                 </h1>
-                <p className="text-xs text-gray-400 font-medium tracking-wide">Welcome back to your dashboard</p>
+                <p className="hidden md:block text-xs text-gray-400 font-medium tracking-wide truncate">Welcome back to your dashboard</p>
             </div>
 
             <div className="flex items-center gap-8">
@@ -65,13 +65,13 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                     <input
                         type="text"
                         placeholder="Search everything..."
-                        className="pl-12 pr-4 py-2.5 w-72 rounded-xl border border-gray-100 bg-gray-50/50 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-300"
+                        className="pl-12 pr-4 py-2.5 w-64 xl:w-72 rounded-xl border border-gray-100 bg-gray-50/50 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-300"
                     />
                 </div>
 
-                <div className="flex items-center gap-6 border-l border-gray-100 pl-8">
+                <div className="flex items-center gap-3 md:gap-6 lg:border-l border-gray-100 lg:pl-6 shrink-0">
                     {/* Wallet Address */}
-                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50/50 border border-indigo-100 text-[11px] font-mono font-bold text-indigo-600 hover:bg-indigo-100 transition-colors duration-200 group">
+                    <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50/50 border border-indigo-100 text-[11px] font-mono font-bold text-indigo-600 hover:bg-indigo-100 transition-colors duration-200 group shrink-0">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-500/20" />
                         {truncatedWallet}
                         <Copy size={12} className="ml-1 opacity-60 group-hover:opacity-100 transition-opacity" />

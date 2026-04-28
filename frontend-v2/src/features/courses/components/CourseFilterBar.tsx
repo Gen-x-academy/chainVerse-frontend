@@ -7,7 +7,7 @@ interface CourseFilterBarProps {
 }
 
 interface FilterState {
-  category: string;
+  category: string[];
   level: string;
   priceRange: [number, number];
   sortBy: string;
@@ -17,7 +17,7 @@ export const CourseFilterBar: React.FC<CourseFilterBarProps> = ({ onSearch, onFi
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
-    category: 'all',
+    category: [],
     level: 'all',
     priceRange: [0, 500],
     sortBy: 'popular',
@@ -94,8 +94,13 @@ export const CourseFilterBar: React.FC<CourseFilterBarProps> = ({ onSearch, onFi
                   <label key={cat} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={filters.category === cat || filters.category === 'all'}
-                      onChange={() => handleFilterChange({ category: filters.category === cat ? 'all' : cat })}
+                      checked={filters.category.includes(cat)}
+                      onChange={() => {
+                        const updated = filters.category.includes(cat)
+                          ? filters.category.filter((c) => c !== cat)
+                          : [...filters.category, cat];
+                        handleFilterChange({ category: updated });
+                      }}
                       className="w-4 h-4 rounded border-gray-300"
                     />
                     <span className="text-sm text-gray-700">{cat}</span>
@@ -145,16 +150,17 @@ export const CourseFilterBar: React.FC<CourseFilterBarProps> = ({ onSearch, onFi
         )}
 
         {/* Active Filters */}
-        {(filters.category !== 'all' || filters.level !== 'all' || filters.priceRange[1] < 500) && (
+        {(filters.category.length > 0 || filters.level !== 'all' || filters.priceRange[1] < 500) && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {filters.category !== 'all' && (
+            {filters.category.map((cat) => (
               <button
-                onClick={() => handleFilterChange({ category: 'all' })}
+                key={cat}
+                onClick={() => handleFilterChange({ category: filters.category.filter((c) => c !== cat) })}
                 className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-200 transition"
               >
-                {filters.category} ✕
+                {cat} ✕
               </button>
-            )}
+            ))}
             {filters.level !== 'all' && (
               <button
                 onClick={() => handleFilterChange({ level: 'all' })}

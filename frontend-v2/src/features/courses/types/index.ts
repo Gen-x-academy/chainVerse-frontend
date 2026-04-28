@@ -4,6 +4,9 @@ export type Course = {
   description?: string;
   thumbnailUrl?: string;
   instructorId?: string;
+  instructor?: string;
+  category?: string;
+  level?: string;
   rating?: number;
   studentCount?: number;
   price?: number;

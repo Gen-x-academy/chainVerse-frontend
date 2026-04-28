@@ -1,96 +1,71 @@
 import React from "react";
+import { Clock, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Users, Clock, TrendingUp } from "lucide-react";
+import { RevenueChart } from "@/src/features/instructors/components/RevenueChart";
 
+// ─── Empty-state placeholder ──────────────────────────────────────────────────
+
+interface EmptyPlaceholderProps {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}
+
+const EmptyPlaceholder: React.FC<EmptyPlaceholderProps> = ({
+  icon: Icon,
+  label,
+}) => (
+  <div className="flex flex-col items-center justify-center h-full gap-3 text-center select-none">
+    <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center">
+      <Icon className="text-gray-300 h-6 w-6" aria-hidden="true" />
+    </div>
+    <p className="text-gray-400 text-sm">{label}</p>
+  </div>
+);
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+/**
+ * InstructorDashboardPage
+ *
+ * Top-level dashboard overview page.
+ * Analytics metrics are delegated entirely to <AnalyticsGrid />,
+ * keeping this page thin and composable.
+ */
 export default function InstructorDashboardPage() {
-    const stats = [
-        {
-            title: "Total Students",
-            value: "1,284",
-            change: "+12.5%",
-            icon: Users,
-            color: "text-blue-600",
-            bg: "bg-blue-50",
-        },
-        {
-            title: "Active Courses",
-            value: "12",
-            change: "+2",
-            icon: BookOpen,
-            color: "text-indigo-600",
-            bg: "bg-indigo-50",
-        },
-        {
-            title: "Total Hours",
-            value: "456",
-            change: "+48h",
-            icon: Clock,
-            color: "text-purple-600",
-            bg: "bg-purple-50",
-        },
-        {
-            title: "Earnings",
-            value: "2,450 XLM",
-            change: "+18%",
-            icon: TrendingUp,
-            color: "text-green-600",
-            bg: "bg-green-50",
-        },
-    ];
+  return (
+    <div className="space-y-8">
+      {/* Page heading */}
+      <header>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+          Dashboard Overview
+        </h2>
+        <p className="text-gray-500 mt-1 text-sm">
+          Here&apos;s what&apos;s happening with your courses today.
+        </p>
+      </header>
 
-    return (
-        <div className="space-y-8">
-            <div>
-                <h2 className="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
-                <p className="text-gray-500 mt-2">Here is what is happening with your courses today.</p>
-            </div>
+      {/* Analytics metric cards */}
+      <AnalyticsGrid />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                {stats.map((stat) => (
-                    <Card key={stat.title} className="border-none shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-medium text-gray-500">{stat.title}</CardTitle>
-                            <div className={`${stat.bg} p-2 rounded-lg`}>
-                                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                            <p className="text-xs text-green-600 mt-1 font-semibold">
-                                {stat.change} <span className="text-gray-400 font-normal ml-1">since last month</span>
-                            </p>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            {/* Charts + content row */}
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+                {/* Revenue chart — spans 3/5 columns on xl */}
+                <div className="xl:col-span-3">
+                    <RevenueChart />
+                </div>
 
-            {/* Content Placeholders */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="border-none shadow-sm h-96">
+                {/* Recent Enrollments panel — spans 2/5 columns on xl */}
+                <Card className="border-none shadow-sm xl:col-span-2">
                     <CardHeader>
-                        <CardTitle>Recent Enrollments</CardTitle>
+                        <CardTitle className="text-base font-semibold text-gray-800">Recent Enrollments</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex items-center justify-center h-full -mt-10">
+                    <CardContent className="flex items-center justify-center h-52">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Users className="text-gray-300" />
+                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Users className="text-gray-300 h-6 w-6" />
                             </div>
                             <p className="text-gray-400 text-sm">No recent enrollments to show.</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="border-none shadow-sm h-96">
-                    <CardHeader>
-                        <CardTitle>Upcoming Sessions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-center h-full -mt-10">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Clock className="text-gray-300" />
-                            </div>
-                            <p className="text-gray-400 text-sm">No upcoming sessions scheduled.</p>
                         </div>
                     </CardContent>
                 </Card>

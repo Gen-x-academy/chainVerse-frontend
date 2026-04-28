@@ -11,7 +11,7 @@ const courseSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   level: z.string().min(1, 'Level is required'),
   price: z.coerce.number().min(0, 'Price must be 0 or more'),
-  thumbnailUrl: z.string().optional(),
+  thumbnailUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;
@@ -52,7 +52,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   });
 
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit((data) => onSubmit(data, isEditing ? 'update' : 'publish'))}>
       {/* Title */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
@@ -158,7 +158,11 @@ export const CourseForm: React.FC<CourseFormProps> = ({
             </button>
             <button
               type="button"
-              onClick={onDelete}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+                  onDelete?.();
+                }
+              }}
               disabled={loading}
               className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >

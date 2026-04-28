@@ -1,77 +1,54 @@
 import { apiClient } from '@/lib/api-client';
 import type { AuthResponse, LoginPayload, RegisterPayload } from '../types/auth.types';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-/** All storage keys written during auth — must all be cleared on logout. */
-const TOKEN_KEY    = 'auth_token';
-const USER_KEY     = 'auth_user';
-const SESSION_KEYS = [TOKEN_KEY, USER_KEY] as const;
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
- * Clears every auth-related key from both localStorage and sessionStorage.
- * O(k) where k = SESSION_KEYS.length (constant → O(1) in practice).
+ * Clears the JS-accessible session indicator cookie on logout.
+ * The HttpOnly auth cookie is cleared server-side via /api/auth/logout.
  */
-function clearAllStorage(): void {
-  for (const key of SESSION_KEYS) {
-    localStorage.removeItem(key);
-    sessionStorage.removeItem(key);
-  }
-
-  // Clear the HttpOnly-equivalent cookie if the server sets one
-  // (document.cookie write only clears the JS-accessible variant)
-  document.cookie = `${TOKEN_KEY}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+function clearSessionCookie(): void {
+  document.cookie = 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    const data = await apiClient.post<AuthResponse>('/api/auth/login', payload);
-    authService.setToken(data.token);
-    return data;
+    // Server sets the HttpOnly 'session' cookie in the response.
+    return apiClient.post<AuthResponse>('/api/auth/login', payload);
   },
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
-    const data = await apiClient.post<AuthResponse>('/api/auth/register', payload);
-    authService.setToken(data.token);
-    return data;
+    // Server sets the HttpOnly 'session' cookie in the response.
+    return apiClient.post<AuthResponse>('/api/auth/register', payload);
   },
 
-  getToken: (): string | null => localStorage.getItem(TOKEN_KEY),
-
-  setToken: (token: string): void => {
-    localStorage.setItem(TOKEN_KEY, token);
-  },
+  // Token lives in an HttpOnly cookie — not readable from JS.
+  // Components that need to make authenticated API calls should use
+  // apiClient directly; the cookie is sent automatically with each request.
+  getToken: (): string | null => null,
 
   /**
    * logout
    *
    * 1. Fires a server-side token revocation request (fire-and-forget).
    *    A network failure NEVER blocks the client-side logout.
-   * 2. Clears all auth keys from localStorage, sessionStorage, and cookies.
-   *
-   * Time:  O(1) — constant key-count clear.
-   * Space: O(1) — no additional allocations.
+   * 2. Clears the JS-accessible session indicator cookie.
+   *    The HttpOnly auth cookie is expired by the server response.
    */
   logout: async (): Promise<void> => {
-    // Fire-and-forget: server revokes the token (invalidates refresh token etc.)
-    // We don't await or throw — client logout must always complete.
     try {
       await apiClient.post('/api/auth/logout', {});
     } catch {
-      // Intentionally swallowed — client state is cleared regardless
+      // Intentionally swallowed — client logout must always complete.
     } finally {
-      clearAllStorage();
+      clearSessionCookie();
     }
   },
 
-  getAuthHeaders: (): Record<string, string> => {
-    const token = authService.getToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  },
-
-  isAuthenticated: (): boolean => !!authService.getToken(),
+  // Session validity is enforced by middleware.ts checking the HttpOnly 'session' cookie.
+  // This client-side check reads the non-HttpOnly session indicator cookie if present.
+  isAuthenticated: (): boolean =>
+    document.cookie.split(';').some((c) => c.trim().startsWith('session=')),
 };

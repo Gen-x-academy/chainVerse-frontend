@@ -4,7 +4,7 @@ import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useWishlist } from '@/src/context/WishlistContext';
 
 interface CourseCardProps {
   id: number;
@@ -20,6 +20,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
+  id,
   title,
   rating,
   description,
@@ -33,11 +34,12 @@ export function CourseCard({
 }: CourseCardProps & {
   onAddToCart?: () => void;
 }) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { toggle, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted(String(id));
 
   const renderStars = () => {
     const stars = [];
-    const fullStars = Math.floor(rating);
+    const fullStars = Math.floor(rating ?? 0);
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
@@ -71,12 +73,14 @@ export function CourseCard({
         )}
         {/* Wishlist Button */}
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={() => toggle(String(id))}
+          aria-label={wishlisted ? `Remove ${title} from wishlist` : `Add ${title} to wishlist`}
+          aria-pressed={wishlisted}
           className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all hover:scale-110"
         >
           <Heart
             size={18}
-            className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}
+            className={wishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}
           />
         </button>
         {/* Category Badge */}
@@ -98,8 +102,9 @@ export function CourseCard({
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-600">By {instructor}</p>
           <div className="flex items-center gap-1">
-            <div className="flex gap-0.5">{renderStars()}</div>
-            <span className="text-xs font-semibold text-gray-700 ml-1">{rating}</span>
+            <div className="flex gap-0.5" aria-hidden="true">{renderStars()}</div>
+            <span className="sr-only">Rating: {rating} out of 5 stars</span>
+            <span className="text-xs font-semibold text-gray-700 ml-1" aria-hidden="true">{rating}</span>
           </div>
         </div>
 
@@ -124,7 +129,7 @@ export function CourseCard({
         {/* Price & Button */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
           <span className="text-xl font-bold text-indigo-600">
-            ${price.toFixed(2)}
+            {currency}{price.toFixed(2)}
           </span>
           <Button
             onClick={onAddToCart}

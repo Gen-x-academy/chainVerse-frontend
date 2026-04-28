@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { AnalyticsCards } from '../components/AnalyticsCards';
 import { RevenueChart } from '../components/RevenueChart';
 import { CourseTable } from '../components/CourseTable';
@@ -16,12 +17,12 @@ export function InstructorDashboardPage() {
             <h1 className="text-3xl font-bold text-gray-900">Instructor Dashboard</h1>
             <p className="text-gray-600 mt-2">Welcome back! Here&apos;s your teaching performance overview.</p>
           </div>
-          <a
+          <Link
             href="/instructors/courses/create"
             className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
           >
             Create New Course
-          </a>
+          </Link>
         </div>
 
         {/* Stats Cards */}
