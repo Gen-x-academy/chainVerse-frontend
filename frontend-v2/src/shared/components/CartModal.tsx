@@ -20,13 +20,12 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
   // Add effect to handle body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
+      const original = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      return () => {
+        document.body.style.overflow = original;
+      };
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [isOpen]);
 
   const handleCheckout = () => {
@@ -74,7 +73,7 @@ export default function CartModal({ cartCount }: { cartCount: number }) {
               />
               <p className="text-gray-500 mb-4 text-lg">Your cart is empty</p>
               <Button
-                onClick={() => (window.location.href = "/courses")}
+                onClick={() => router.push("/courses")}
                 className="bg-[#4361EE] hover:bg-[#3651D4] transition-colors duration-200"
               >
                 Browse Courses
