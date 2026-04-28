@@ -31,6 +31,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
+  if (response.status === 401) {
+    const { authService } = await import('@/src/features/auth/services/auth.service');
+    await authService.logout();
+    window.location.href = '/login';
+    throw new Error('Session expired. Please log in again.');
+  }
+
   if (!response.ok) {
     const message = await response.text().catch(() => '');
     throw new Error(message || `Request failed with status ${response.status}`);
