@@ -39,7 +39,10 @@ export const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setApiError(null);
     try {
-      await authService.login({ email: data.email, password: data.password });
+      const response = await authService.login({ email: data.email, password: data.password });
+      if (response.expiresIn) {
+        sessionStorage.setItem('session_expires_at', String(Date.now() + response.expiresIn * 1000));
+      }
       router.replace('/dashboard');
     } catch {
       setApiError('Invalid email or password. Please try again.');

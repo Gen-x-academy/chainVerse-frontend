@@ -9,16 +9,6 @@ interface SessionState {
   isLoading: boolean;
 }
 
-/**
- * useSession
- *
- * Reads the persisted auth token from localStorage on mount and exposes
- * the current session state. Call `refresh()` to re-read the token after
- * a login or token rotation, and `clear()` to wipe the session on logout.
- *
- * Usage:
- *   const { isAuthenticated, isLoading, refresh, clear } = useSession();
- */
 export function useSession() {
   const [session, setSession] = useState<SessionState>({
     isAuthenticated: false,
@@ -26,23 +16,43 @@ export function useSession() {
     isLoading: true,
   });
 
+  const clear = useCallback(() => {
+    sessionStorage.removeItem('session_expires_at');
+    setSession({ isAuthenticated: false, token: null, isLoading: false });
+  }, []);
+
   const refresh = useCallback(() => {
-    const token = authService.getToken();
+    const isAuth = authService.isAuthenticated();
     setSession({
-      isAuthenticated: !!token,
-      token,
+      isAuthenticated: isAuth,
+      token: authService.getToken(),
       isLoading: false,
     });
   }, []);
 
-  const clear = useCallback(() => {
-    setSession({ isAuthenticated: false, token: null, isLoading: false });
-  }, []);
-
-  // Hydrate from localStorage on first render (client-side only)
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Schedule client-side expiry using the expiresIn value stored at login
+  useEffect(() => {
+    if (!session.isAuthenticated) return;
+
+    const expiresAt = Number(sessionStorage.getItem('session_expires_at'));
+    if (!expiresAt) return;
+
+    const msUntilExpiry = expiresAt - Date.now();
+    if (msUntilExpiry <= 0) {
+      clear();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      clear();
+    }, msUntilExpiry);
+
+    return () => clearTimeout(timer);
+  }, [session.isAuthenticated, clear]);
 
   return { ...session, refresh, clear };
 }

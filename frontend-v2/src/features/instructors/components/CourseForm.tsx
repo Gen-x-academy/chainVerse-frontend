@@ -158,7 +158,11 @@ export const CourseForm: React.FC<CourseFormProps> = ({
             </button>
             <button
               type="button"
-              onClick={onDelete}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+                  onDelete?.();
+                }
+              }}
               disabled={loading}
               className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
