@@ -3,6 +3,8 @@
  * Central entry point for application-wide state management.
  */
 
+import { create } from 'zustand';
+
 // 1. Exporting types for Global State
 export interface GlobalState {
   isSidebarOpen: boolean;
@@ -16,18 +18,10 @@ export interface Notification {
   message: string;
 }
 
-// 2. Placeholder for Root Provider
-// As the app grows, you will wrap your App component in a Provider exported from here.
-// Example: export { StoreProvider } from './StoreContext';
-
-/**
- * FUTURE: 
- * If using Zustand: export * from './useStore';
- * If using Redux: export * from './configureStore';
- */
-
 export const INITIAL_STATE: GlobalState = {
   isSidebarOpen: true,
   theme: 'light',
   notifications: [],
 };
+
+export const useGlobalStore = create<GlobalState>(() => INITIAL_STATE);
