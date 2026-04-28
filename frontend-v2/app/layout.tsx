@@ -15,8 +15,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stellar Explain", // Updated from your project context
-  description: "Software engineering and learning management platform",
+  title: "ChainVerse — Blockchain Learning Platform",
+  description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+  icons: { icon: "/icon.png" },
+  openGraph: {
+    title: "ChainVerse — Blockchain Learning Platform",
+    description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+    url: "https://chainverse.app",
+    siteName: "ChainVerse",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ChainVerse" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ChainVerse — Blockchain Learning Platform",
+    description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
