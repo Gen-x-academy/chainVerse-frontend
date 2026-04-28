@@ -10,8 +10,8 @@ export function registerGlobalErrorHandler(handler: GlobalErrorHandler) {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
+      staleTime: 1000 * 60 * 5,   // 5 min — data stays fresh
+      gcTime: 1000 * 60 * 30,     // 30 min — cache garbage-collected
       refetchOnWindowFocus: false,
       retry: 1,
     },
