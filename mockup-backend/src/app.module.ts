@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from "@nestjs/common";
+import { ThrottlerModule } from "@nestjs/throttler";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 
 @Module({
   imports: [
@@ -10,10 +11,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
-        const limits = config.get('throttler.limits') || [
+        const redisUrl = config.get("redis.url");
+        const limits = config.get("throttler.limits") || [
           { ttl: 60, limit: 10 },
         ];
-        return limits;
+
+        return {
+          throttlers: limits,
+          storage: redisUrl
+            ? new ThrottlerStorageRedisService(redisUrl)
+            : undefined,
+        };
       },
       inject: [ConfigService],
     }),
