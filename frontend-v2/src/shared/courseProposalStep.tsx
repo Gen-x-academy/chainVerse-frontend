@@ -48,7 +48,7 @@ export default function CourseProposalStep({
           <div className="mb-6">
             <h2 className="text-xl font-semibold">Course Proposal</h2>
             <p className="text-muted-foreground text-sm">
-              Tell us about the course you'd like to teach
+              Tell us about the course you&apos;d like to teach
             </p>
           </div>
 
