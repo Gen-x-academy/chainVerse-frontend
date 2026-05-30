@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ratings-feedback.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
+import { NotificationModule } from './notification.module';
+import { PointsModule } from './points/points.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { TutorCourseModule } from './tutor-course/tutor-course.module';
     }),
     AdminAuthModule,
     TutorCourseModule,
+    NotificationModule,
+    PointsModule,
   ],
 })
 export class AppModule {}
