@@ -1,13 +1,13 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { authService } from '../auth.service';
 
-vi.mock('@/lib/api-client', () => ({
+vi.mock('@/src/lib/api-client', () => ({
   apiClient: {
     post: vi.fn(),
   },
 }));
 
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/src/lib/api-client';
 
 const mockUser = {
   id: '1',

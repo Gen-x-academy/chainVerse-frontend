@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/src/lib/api-client';
 import type { AuthResponse, LoginPayload, RegisterPayload } from '../types/auth.types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

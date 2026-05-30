@@ -1,11 +1,11 @@
 ﻿import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { authService } from '@/src/features/auth/services/auth.service';
 
-vi.mock('@/lib/api-client', () => ({
+vi.mock('@/src/lib/api-client', () => ({
   apiClient: { post: vi.fn() },
 }));
 
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/src/lib/api-client';
 
 const mockResponse = {
   user: { id: '1', email: 'student@test.com', firstName: 'A', lastName: 'B', role: 'student' as const },
