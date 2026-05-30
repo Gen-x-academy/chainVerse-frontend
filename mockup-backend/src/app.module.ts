@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ratings-feedback.module';
@@ -7,8 +8,12 @@ import { TutorCourseModule } from './tutor-course/tutor-course.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('MONGO_URI'),
+      }),
+      inject: [ConfigService],
     }),
     CourseRatingsFeedbackModule,
     ThrottlerModule.forRootAsync({
