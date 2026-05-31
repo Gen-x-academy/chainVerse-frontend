@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ratings-feedback.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
+import { BadgeModule } from './badge/badge.module';
+import { FinancialAidModule } from './financial-aid/financial-aid.module';
 import { HealthModule } from './health/health.module';
 import { SubscriptionPlanModule } from './subscription-plan/subscription-plan.module';
 import { FaqManagementModule } from './faq-management/faq-management.module';
@@ -39,6 +41,8 @@ import { OrganizationMemberModule } from './organization-member/organization-mem
     }),
     AdminAuthModule,
     TutorCourseModule,
+    BadgeModule,
+    FinancialAidModule,
     HealthModule,
     SubscriptionPlanModule,
     FaqManagementModule,
