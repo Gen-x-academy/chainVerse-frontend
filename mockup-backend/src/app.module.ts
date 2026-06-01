@@ -6,6 +6,7 @@ import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ra
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
 import { AdminCourseModule } from './admin-course/admin-course.module';
+import { StudentCartModule } from './student-cart/student-cart.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AdminCourseModule } from './admin-course/admin-course.module';
     AdminAuthModule,
     TutorCourseModule,
     AdminCourseModule,
+    StudentCartModule,
   ],
 })
 export class AppModule {}
