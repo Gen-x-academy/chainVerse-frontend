@@ -2,10 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as express from 'express';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { helmet } from "helmet";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(compression());
 
   // Enforce body size limits to prevent memory exhaustion from large payloads
   app.use(express.json({ limit: '1mb' }));
@@ -24,6 +27,8 @@ async function bootstrap() {
   });
 
   app.enableShutdownHooks();
+
+  app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('port') ?? process.env.PORT ?? 3000;

@@ -11,6 +11,14 @@
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "dependencies": {
+    "compression": "1.7.4",
+    "nodemailer": "6.9.14"
+  },
+  "devDependencies": {
+    "@types/compression": "1.7.5",
+    "@types/nodemailer": "6.4.14"
+  },
   "jest": {
     "moduleFileExtensions": ["js", "json", "ts"],
     "rootDir": "src",

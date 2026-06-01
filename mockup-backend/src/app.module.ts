@@ -6,6 +6,9 @@ import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ra
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
 import { AdminCourseModule } from './admin-course/admin-course.module';
+import { StudentAuthModule } from './student-auth/student-auth.module';
+import { TutorAuthModule } from './tutor-auth/tutor-auth.module';
+import { NotificationModule } from './notification.module';
 
 @Module({
   imports: [
@@ -13,6 +16,8 @@ import { AdminCourseModule } from './admin-course/admin-course.module';
     MongooseModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('MONGO_URI'),
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000,
       }),
       inject: [ConfigService],
     }),
@@ -30,6 +35,9 @@ import { AdminCourseModule } from './admin-course/admin-course.module';
     AdminAuthModule,
     TutorCourseModule,
     AdminCourseModule,
+    StudentAuthModule,
+    TutorAuthModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
