@@ -5,19 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ratings-feedback.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
-import { BadgeModule } from './badge/badge.module';
-import { FinancialAidModule } from './financial-aid/financial-aid.module';
-import { HealthModule } from './health/health.module';
-import { SubscriptionPlanModule } from './subscription-plan/subscription-plan.module';
-import { FaqManagementModule } from './faq-management/faq-management.module';
-import { GamificationPointsModule } from './gamification-points/gamification-points.module';
-import { StudentAuthModule } from './student-auth/student-auth.module';
-import { GoogleAuthModule } from './google-auth/google-auth.module';
-import { ContactMessageModule } from './contact-message/contact-message.module';
-import { NotificationModule } from './notification.module';
-import { PointsModule } from './points/points.module';
-import { OrganizationModule } from './organization/organization.module';
-import { OrganizationMemberModule } from './organization-member/organization-member.module';
+import { AdminCourseModule } from './admin-course/admin-course.module';
 
 @Module({
   imports: [
@@ -41,19 +29,7 @@ import { OrganizationMemberModule } from './organization-member/organization-mem
     }),
     AdminAuthModule,
     TutorCourseModule,
-    BadgeModule,
-    FinancialAidModule,
-    HealthModule,
-    SubscriptionPlanModule,
-    FaqManagementModule,
-    GamificationPointsModule,
-    StudentAuthModule,
-    GoogleAuthModule,
-    ContactMessageModule,
-    NotificationModule,
-    PointsModule,
-    OrganizationModule,
-    OrganizationMemberModule,
+    AdminCourseModule,
   ],
 })
 export class AppModule {}
