@@ -1,5 +1,5 @@
 # ChainVerse Frontend v2
-
+///WIP
 A Next.js 14 application for the ChainVerse learning platform.
 
 ## Prerequisites
