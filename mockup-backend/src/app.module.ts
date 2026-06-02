@@ -6,10 +6,9 @@ import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ra
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
 import { AdminCourseModule } from './admin-course/admin-course.module';
-import { CourseDiscoveryModule } from './course-discovery/course-discovery.module';
-import { StudentCartModule } from './student-cart/student-cart.module';
-import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
-import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
+import { StudentAuthModule } from './student-auth/student-auth.module';
+import { TutorAuthModule } from './tutor-auth/tutor-auth.module';
+import { NotificationModule } from './notification.module';
 
 @Module({
   imports: [
@@ -17,6 +16,8 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     MongooseModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('MONGO_URI'),
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000,
       }),
       inject: [ConfigService],
     }),
@@ -41,9 +42,9 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     AdminAuthModule,
     TutorCourseModule,
     AdminCourseModule,
-    CourseDiscoveryModule,
-    StudentCartModule,
-    StudentEnrollmentModule,
+    StudentAuthModule,
+    TutorAuthModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
