@@ -25,10 +25,17 @@ import { NotificationModule } from './notification.module';
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
-        const limits = config.get('throttler.limits') || [
+        const redisUrl = config.get("redis.url");
+        const limits = config.get("throttler.limits") || [
           { ttl: 60, limit: 10 },
         ];
-        return limits;
+
+        return {
+          throttlers: limits,
+          storage: redisUrl
+            ? new ThrottlerStorageRedisService(redisUrl)
+            : undefined,
+        };
       },
       inject: [ConfigService],
     }),
