@@ -5,9 +5,14 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('MONGO_URI'),
+      }),
+      inject: [ConfigService],
     }),
+    CourseRatingsFeedbackModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
@@ -25,6 +30,9 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
       },
       inject: [ConfigService],
     }),
+    AdminAuthModule,
+    TutorCourseModule,
+    AdminCourseModule,
   ],
 })
 export class AppModule {}

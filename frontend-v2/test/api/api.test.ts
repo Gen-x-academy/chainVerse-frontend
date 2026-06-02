@@ -10,6 +10,7 @@ describe('API Integration Tests', () => {
 
   it('should fetch data successfully', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
       json: async () => ({ data: [1, 2, 3] }),
     } as Response);
 

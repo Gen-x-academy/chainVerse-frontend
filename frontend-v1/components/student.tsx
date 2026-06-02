@@ -98,7 +98,7 @@ export class StudentAuthService {
   /**
    * Creates a short-lived password reset token.
    */
-  async createPasswordResetToken(email: string): Promise<string> {
+  async createPasswordResetToken(email: string): Promise<void> {
     const student = await this.studentRepo.findByEmail(email);
     if (!student) {
       throw new Error('Student not found');
@@ -114,6 +114,5 @@ export class StudentAuthService {
 
     await this.mailService.sendPasswordResetEmail(student.email, token);
 
-    return token;
   }
 }

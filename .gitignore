@@ -1,0 +1,11 @@
+.env
+
+# Root-level scratch files from issue #420. Keep these out if they are regenerated locally.
+/aggression.tsx
+/allocation.tsx
+/dump.tsx
+/summary.tsx
+/paer.ts
+/pay.ts
+/use-mobile.ts
+/use-toast.ts
