@@ -1,6 +1,12 @@
-import { Module } from "@nestjs/common";
-import { ThrottlerModule } from "@nestjs/throttler";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ratings-feedback.module';
+import { AdminAuthModule } from './admin-auth/admin-auth.module';
+import { TutorCourseModule } from './tutor-course/tutor-course.module';
+import { AdminCourseModule } from './admin-course/admin-course.module';
+import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 
 @Module({
@@ -33,6 +39,7 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     AdminAuthModule,
     TutorCourseModule,
     AdminCourseModule,
+    StudentEnrollmentModule,
   ],
 })
 export class AppModule {}
