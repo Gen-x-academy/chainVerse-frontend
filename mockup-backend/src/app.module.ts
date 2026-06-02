@@ -6,6 +6,7 @@ import { CourseRatingsFeedbackModule } from './course-ratings-feedback/course-ra
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
 import { AdminCourseModule } from './admin-course/admin-course.module';
+import { CourseDiscoveryModule } from './course-discovery/course-discovery.module';
 import { StudentCartModule } from './student-cart/student-cart.module';
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
@@ -40,6 +41,7 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     AdminAuthModule,
     TutorCourseModule,
     AdminCourseModule,
+    CourseDiscoveryModule,
     StudentCartModule,
     StudentEnrollmentModule,
   ],
