@@ -7,6 +7,7 @@ import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TutorCourseModule } from './tutor-course/tutor-course.module';
 import { AdminCourseModule } from './admin-course/admin-course.module';
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
+import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 
 @Module({
   imports: [
@@ -21,10 +22,17 @@ import { StudentEnrollmentModule } from './student-enrollment/student-enrollment
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
-        const limits = config.get('throttler.limits') || [
+        const redisUrl = config.get("redis.url");
+        const limits = config.get("throttler.limits") || [
           { ttl: 60, limit: 10 },
         ];
-        return limits;
+
+        return {
+          throttlers: limits,
+          storage: redisUrl
+            ? new ThrottlerStorageRedisService(redisUrl)
+            : undefined,
+        };
       },
       inject: [ConfigService],
     }),
