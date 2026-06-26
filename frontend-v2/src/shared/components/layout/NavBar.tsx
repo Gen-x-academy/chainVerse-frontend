@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib';
 import { ConnectWalletButton } from '@/src/shared/components/ConnectWalletButton';
+import { colors } from '@/src/shared/constants/design-tokens';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +22,7 @@ export const Navbar = () => {
   const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK;
 
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="bg-white border-b border-gray-200" style={{ '--dt-primary': colors.primary } as React.CSSProperties}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo Section */}
@@ -43,8 +44,8 @@ export const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'text-gray-600 hover:text-blue-600 transition-colors font-medium',
-                  pathname === link.href && 'text-blue-600 font-semibold border-b-2 border-blue-600'
+                  'text-gray-600 hover:text-[var(--dt-primary)] transition-colors font-medium',
+                  pathname === link.href && 'text-[var(--dt-primary)] font-semibold border-b-2 border-[var(--dt-primary)]'
                 )}
               >
                 {link.label}
@@ -62,7 +63,7 @@ export const Navbar = () => {
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">{isOpen ? 'Close main menu' : 'Open main menu'}</span>
               {/* Hamburger Icon */}
               <svg
                 className={cn("h-6 w-6 transition-transform", isOpen ? "rotate-90" : "rotate-0")}
@@ -88,6 +89,7 @@ export const Navbar = () => {
           isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
         )}
         id="mobile-menu"
+        aria-hidden={!isOpen}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-100">
           {navLinks.map((link) => (
@@ -96,8 +98,8 @@ export const Navbar = () => {
               href={link.href}
               onClick={() => setIsOpen(false)}
               className={cn(
-                'block px-3 py-4 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50',
-                pathname === link.href && 'text-blue-600 font-semibold bg-blue-50'
+                'block px-3 py-4 rounded-md text-base font-medium text-gray-700 hover:text-[var(--dt-primary)] hover:bg-gray-50',
+                pathname === link.href && 'text-[var(--dt-primary)] font-semibold bg-blue-50'
               )}
             >
               {link.label}
