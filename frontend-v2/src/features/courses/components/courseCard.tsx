@@ -4,7 +4,8 @@ import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { useWishlist } from '@/src/context/WishlistContext';
+import { useWishlistStore } from '@/src/store/wishlist-store';
+import { colors } from '@/src/shared/constants/design-tokens';
 
 interface CourseCardProps {
   id: number;
@@ -34,7 +35,8 @@ export function CourseCard({
 }: CourseCardProps & {
   onAddToCart?: () => void;
 }) {
-  const { toggle, isWishlisted } = useWishlist();
+  const toggle = useWishlistStore((s) => s.toggle);
+  const isWishlisted = useWishlistStore((s) => s.isWishlisted);
   const wishlisted = isWishlisted(String(id));
 
   const renderStars = () => {
@@ -56,7 +58,7 @@ export function CourseCard({
   };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-indigo-200 group">
+    <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-[var(--dt-primary)]/20 group" style={{ '--dt-primary': colors.primary, '--dt-primary-hover': colors.primaryHover } as React.CSSProperties}>
       {/* Image Container */}
       <div className="relative h-40 bg-gradient-to-br from-blue-400 to-indigo-600 overflow-hidden">
         {image ? (
@@ -94,7 +96,7 @@ export function CourseCard({
       <CardContent className="flex flex-col flex-1 p-5 space-y-4">
         {/* Title */}
         <div>
-          <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+          <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-[var(--dt-primary)] transition-colors">
             {title}
           </h3>
         </div>
@@ -129,13 +131,13 @@ export function CourseCard({
 
         {/* Price & Button */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-          <span className="text-xl font-bold text-indigo-600">
+          <span className="text-xl font-bold text-[var(--dt-primary)]">
             {currency}{price.toFixed(2)}
           </span>
           <Button
             onClick={onAddToCart}
             size="sm"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 group/btn"
+            className="bg-[var(--dt-primary)] hover:bg-[var(--dt-primary-hover)] text-white font-semibold gap-2 group/btn"
           >
             <ShoppingCart size={16} className="group-hover/btn:scale-110 transition-transform" />
             <span className="hidden sm:inline">Add</span>
