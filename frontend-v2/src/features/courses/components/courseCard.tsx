@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { useWishlist } from '@/src/context/WishlistContext';
+import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 
 interface CourseCardProps {
@@ -35,7 +36,8 @@ export function CourseCard({
 }: CourseCardProps & {
   onAddToCart?: () => void;
 }) {
-  const { toggle, isWishlisted } = useWishlist();
+  const toggle = useWishlistStore((s) => s.toggle);
+  const isWishlisted = useWishlistStore((s) => s.isWishlisted);
   const wishlisted = isWishlisted(String(id));
 
   const renderStars = () => {

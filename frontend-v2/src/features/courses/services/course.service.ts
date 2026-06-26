@@ -16,4 +16,7 @@ export const courseService = {
 
   remove: (id: string) =>
     apiClient.delete<{ success: boolean }>(`/courses/${id}`),
+
+  toggleWishlist: (courseId: string, isWishlisted: boolean) =>
+    apiClient.post<{ success: boolean }>(`/courses/${courseId}/wishlist`, { isWishlisted }),
 }

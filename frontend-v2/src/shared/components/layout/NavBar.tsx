@@ -63,7 +63,7 @@ export const Navbar = () => {
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">{isOpen ? 'Close main menu' : 'Open main menu'}</span>
               {/* Hamburger Icon */}
               <svg
                 className={cn("h-6 w-6 transition-transform", isOpen ? "rotate-90" : "rotate-0")}
@@ -89,6 +89,7 @@ export const Navbar = () => {
           isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
         )}
         id="mobile-menu"
+        aria-hidden={!isOpen}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-100">
           {navLinks.map((link) => (
