@@ -4,6 +4,7 @@ import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
+import { useWishlist } from '@/src/context/WishlistContext';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 
