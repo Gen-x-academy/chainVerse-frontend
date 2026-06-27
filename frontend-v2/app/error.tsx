@@ -1,6 +1,7 @@
 'use client';
 
-import { ErrorFallback } from '@/shared/components/ErrorFallback';
+import { useEffect } from 'react';
+import { ErrorFallback } from '@/src/shared/components/ErrorFallback';
 
 export default function Error({
   error,
@@ -9,5 +10,9 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error('Global error boundary caught:', error);
+  }, [error]);
+
   return <ErrorFallback error={error} reset={reset} />;
 }
