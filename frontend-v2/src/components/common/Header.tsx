@@ -3,6 +3,7 @@ import { Menu, X, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/src/store/authStore';
+import { NotificationBell } from '@/src/features/notifications/components/NotificationBell';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -103,6 +104,9 @@ export const Header: React.FC = () => {
 
           {/* Right Side - Profile & Mobile Menu */}
           <div className="flex items-center gap-4">
+            {/* Notification Bell */}
+            <NotificationBell />
+
             {/* User Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button

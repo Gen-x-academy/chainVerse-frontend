@@ -103,3 +103,28 @@ frontend-v2/
 ├── utils/            # Helper functions and validators
 └── e2e/              # Playwright end-to-end tests
 ```
+
+## Deploying to Render
+
+The frontend is continuously deployed to Render from the `main` branch.
+
+### Required environment variables
+
+Set the following in the Render dashboard under **frontend service → Environment**:
+
+| Variable | Value | Description |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `https://chainverse-backend-prod.onrender.com/api` | Backend API base URL for the production Render service |
+| `NEXT_PUBLIC_API_BASE_URL` | `https://chainverse-backend-prod.onrender.com/api/v1` | Versioned base URL used by the internal API client |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | `mainnet` | Stellar network (use `testnet` for staging) |
+
+> **Important:** Without `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_API_BASE_URL` pointing to the
+> backend Render service, the deployed frontend will make API calls to `localhost` which does
+> not exist in the production environment and every API call will fail.
+
+### Steps
+
+1. Log in to the [Render dashboard](https://dashboard.render.com/).
+2. Select the **chainverse-frontend-prod** service.
+3. Navigate to **Environment** → **Add environment variable** and add each variable above.
+4. Click **Manual Deploy → Deploy latest commit** (or push to `main` to trigger an automatic deploy).
