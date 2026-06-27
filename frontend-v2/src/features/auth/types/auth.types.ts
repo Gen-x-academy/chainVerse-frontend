@@ -15,6 +15,7 @@ export interface User {
 export interface AuthResponse {
   user: User;
   token: string;
+  refreshToken?: string;
   expiresIn: number; // Duration in seconds
 }
 
@@ -47,3 +48,8 @@ export type DecodedToken = {
   iat: number;    // Issued at
   role: string;
 };
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+  expiresIn: number;
+}

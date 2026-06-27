@@ -44,8 +44,9 @@ export const LoginPage: React.FC = () => {
         sessionStorage.setItem('session_expires_at', String(Date.now() + response.expiresIn * 1000));
       }
       router.replace('/dashboard');
-    } catch {
-      setApiError('Invalid email or password. Please try again.');
+    } catch (err) {
+      // Surface the actual API error message so users know what went wrong
+      setApiError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     }
   };
 
