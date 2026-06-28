@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend-v2 && npm run dev",
+    "build": "cd frontend-v2 && npm run build",
+    "install:all": "cd frontend-v2 && npm install"
+  }
+}
