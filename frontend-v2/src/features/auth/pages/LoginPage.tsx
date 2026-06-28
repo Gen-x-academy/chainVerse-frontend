@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
 import { authService } from '../services/auth.service';
+import { useAuthStore } from '@/src/store/authStore';
 
 const loginSchema = z.object({
   email: z
@@ -42,6 +43,9 @@ export const LoginPage: React.FC = () => {
       const response = await authService.login({ email: data.email, password: data.password });
       if (response.expiresIn) {
         sessionStorage.setItem('session_expires_at', String(Date.now() + response.expiresIn * 1000));
+      }
+      if (response.user && response.token) {
+        useAuthStore.getState().login(response.user, response.token);
       }
       router.replace('/dashboard');
     } catch (err) {

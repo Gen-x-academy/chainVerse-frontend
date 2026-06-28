@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface AuthUser {
   id?: string;
@@ -19,11 +20,50 @@ interface AuthState {
   clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
-  user: null,
-  token: null,
-  login: (user, token) => set({ isAuthenticated: true, user, token }),
-  logout: () => set({ isAuthenticated: false, user: null, token: null }),
-  clearAuth: () => set({ isAuthenticated: false, user: null, token: null }),
-}));
+const ACCESS_TOKEN_KEY = 'accessToken';
+const USER_KEY = 'auth_user';
+
+function getStoredUser(): AuthUser | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? (JSON.parse(raw) as AuthUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      isAuthenticated: false,
+      user: null,
+      token: null,
+      login: (user, token) => {
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        localStorage.setItem(ACCESS_TOKEN_KEY, token);
+        set({ isAuthenticated: true, user, token });
+      },
+      logout: () => {
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('token_expiry');
+        set({ isAuthenticated: false, user: null, token: null });
+      },
+      clearAuth: () => {
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        set({ isAuthenticated: false, user: null, token: null });
+      },
+    }),
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        user: state.user,
+        token: state.token,
+      }),
+    },
+  ),
+);

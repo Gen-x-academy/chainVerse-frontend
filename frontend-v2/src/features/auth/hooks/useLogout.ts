@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "../services/auth.service";
+import { useAuthStore } from "@/src/store/authStore";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +44,7 @@ export function useLogout(): UseLogoutReturn {
     setError(null);
     try {
       await authService.logout();
+      useAuthStore.getState().logout();
       router.replace(POST_LOGOUT_ROUTE);
     } catch {
       // authService.logout() swallows network errors internally,
