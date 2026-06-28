@@ -8,6 +8,12 @@ const TOKEN_EXPIRY_KEY = 'token_expiry';
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
+function getSessionCookie(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)session=([^;]*)/);
+  return match ? match[1] : null;
+}
+
 export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/api/auth/login', payload);
@@ -39,12 +45,14 @@ export const authService = {
       // Intentionally swallowed — client logout must always complete.
     } finally {
       localStorage.removeItem(TOKEN_EXPIRY_KEY);
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
   },
 
-  // Session validity is enforced by middleware.ts checking the HttpOnly 'session' cookie.
-  // This client-side check reads the non-HttpOnly session indicator cookie if present.
   isAuthenticated: (): boolean => {
+    if (getSessionCookie()) return true;
     const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
     if (!expiry) return false;
     return Date.now() < Number(expiry);

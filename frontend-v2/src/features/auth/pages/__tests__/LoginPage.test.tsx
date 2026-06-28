@@ -15,6 +15,15 @@ vi.mock('../../services/auth.service', () => ({
   },
 }));
 
+vi.mock('@/src/store/authStore', () => ({
+  useAuthStore: {
+    getState: () => ({
+      login: vi.fn(),
+      logout: vi.fn(),
+    }),
+  },
+}));
+
 const mockReplace = vi.fn();
 
 describe('LoginPage', () => {
@@ -25,8 +34,8 @@ describe('LoginPage', () => {
 
   it('renders email and password inputs', () => {
     render(<LoginPage />);
-    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/you@example\.com/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/••••••••/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
@@ -40,8 +49,8 @@ describe('LoginPage', () => {
   it('calls authService.login with correct values on valid submit', async () => {
     (authService.login as ReturnType<typeof vi.fn>).mockResolvedValue({ expiresIn: 3600 });
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText(/email address/i), 'user@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/you@example\.com/i), 'user@test.com');
+    await userEvent.type(screen.getByPlaceholderText(/••••••••/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /login/i }));
     await waitFor(() => {
       expect(authService.login).toHaveBeenCalledWith({
@@ -54,8 +63,8 @@ describe('LoginPage', () => {
   it('redirects to dashboard on success', async () => {
     (authService.login as ReturnType<typeof vi.fn>).mockResolvedValue({ expiresIn: 3600 });
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText(/email address/i), 'user@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/you@example\.com/i), 'user@test.com');
+    await userEvent.type(screen.getByPlaceholderText(/••••••••/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /login/i }));
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/dashboard');
@@ -67,8 +76,8 @@ describe('LoginPage', () => {
       new Error('Invalid email or password')
     );
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText(/email address/i), 'user@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/you@example\.com/i), 'user@test.com');
+    await userEvent.type(screen.getByPlaceholderText(/••••••••/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /login/i }));
     expect(await screen.findByText(/invalid email or password/i)).toBeInTheDocument();
   });
@@ -76,8 +85,8 @@ describe('LoginPage', () => {
   it('shows fallback error message when error has no message', async () => {
     (authService.login as ReturnType<typeof vi.fn>).mockRejectedValue('unknown');
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText(/email address/i), 'user@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/you@example\.com/i), 'user@test.com');
+    await userEvent.type(screen.getByPlaceholderText(/••••••••/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /login/i }));
     expect(await screen.findByText(/login failed/i)).toBeInTheDocument();
   });
