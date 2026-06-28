@@ -1,27 +1,22 @@
 import { apiClient } from '@/src/lib/api-client';
 import type { AuthResponse, LoginPayload, RegisterPayload } from '../types/auth.types';
 
+const TOKEN_EXPIRY_KEY = 'token_expiry';
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/**
- * Clears the JS-accessible session indicator cookie on logout.
- * The HttpOnly auth cookie is cleared server-side via /api/auth/logout.
- */
-function clearSessionCookie(): void {
-  document.cookie = 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
-}
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    // Server sets the HttpOnly 'session' cookie in the response.
-    return apiClient.post<AuthResponse>('/api/auth/login', payload);
+    const response = await apiClient.post<AuthResponse>('/api/auth/login', payload);
+    return response;
   },
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
-    // Server sets the HttpOnly 'session' cookie in the response.
-    return apiClient.post<AuthResponse>('/api/auth/register', payload);
+    const response = await apiClient.post<AuthResponse>('/api/auth/register', payload);
+    return response;
   },
 
   // Token lives in an HttpOnly cookie — not readable from JS.
@@ -43,12 +38,15 @@ export const authService = {
     } catch {
       // Intentionally swallowed — client logout must always complete.
     } finally {
-      clearSessionCookie();
+      localStorage.removeItem(TOKEN_EXPIRY_KEY);
     }
   },
 
   // Session validity is enforced by middleware.ts checking the HttpOnly 'session' cookie.
   // This client-side check reads the non-HttpOnly session indicator cookie if present.
-  isAuthenticated: (): boolean =>
-    document.cookie.split(';').some((c) => c.trim().startsWith('session=')),
+  isAuthenticated: (): boolean => {
+    const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+    if (!expiry) return false;
+    return Date.now() < Number(expiry);
+  },
 };

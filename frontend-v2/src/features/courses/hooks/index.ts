@@ -1,5 +1,6 @@
 export {
   courseKeys,
+  useCourses,
   useCourseList,
   useCourseById,
   useCreateCourse,

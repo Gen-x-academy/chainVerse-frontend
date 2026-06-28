@@ -67,8 +67,6 @@ const METRICS_DATA: AnalyticsMetric[] = [
   },
 ];
 
-const FETCH_DELAY_MS = 0; // removed artificial delay — real network latency is sufficient
-
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**

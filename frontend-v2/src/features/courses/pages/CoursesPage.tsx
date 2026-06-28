@@ -6,7 +6,7 @@ import { CourseFilters } from '../components/CourseFilters';
 import { CourseList } from '../components/CourseList';
 import { CourseCardSkeleton } from '../components/CourseCardSkeleton';
 import { useCourses } from '../hooks';
-import { SectionContainer } from '@/shared/components/layout/SectionContainer';
+import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
 
 const COURSES_PER_PAGE = 6;
 

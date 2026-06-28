@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import { CourseCard } from './courseCard';
+import { CourseCard } from '@/src/features/courses/components/courseCard';
 import { toast } from './ui/use-toast';
 import { useCartStore } from '@/store/cartStore';
 

@@ -5,27 +5,24 @@ import { authService } from '../services/auth.service';
 
 interface SessionState {
   isAuthenticated: boolean;
-  token: string | null;
   isLoading: boolean;
 }
 
 export function useSession() {
   const [session, setSession] = useState<SessionState>({
     isAuthenticated: false,
-    token: null,
     isLoading: true,
   });
 
   const clear = useCallback(() => {
     sessionStorage.removeItem('session_expires_at');
-    setSession({ isAuthenticated: false, token: null, isLoading: false });
+    setSession({ isAuthenticated: false, isLoading: false });
   }, []);
 
   const refresh = useCallback(() => {
     const isAuth = authService.isAuthenticated();
     setSession({
       isAuthenticated: isAuth,
-      token: authService.getToken(),
       isLoading: false,
     });
   }, []);

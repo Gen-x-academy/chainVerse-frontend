@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Modal } from '@/src/shared/components/ui/Modal';
 
 const courseSchema = z.object({
   title: z.string().min(1, 'Title is required').min(3, 'Title must be at least 3 characters'),
@@ -34,6 +35,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   isEditing = false,
   loading = false,
 }) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -158,11 +161,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
-                  onDelete?.();
-                }
-              }}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={loading}
               className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -192,6 +191,30 @@ export const CourseForm: React.FC<CourseFormProps> = ({
           </>
         )}
       </div>
+
+      <Modal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="Delete Course"
+      >
+        <p className="text-gray-600 mb-6">Are you sure you want to delete this course? This action cannot be undone.</p>
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(false)}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowDeleteConfirm(false); onDelete?.(); }}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </form>
   );
 };

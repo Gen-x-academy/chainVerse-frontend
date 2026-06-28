@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Star } from 'lucide-react';
-import { EmptyState } from '@/shared/components/ui/EmptyState';
+import { EmptyState } from '@/src/shared/components/ui/EmptyState';
 import Link from 'next/link';
 
 interface CourseItem {

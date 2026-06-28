@@ -17,6 +17,23 @@ export const courseKeys = {
 
 // ─── Read hooks ───────────────────────────────────────────────────────────────
 
+/**
+ * Fetches the full course catalogue for client-side filtering.
+ * Used by CoursesPage (fix #606).
+ */
+export function useCourses() {
+  const result = useQuery({
+    queryKey: courseKeys.lists(),
+    queryFn: () => courseService.list(1, 1000),
+  });
+
+  return {
+    courses: result.data?.data ?? [],
+    isLoading: result.isLoading,
+    error: result.error ? (result.error as Error).message : null,
+  };
+}
+
 export function useCourseList(page = 1, pageSize = 10) {
   return useQuery({
     queryKey: courseKeys.list(page, pageSize),

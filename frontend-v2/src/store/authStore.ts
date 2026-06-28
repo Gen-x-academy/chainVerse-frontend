@@ -1,35 +1,29 @@
 import { create } from 'zustand';
-import { authService } from '@/src/features/auth/services/auth.service';
-import type { User } from '@/src/features/auth/types/auth.types';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+interface AuthUser {
+  id?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: 'admin' | 'instructor' | 'student';
+  avatarUrl?: string;
+}
 
-type AuthState = {
+interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
-  setAuth: (user: User) => void;
+  user: AuthUser | null;
+  token: string | null;
+  login: (user: AuthUser, token: string) => void;
+  logout: () => void;
+  /** Alias for logout — clears all auth state. */
   clearAuth: () => void;
-};
+}
 
-// ─── Store ────────────────────────────────────────────────────────────────────
-
-/**
- * useAuthStore
- *
- * Reactive auth state layer on top of authService.
- * Initializes from the existing token in localStorage (client-side only).
- *
- * setAuth   — called after a successful login/register.
- * clearAuth — called after logout; clears both store and authService storage.
- *
- * All actions — O(1).
- */
-export const useAuthStore = create<AuthState>()((set) => ({
-  // Guard against SSR: localStorage is unavailable on the server.
-  isAuthenticated: typeof window !== 'undefined' && authService.isAuthenticated(),
+export const useAuthStore = create<AuthState>((set) => ({
+  isAuthenticated: false,
   user: null,
-
-  setAuth: (user) => set({ isAuthenticated: true, user }),
-
-  clearAuth: () => set({ isAuthenticated: false, user: null }),
+  token: null,
+  login: (user, token) => set({ isAuthenticated: true, user, token }),
+  logout: () => set({ isAuthenticated: false, user: null, token: null }),
+  clearAuth: () => set({ isAuthenticated: false, user: null, token: null }),
 }));

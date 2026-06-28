@@ -29,3 +29,7 @@ export class Course {
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
+
+// Compound text index — enables $text search on title and description.
+// MongoDB uses this index instead of doing a full-collection scan.
+CourseSchema.index({ title: 'text', description: 'text' });

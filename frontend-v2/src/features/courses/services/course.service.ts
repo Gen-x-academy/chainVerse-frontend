@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/src/lib/api-client';
 import type { Course, CourseListResponse, CoursePayload } from '../types';
 
 export const courseService = {
@@ -16,4 +16,7 @@ export const courseService = {
 
   remove: (id: string) =>
     apiClient.delete<{ success: boolean }>(`/courses/${id}`),
+
+  toggleWishlist: (courseId: string, isWishlisted: boolean) =>
+    apiClient.post<{ success: boolean }>(`/courses/${courseId}/wishlist`, { isWishlisted }),
 }

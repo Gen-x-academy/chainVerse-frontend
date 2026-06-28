@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CourseCard } from '@/components/courseCard';
+import { CourseCard } from '@/src/features/courses/components/courseCard';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from './ui/use-toast';
 import { useCartStore } from '@/store/cartStore';

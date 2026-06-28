@@ -6,7 +6,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AuthForm } from '../components/AuthForm';
+import { authService } from '../services/auth.service';
 
 const registerSchema = z
   .object({
@@ -31,6 +33,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const router = useRouter();
 
   const {
     register,
@@ -40,8 +44,14 @@ export const RegisterPage: React.FC = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log('Register form data:', data);
+  const onSubmit = async (data: RegisterFormData) => {
+    setApiError(null);
+    try {
+      await authService.register({ name: data.fullName, email: data.email, password: data.password });
+      router.replace('/dashboard');
+    } catch {
+      setApiError('Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -50,6 +60,11 @@ export const RegisterPage: React.FC = () => {
       subtitle="Join ChainVerse and start learning"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {apiError && (
+        <div role="alert" className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          {apiError}
+        </div>
+      )}
       {/* Full Name */}
       <div>
         <label htmlFor="fullName" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -144,7 +159,7 @@ export const RegisterPage: React.FC = () => {
           />
           <button
             type="button"
-            aria-label={showConfirm ? 'Hide password' : 'Show password'}
+            aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
             onClick={() => setShowConfirm(!showConfirm)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
           >

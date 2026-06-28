@@ -13,6 +13,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <button
           key={i}
           onClick={() => onPageChange(i + 1)}
+          aria-label={`Go to page ${i + 1}`}
+          aria-current={currentPage === i + 1 ? 'page' : undefined}
           className={`px-3 py-1 border rounded ${
             currentPage === i + 1 ? "bg-blue-500 text-white" : ""
           }`}

@@ -1,5 +1,9 @@
 .env
 
+# logs
+*.log
+debug.log
+
 # Root-level scratch files from issue #420. Keep these out if they are regenerated locally.
 /aggression.tsx
 /allocation.tsx
