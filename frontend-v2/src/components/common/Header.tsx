@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/src/store/authStore';
 import { NotificationBell } from '@/src/features/notifications/components/NotificationBell';
+import { ConnectWalletButton } from '@/src/components/wallet/ConnectWalletButton';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -104,6 +105,9 @@ export const Header: React.FC = () => {
 
           {/* Right Side - Profile & Mobile Menu */}
           <div className="flex items-center gap-4">
+            {/* Wallet Connect — issue #694: only shown to logged-in users */}
+            {isAuthenticated && <ConnectWalletButton />}
+
             {/* Notification Bell */}
             <NotificationBell />
 
