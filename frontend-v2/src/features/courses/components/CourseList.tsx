@@ -3,6 +3,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { EmptyState } from '@/src/shared/components/ui/EmptyState';
+import { getLevelBadgeClass } from '@/lib/utils';
 import Link from 'next/link';
 
 interface CourseItem {
@@ -46,13 +47,7 @@ export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
 
           <div className="p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                course.level === 'Beginner'
-                  ? 'bg-green-100 text-green-700'
-                  : course.level === 'Intermediate'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-purple-100 text-purple-700'
-              }`}>
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getLevelBadgeClass(course.level)}`}>
                 {course.level}
               </span>
               <span className="text-lg font-bold text-indigo-600">

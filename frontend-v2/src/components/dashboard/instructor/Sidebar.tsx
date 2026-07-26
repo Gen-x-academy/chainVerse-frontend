@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => 
 
     return (
         <aside className={cn(
-            "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-all duration-300 overflow-y-auto lg:translate-x-0 lg:shadow-none",
+            "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-all duration-300 lg:translate-x-0 lg:shadow-none",
             isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         )}>
             <div className="flex h-full flex-col px-4 py-6">
@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => 
                 </Link>
 
                 {/* Navigation */}
-                <nav className="flex-1 space-y-2">
+                <nav className="flex-1 space-y-2 overflow-y-auto">
                     {routes.map((route) => (
                         <Link
                             key={route.name}
@@ -64,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ routes, isOpen, onClose }) => 
                 </nav>
 
                 {/* Bottom Section */}
-                <div className="mt-auto pt-6 border-t border-gray-100 space-y-3">
+                <div className="flex-shrink-0 mt-auto pt-6 border-t border-gray-100 space-y-3">
                     {isAuthenticated && (
                         <button
                             onClick={logout}

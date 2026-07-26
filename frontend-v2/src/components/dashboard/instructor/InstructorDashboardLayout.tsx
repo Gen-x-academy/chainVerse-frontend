@@ -23,26 +23,26 @@ export const InstructorDashboardLayout: React.FC<InstructorDashboardLayoutProps>
         {
             name: "Overview",
             icon: LayoutDashboard,
-            route: "/instructor/dashboard",
-            isActive: pathname === "/instructor/dashboard",
+            route: "/instructors/dashboard",
+            isActive: pathname === "/instructors/dashboard",
         },
         {
             name: "Account",
             icon: UserCircle,
-            route: "/instructor/dashboard/account",
-            isActive: pathname === "/instructor/dashboard/account",
+            route: "/instructors/dashboard/account",
+            isActive: pathname === "/instructors/dashboard/account",
         },
         {
             name: "Course Management",
             icon: BookOpen,
-            route: "/instructor/dashboard/courses",
-            isActive: pathname.includes("/courses"),
+            route: "/instructors/courses",
+            isActive: pathname.includes("/instructors/courses"),
         },
         {
             name: "Sessions",
             icon: Calendar,
-            route: "/instructor/dashboard/sessions",
-            isActive: pathname === "/instructor/dashboard/sessions",
+            route: "/instructors/sessions",
+            isActive: pathname === "/instructors/sessions",
         },
     ], [pathname]);
 

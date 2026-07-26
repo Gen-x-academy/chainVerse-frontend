@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useWishlist } from '@/src/context/WishlistContext';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
+import { getLevelBadgeClass } from '@/lib/utils';
 
 interface CourseCardProps {
   id: number;
@@ -118,13 +119,7 @@ export function CourseCard({
         {/* Level Badge */}
         <div className="flex items-center gap-2">
           <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-              level === 'beginner'
-                ? 'bg-green-100 text-green-700'
-                : level === 'intermediate'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-purple-100 text-purple-700'
-            }`}
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getLevelBadgeClass(level)}`}
           >
             {level.charAt(0).toUpperCase() + level.slice(1)}
           </span>

@@ -62,7 +62,7 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
 const RevenueChartSkeleton: React.FC = () => (
   <div className="animate-pulse" role="status" aria-label="Loading revenue chart">
     {/* Stat row */}
-    <div className="flex gap-6 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
       {Array.from({ length: 3 }, (_, i) => (
         <div key={i} className="flex-1 space-y-2">
           <div className="h-3 w-20 bg-gray-200 rounded-full" />
@@ -204,7 +204,7 @@ export const RevenueChart: React.FC = () => {
         data && (
           <>
             {/* ── Summary Stats ── */}
-            <div className="flex gap-6 mb-6 flex-wrap border-b border-gray-50 pb-5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 border-b border-gray-50 pb-5">
               <Stat
                 label="Total Revenue"
                 value={`${data.summary.total.toLocaleString()} XLM`}
@@ -224,7 +224,7 @@ export const RevenueChart: React.FC = () => {
                 value={data.summary.peakMonth}
               />
               {/* Inline growth badge */}
-              <div className="flex items-center self-center ml-auto">
+              <div className="flex items-center self-center col-span-2 sm:col-span-1 sm:justify-end">
                 <span
                   className={cn(
                     "inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full",
