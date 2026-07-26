@@ -5,10 +5,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+const LEVEL_BADGE_MAP: Record<string, string> = {
+  beginner: 'bg-green-100 text-green-700',
+  intermediate: 'bg-blue-100 text-blue-700',
+  advanced: 'bg-purple-100 text-purple-700',
+};
+
 /** Normalize course level casing for badge styling */
 export function getLevelBadgeClass(level?: string): string {
-  const l = (level ?? '').toLowerCase();
-  if (l === 'beginner') return 'bg-green-100 text-green-700';
-  if (l === 'intermediate') return 'bg-blue-100 text-blue-700';
-  return 'bg-purple-100 text-purple-700';
+  return LEVEL_BADGE_MAP[(level ?? '').toLowerCase()] ?? 'bg-purple-100 text-purple-700';
+}
+
+/** Capitalize level string for display */
+export function formatLevel(level?: string): string {
+  if (!level) return '';
+  return level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
 }

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useWishlist } from '@/src/context/WishlistContext';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
-import { getLevelBadgeClass } from '@/lib/utils';
+import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
 
 interface CourseCardProps {
   id: number;
@@ -121,7 +121,7 @@ export function CourseCard({
           <span
             className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getLevelBadgeClass(level)}`}
           >
-            {level.charAt(0).toUpperCase() + level.slice(1)}
+            {formatLevel(level)}
           </span>
         </div>
 
