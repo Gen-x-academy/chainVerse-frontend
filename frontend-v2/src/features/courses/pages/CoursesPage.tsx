@@ -10,6 +10,19 @@ import { SectionContainer } from '@/src/shared/components/layout/SectionContaine
 
 const COURSES_PER_PAGE = 6;
 
+function getPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | '...')[] = [];
+  pages.push(1);
+  if (current > 3) pages.push('...');
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (current < total - 2) pages.push('...');
+  pages.push(total);
+  return pages;
+}
+
 function CourseGrid() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -101,40 +114,46 @@ function CourseGrid() {
           )}
 
           {!isLoading && totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                aria-label="Go to previous page"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="overflow-x-auto mt-8">
+              <div className="flex items-center justify-center gap-2 min-w-max mx-auto">
                 <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  aria-label={`Go to page ${page}`}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                    currentPage === page
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
-                  }`}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Go to previous page"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {page}
+                  Previous
                 </button>
-              ))}
 
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                aria-label="Go to next page"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+                {getPageNumbers(currentPage, totalPages).map((page, idx) =>
+                  page === '...' ? (
+                    <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-gray-400">...</span>
+                  ) : (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page as number)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={currentPage === page ? 'page' : undefined}
+                      className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                        currentPage === page
+                          ? 'bg-indigo-600 text-white'
+                          : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  aria-label="Go to next page"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>

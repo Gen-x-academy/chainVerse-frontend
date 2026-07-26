@@ -37,7 +37,7 @@ describe('authService', () => {
     it('calls POST /api/auth/login with credentials', async () => {
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockAuthResponse);
       const result = await authService.login({ email: 'test@example.com', password: 'pass' });
-      expect(apiClient.post).toHaveBeenCalledWith('/api/auth/login', {
+      expect(apiClient.post).toHaveBeenCalledWith('/auth/login', {
         email: 'test@example.com',
         password: 'pass',
       });
@@ -55,7 +55,7 @@ describe('authService', () => {
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockAuthResponse);
       const payload = { name: 'Test User', email: 'test@example.com', password: 'pass' };
       const result = await authService.register(payload);
-      expect(apiClient.post).toHaveBeenCalledWith('/api/auth/register', payload);
+      expect(apiClient.post).toHaveBeenCalledWith('/auth/register', payload);
       expect(result).toEqual(mockAuthResponse);
     });
   });
@@ -70,7 +70,7 @@ describe('authService', () => {
     it('calls POST /api/auth/logout', async () => {
       vi.mocked(apiClient.post).mockResolvedValueOnce(undefined);
       await authService.logout();
-      expect(apiClient.post).toHaveBeenCalledWith('/api/auth/logout', {});
+      expect(apiClient.post).toHaveBeenCalledWith('/auth/logout', {});
     });
 
     it('completes even when logout request fails', async () => {
