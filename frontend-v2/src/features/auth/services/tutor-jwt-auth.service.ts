@@ -12,7 +12,7 @@ export class TutorJwtAuthService {
    */
   async create(dto: { tutorId: string; accessToken: string; refreshToken: string; expiresIn: number }): Promise<{ id: string }> {
     return apiClient.post<{ id: string }>(
-      '/api/tutors/auth', 
+      '/tutors/auth', 
       dto
     );
   }
@@ -22,7 +22,7 @@ export class TutorJwtAuthService {
    */
   async findByTutorId(tutorId: string): Promise<{ id: string; tutorId: string; accessToken: string; refreshToken: string; expiresIn: number; createdAt: string; updatedAt: string } | null> {
     try {
-      const response = await apiClient.get<any>(`/api/tutors/auth/${tutorId}`);
+      const response = await apiClient.get<any>(`/tutors/auth/${tutorId}`);
       return response;
     } catch (error) {
       return null;
@@ -34,7 +34,7 @@ export class TutorJwtAuthService {
    */
   async update(id: string, dto: { accessToken?: string; refreshToken?: string; expiresIn?: number }): Promise<{ success: boolean }> {
     return apiClient.patch<{ success: boolean }>(
-      `/api/tutors/auth/${id}`, 
+      `/tutors/auth/${id}`, 
       dto
     );
   }
@@ -43,7 +43,7 @@ export class TutorJwtAuthService {
    * Deletes tutor auth record from the database
    */
   async delete(id: string): Promise<{ success: boolean }> {
-    return apiClient.delete<{ success: boolean }>(`/api/tutors/auth/${id}`);
+    return apiClient.delete<{ success: boolean }>(`/tutors/auth/${id}`);
   }
 
   /**

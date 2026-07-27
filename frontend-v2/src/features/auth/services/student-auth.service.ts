@@ -12,7 +12,7 @@ export class StudentAuthService {
       const payload = this.verifyJwt(dto.token);
       
       // Get student from database to check verificationToken
-      const student = await apiClient.get<any>(`/api/students/${dto.studentId}`);
+      const student = await apiClient.get<any>(`/students/${dto.studentId}`);
       
       // Fix: Compare the supplied token with the stored verificationToken
       if (dto.token !== student.verificationToken) {
@@ -20,7 +20,7 @@ export class StudentAuthService {
       }
       
       // Mark email as verified
-      await apiClient.post(`/api/students/${dto.studentId}/verify-email`, {
+      await apiClient.post(`/students/${dto.studentId}/verify-email`, {
         token: dto.token
       });
       
@@ -50,7 +50,7 @@ export class StudentAuthService {
 
     // Generate new access token
     const response = await apiClient.post<{ accessToken: string; expiresIn: number }>(
-      `/api/students/${dto.studentId}/refresh-token`,
+      `/students/${dto.studentId}/refresh-token`,
       { refreshToken: dto.refreshToken }
     );
 
