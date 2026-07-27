@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChainVerse — Blockchain Learning Platform",
-  description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+  title: "ChainVerse Academy — Blockchain Learning on Stellar",
+  description: "Learn blockchain, DeFi, NFTs, and smart contracts. Earn on-chain certificates and CHV rewards.",
   icons: { icon: "/icon.png" },
   openGraph: {
-    title: "ChainVerse — Blockchain Learning Platform",
-    description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+    title: "ChainVerse Academy — Blockchain Learning on Stellar",
+    description: "Learn blockchain, DeFi, NFTs, and smart contracts. Earn on-chain certificates and CHV rewards.",
     url: "https://chainverse.app",
     siteName: "ChainVerse",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ChainVerse" }],
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ChainVerse — Blockchain Learning Platform",
-    description: "Learn blockchain, DeFi, NFTs and smart contracts on ChainVerse.",
+    title: "ChainVerse Academy — Blockchain Learning on Stellar",
+    description: "Learn blockchain, DeFi, NFTs, and smart contracts. Earn on-chain certificates and CHV rewards.",
     images: ["/og-image.png"],
   },
 };
