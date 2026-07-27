@@ -112,6 +112,7 @@ export const Navbar = () => {
         aria-hidden={!isOpen}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-100">
+          {/* Auth-aware links: unauthenticated → Login/Register; student → Dashboard/My Courses; instructor → Instructor Dashboard/My Courses (#732) */}
           {navLinks.map((link) => (
             <Link
               key={link.href}
