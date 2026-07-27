@@ -57,7 +57,7 @@ export function StandardFormTemplate() {
               <input
                 id="fullName"
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 transition-colors"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus-ring transition-colors"
                 placeholder="Jane Doe"
               />
             </div>
@@ -72,7 +72,7 @@ export function StandardFormTemplate() {
                 <input
                   id="email"
                   type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus-ring transition-colors"
                   placeholder="jane@example.com"
                 />
               </div>
@@ -84,7 +84,7 @@ export function StandardFormTemplate() {
                 </label>
                 <select
                   id="role"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus-ring transition-colors"
                 >
                   <option>Administrator</option>
                   <option>Editor</option>

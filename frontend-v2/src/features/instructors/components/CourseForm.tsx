@@ -62,8 +62,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <input
           type="text"
           placeholder="Course title"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
-            errors.title ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
+            errors.title ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
           }`}
           {...register('title')}
         />
@@ -76,8 +76,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <textarea
           rows={4}
           placeholder="Course description"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition resize-none ${
-            errors.description ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition resize-none ${
+            errors.description ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
           }`}
           {...register('description')}
         />
@@ -89,8 +89,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
           <select
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
-              errors.category ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
+              errors.category ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
             }`}
             {...register('category')}
           >
@@ -105,8 +105,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Level</label>
           <select
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
-              errors.level ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
+              errors.level ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
             }`}
             {...register('level')}
           >
@@ -127,8 +127,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
           step="0.01"
           min="0"
           placeholder="0.00"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
-            errors.price ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
+            errors.price ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
           }`}
           {...register('price')}
         />
@@ -141,7 +141,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <input
           type="text"
           placeholder="https://example.com/image.jpg"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus-ring transition"
           {...register('thumbnailUrl')}
         />
       </div>

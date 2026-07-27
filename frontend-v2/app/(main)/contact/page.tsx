@@ -238,7 +238,7 @@ const ContactUsPage = () => {
                       onChange={(e) =>
                         handleInputChange("fullName", e.target.value)
                       }
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all ${
+                      className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all ${
                         errors.fullName ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="Enter your full name"
@@ -272,7 +272,7 @@ const ContactUsPage = () => {
                         onChange={(e) =>
                           handleInputChange("email", e.target.value)
                         }
-                        className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all ${
+                        className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all ${
                           errors.email ? "border-red-500" : "border-gray-300"
                         }`}
                         placeholder="your.email@example.com"
@@ -305,7 +305,7 @@ const ContactUsPage = () => {
                         onChange={(e) =>
                           handleInputChange("phone", e.target.value)
                         }
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all"
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all"
                         placeholder="+234 800 000 0000"
                       />
                     </div>
@@ -332,7 +332,7 @@ const ContactUsPage = () => {
                       onChange={(e) =>
                         handleInputChange("company", e.target.value)
                       }
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all"
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all"
                       placeholder="Your company name"
                     />
                   </div>
@@ -357,7 +357,7 @@ const ContactUsPage = () => {
                       onChange={(e) =>
                         handleInputChange("subject", e.target.value)
                       }
-                      className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all ${
+                      className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all ${
                         errors.subject ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="How can we help you?"
@@ -386,7 +386,7 @@ const ContactUsPage = () => {
                     onChange={(e) =>
                       handleInputChange("message", e.target.value)
                     }
-                    className={`block w-full px-3 py-3 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all resize-none ${
+                    className={`block w-full px-3 py-3 border rounded-lg placeholder-gray-400 focus-ring focus:border-transparent transition-all resize-none ${
                       errors.message ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Tell us more about your inquiry..."
@@ -406,7 +406,7 @@ const ContactUsPage = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus-ring transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>

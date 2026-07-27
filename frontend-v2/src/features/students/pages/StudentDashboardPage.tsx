@@ -122,11 +122,11 @@ export const StudentDashboardPage: React.FC = () => {
                       aria-valuenow={enrollment.progress}
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-label={`${enrollment.courseId} progress`}
-                      className="w-full bg-gray-200 rounded-full h-2 overflow-hidden"
+                      aria-label={`${enrollment.courseId} — ${enrollment.progress}% complete`}
+                      className="w-full bg-gray-200 rounded-full h-2"
                     >
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-indigo-600 h-2 rounded-full"
                         style={{ width: `${enrollment.progress}%` }}
                       />
                     </div>

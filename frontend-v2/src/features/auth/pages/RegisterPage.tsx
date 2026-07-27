@@ -74,10 +74,10 @@ export const RegisterPage: React.FC = () => {
           id="fullName"
           type="text"
           placeholder="John Doe"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
             errors.fullName
               ? 'border-red-300 focus-visible:ring-red-500'
-              : 'border-gray-300 focus-visible:ring-blue-500'
+              : 'border-gray-300'
           }`}
           {...register('fullName')}
         />
@@ -96,10 +96,10 @@ export const RegisterPage: React.FC = () => {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
             errors.email
               ? 'border-red-300 focus-visible:ring-red-500'
-              : 'border-gray-300 focus-visible:ring-blue-500'
+              : 'border-gray-300'
           }`}
           {...register('email')}
         />
@@ -119,10 +119,10 @@ export const RegisterPage: React.FC = () => {
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             autoComplete="new-password"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition pr-12 ${
               errors.password
                 ? 'border-red-300 focus-visible:ring-red-500'
-                : 'border-gray-300 focus-visible:ring-blue-500'
+                : 'border-gray-300'
             }`}
             {...register('password')}
           />
@@ -130,7 +130,7 @@ export const RegisterPage: React.FC = () => {
             type="button"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-ring rounded"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -150,10 +150,10 @@ export const RegisterPage: React.FC = () => {
             id="confirmPassword"
             type={showConfirm ? 'text' : 'password'}
             placeholder="••••••••"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition pr-12 ${
               errors.confirmPassword
                 ? 'border-red-300 focus-visible:ring-red-500'
-                : 'border-gray-300 focus-visible:ring-blue-500'
+                : 'border-gray-300'
             }`}
             {...register('confirmPassword')}
           />
@@ -161,7 +161,7 @@ export const RegisterPage: React.FC = () => {
             type="button"
             aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
             onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-ring rounded"
           >
             {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -175,7 +175,7 @@ export const RegisterPage: React.FC = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-ring"
       >
         {isSubmitting ? (
           <>
@@ -190,7 +190,7 @@ export const RegisterPage: React.FC = () => {
       {/* Login Link */}
       <p className="text-center text-gray-600 text-sm">
         Already have an account?{' '}
-        <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold focus-ring rounded">
           Sign in
         </Link>
       </p>

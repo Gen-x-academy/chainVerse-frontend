@@ -124,7 +124,7 @@ export default function ProfilePage() {
                   value={profile.firstName}
                   onChange={(e) => setProfile((p) => ({ ...p, firstName: e.target.value }))}
                   placeholder="Jane"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
                 />
               </div>
               <div>
@@ -137,7 +137,7 @@ export default function ProfilePage() {
                   value={profile.lastName}
                   onChange={(e) => setProfile((p) => ({ ...p, lastName: e.target.value }))}
                   placeholder="Doe"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
                 />
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                 value={profile.avatarUrl}
                 onChange={(e) => setProfile((p) => ({ ...p, avatarUrl: e.target.value }))}
                 placeholder="https://example.com/avatar.png"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
               />
             </div>
 
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                 value={profile.bio}
                 onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
                 placeholder="Tell us a bit about yourself..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm resize-none"
               />
             </div>
 
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={saveStatus === 'saving'}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium disabled:opacity-50 focus-ring"
               >
                 {saveStatus === 'saving' ? 'Saving...' : 'Save Profile'}
               </button>
@@ -198,7 +198,7 @@ export default function ProfilePage() {
                 value={passwords.currentPassword}
                 onChange={(e) => setPasswords((p) => ({ ...p, currentPassword: e.target.value }))}
                 autoComplete="current-password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
               />
             </div>
             <div>
@@ -211,7 +211,7 @@ export default function ProfilePage() {
                 value={passwords.newPassword}
                 onChange={(e) => setPasswords((p) => ({ ...p, newPassword: e.target.value }))}
                 autoComplete="new-password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
               />
             </div>
             <div>
@@ -224,7 +224,7 @@ export default function ProfilePage() {
                 value={passwords.confirmPassword}
                 onChange={(e) => setPasswords((p) => ({ ...p, confirmPassword: e.target.value }))}
                 autoComplete="new-password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring text-sm"
               />
             </div>
 
@@ -234,7 +234,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={passwordStatus === 'saving'}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium disabled:opacity-50 focus-ring"
               >
                 {passwordStatus === 'saving' ? 'Updating...' : 'Update Password'}
               </button>

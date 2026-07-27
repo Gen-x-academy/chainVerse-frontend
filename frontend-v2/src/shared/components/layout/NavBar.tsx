@@ -61,7 +61,7 @@ export const Navbar = () => {
             <button
               onClick={toggleMenu}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none min-h-[44px] min-w-[44px]"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus-ring min-h-[44px] min-w-[44px]"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >

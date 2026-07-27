@@ -116,6 +116,11 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Shared a11y focus ring — use class `focus-ring` on buttons, links, inputs */
+@utility focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
