@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/src/lib/api-client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

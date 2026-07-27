@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib';
@@ -10,6 +10,8 @@ import { colors } from '@/src/shared/constants/design-tokens';
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => { setIsOpen(false); }, [pathname]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 

@@ -21,3 +21,15 @@ export function formatLevel(level?: string): string {
   if (!level) return '';
   return level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
 }
+
+/**
+ * Formats a date string or Date object into a human-readable format.
+ */
+export function formatDate(date: string | Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
+}
+

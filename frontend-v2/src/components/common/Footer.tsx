@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
     resources: [
       { label: 'Documentation', href: '#' },
       { label: 'Community', href: '#' },
-      { label: 'Contact', href: '#' },
+      { label: 'Contact', href: '/contact' },
       { label: 'Support', href: '#' },
     ],
     legal: [

@@ -1,10 +1,9 @@
 'use client';
 
-import { Star, Heart, ShoppingCart } from 'lucide-react';
+import { Star, Heart, ShoppingCart, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { useWishlist } from '@/src/context/WishlistContext';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
@@ -71,8 +70,10 @@ export function CourseCard({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">{category}</span>
+          /* #784 — proper placeholder when no image is provided */
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+            <BookOpen className="text-white/70" size={32} aria-hidden="true" />
+            <span className="text-white/90 text-xs font-semibold uppercase tracking-wide">{category}</span>
           </div>
         )}
         {/* Wishlist Button */}
@@ -128,12 +129,12 @@ export function CourseCard({
         {/* Price & Button */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
           <span className="text-xl font-bold text-[var(--dt-primary)]">
-            {currency}{price.toFixed(2)}
+            {price === 0 ? 'Free' : `${currency || '$'}${price.toFixed(2)}`}
           </span>
           <Button
             onClick={onAddToCart}
             size="sm"
-            className="bg-[var(--dt-primary)] hover:bg-[var(--dt-primary-hover)] text-white font-semibold gap-2 group/btn"
+            className="min-h-[44px] min-w-[44px] bg-[var(--dt-primary)] hover:bg-[var(--dt-primary-hover)] text-white font-semibold gap-2 group/btn"
           >
             <ShoppingCart size={16} className="group-hover/btn:scale-110 transition-transform" />
             <span className="hidden sm:inline">Add</span>

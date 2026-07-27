@@ -9,14 +9,14 @@ export class AdminCourseService {
   async delete(id: string, tutorId: string, isAdmin: boolean, reason: string): Promise<{ success: boolean }> {
     try {
       // Get course first
-      const course = await apiClient.get<any>(`/api/courses/${id}`);
+      const course = await apiClient.get<any>(`/courses/${id}`);
       
       // Fix: Use tutorId for both admin and tutor roles instead of undefined adminId
       // course.deletedBy = isAdmin ? `admin:${adminId}` : `tutor:${tutorId}`;
       course.deletedBy = isAdmin ? `admin:${tutorId}` : `tutor:${tutorId}`;
       
       // Update course with deletion info
-      await apiClient.patch(`/api/courses/${id}`, {
+      await apiClient.patch(`/courses/${id}`, {
         deleted: true,
         deletedBy: course.deletedBy,
         deletionReason: reason,

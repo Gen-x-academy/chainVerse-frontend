@@ -1,13 +1,5 @@
-import { EmptyState } from "@/src/shared/components/ui/EmptyState";
+import { LandingPage } from '@/src/pages/LandingPage/LandingPage';
 
 export default function Page() {
-  return (
-    <div>
-      <EmptyState
-        title="testing empty state"
-        description="to use in an example"
-      />
-      Page
-    </div>
-  );
+  return <LandingPage />;
 }

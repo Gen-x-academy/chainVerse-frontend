@@ -16,12 +16,12 @@ function getSessionCookie(): string | null {
 
 export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/login', payload);
+    const response = await apiClient.post<AuthResponse>('/auth/login', payload);
     return response;
   },
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/register', payload);
+    const response = await apiClient.post<AuthResponse>('/auth/register', payload);
     return response;
   },
 
@@ -40,7 +40,7 @@ export const authService = {
    */
   logout: async (): Promise<void> => {
     try {
-      await apiClient.post('/api/auth/logout', {});
+      await apiClient.post('/auth/logout', {});
     } catch {
       // Intentionally swallowed — client logout must always complete.
     } finally {
@@ -56,5 +56,16 @@ export const authService = {
     const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
     if (!expiry) return false;
     return Date.now() < Number(expiry);
+  },
+
+  /**
+   * Returns HTTP Authorization headers when a stored access token is available.
+   * Returns an empty object when unauthenticated so callers can spread the result
+   * safely without null-checks.
+   */
+  getAuthHeaders: (): Record<string, string> => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
   },
 };

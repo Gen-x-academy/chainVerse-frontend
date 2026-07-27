@@ -31,7 +31,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
   };
 
   return (
-    <aside className="w-full lg:w-64 flex-shrink-0">
+    <aside className="w-full lg:w-64 flex-shrink-0 overflow-hidden">
       <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
         {/* Category Filter */}
         <div>
@@ -45,7 +45,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
                   onChange={() => handleCategoryToggle(category)}
                   className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-gray-700">{category}</span>
+                <span className="text-sm text-gray-700 truncate">{category}</span>
               </label>
             ))}
           </div>
@@ -64,7 +64,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
                   onChange={() => onLevelChange(level)}
                   className="w-4 h-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-gray-700">{level}</span>
+                <span className="text-sm text-gray-700 truncate">{level}</span>
               </label>
             ))}
           </div>

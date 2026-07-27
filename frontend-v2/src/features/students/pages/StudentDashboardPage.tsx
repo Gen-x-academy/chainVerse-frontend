@@ -67,7 +67,7 @@ export const StudentDashboardPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Suspense fallback={<div className="h-32 bg-gray-200 rounded-xl animate-pulse mb-8" />}>
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-8 mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back, {firstName}!</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">Welcome back, {firstName}!</h1>
             <p className="text-blue-100">
               You&apos;re making great progress! Keep up the momentum and complete your courses.
             </p>
@@ -88,12 +88,12 @@ export const StudentDashboardPage: React.FC = () => {
                     key={index}
                     className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
                         <p className="text-gray-600 text-sm font-medium mb-1">{stat.label}</p>
                         <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                       </div>
-                      <div className={`${STAT_COLORS[index]} p-3 rounded-lg`}>
+                      <div className={`${STAT_COLORS[index]} p-3 rounded-lg flex-shrink-0`}>
                         <Icon size={24} />
                       </div>
                     </div>

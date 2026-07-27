@@ -166,7 +166,7 @@ export const RevenueChart: React.FC = () => {
         </div>
 
         {/* Period tabs */}
-        <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+        <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100 w-full sm:w-auto">
           {PERIODS.map(({ label, value }) => (
             <PeriodPill
               key={value}

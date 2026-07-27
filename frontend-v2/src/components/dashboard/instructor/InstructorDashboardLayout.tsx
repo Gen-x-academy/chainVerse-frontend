@@ -62,7 +62,7 @@ export const InstructorDashboardLayout: React.FC<InstructorDashboardLayoutProps>
             <Sidebar routes={routes} isOpen={isSidebarOpen} onClose={handleSidebarClose} />
             <div className="flex-1 lg:ml-64 flex flex-col min-h-screen min-w-0">
                 <Header onMenuToggle={handleMenuToggle} />
-                <main className="flex-1 p-8">
+                <main className="flex-1 p-4 sm:p-6 lg:p-8">
                     <div className="max-w-[1400px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
                         {children}
                     </div>
