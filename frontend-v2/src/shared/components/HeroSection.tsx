@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 const HeroSection: React.FC = () => {
   return (
     <div className="w-full mx-auto py-12 md:py-24 lg:py-32 xl:py-48 overflow-hidden container grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
-      <div className="flex flex-col justify-center space-y-4">
+      <div className="flex flex-col justify-center space-y-4 px-4 lg:px-0">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Learn Blockchain. Earn Crypto.
@@ -39,6 +39,8 @@ const HeroSection: React.FC = () => {
           </Button>
         </div>
       </div>
+      <div className="hidden min-[400px]:flex items-center justify-center">
+        <BlockchainAnimation />
       <div className="flex items-center justify-center">
         {/* Temporary static visual — BlockchainAnimation will be ported from v1 */}
         <div className="w-full h-64 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center">

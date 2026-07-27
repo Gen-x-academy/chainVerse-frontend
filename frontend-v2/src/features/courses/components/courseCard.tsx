@@ -4,7 +4,6 @@ import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { useWishlist } from '@/src/context/WishlistContext';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 
@@ -133,7 +132,7 @@ export function CourseCard({
         {/* Price & Button */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
           <span className="text-xl font-bold text-[var(--dt-primary)]">
-            {currency}{price.toFixed(2)}
+            {price === 0 ? 'Free' : `${currency || '$'}${price.toFixed(2)}`}
           </span>
           <Button
             onClick={onAddToCart}
