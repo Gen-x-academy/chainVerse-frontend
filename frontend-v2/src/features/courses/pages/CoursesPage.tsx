@@ -1,5 +1,7 @@
 'use client';
 
+import React, { Suspense, useState, useEffect, useMemo } from 'react';
+import { Search } from 'lucide-react';
 import React, { Suspense, useState, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { CourseFilters } from '../components/CourseFilters';
@@ -25,24 +27,37 @@ function CourseGrid() {
     setCurrentPage(1);
   }, [searchQuery, selectedCategories, selectedLevel, priceRange]);
 
-  const filtered = courses.filter((course) => {
-    const matchesSearch =
-      !searchQuery ||
-      course.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategories.length === 0 ||
-      selectedCategories.includes(course.category ?? '');
-    const matchesLevel =
-      selectedLevel === 'All' ||
-      (course.level ?? '').toLowerCase() === selectedLevel.toLowerCase();
-    const matchesPrice = course.price == null || course.price <= priceRange;
-    return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
-  });
+  const filtered = useMemo(
+    () =>
+      courses.filter((course) => {
+        const matchesSearch =
+          !searchQuery ||
+          course.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          selectedCategories.length === 0 ||
+          selectedCategories.includes(course.category ?? '');
+        const matchesLevel =
+          selectedLevel === 'All' ||
+          (course.level ?? '').toLowerCase() === selectedLevel.toLowerCase();
+        const matchesPrice =
+          course.price == null || course.price <= priceRange;
+        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+      }),
+    [courses, searchQuery, selectedCategories, selectedLevel, priceRange]
+  );
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / COURSES_PER_PAGE));
-  const paginated = filtered.slice(
-    (currentPage - 1) * COURSES_PER_PAGE,
-    currentPage * COURSES_PER_PAGE
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filtered.length / COURSES_PER_PAGE)),
+    [filtered.length]
+  );
+
+  const paginated = useMemo(
+    () =>
+      filtered.slice(
+        (currentPage - 1) * COURSES_PER_PAGE,
+        currentPage * COURSES_PER_PAGE
+      ),
+    [filtered, currentPage]
   );
 
   return (

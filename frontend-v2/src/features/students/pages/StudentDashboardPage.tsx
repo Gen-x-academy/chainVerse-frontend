@@ -67,7 +67,7 @@ export const StudentDashboardPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Suspense fallback={<div className="h-32 bg-gray-200 rounded-xl animate-pulse mb-8" />}>
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-8 mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back, {firstName}!</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">Welcome back, {firstName}!</h1>
             <p className="text-blue-100">
               You&apos;re making great progress! Keep up the momentum and complete your courses.
             </p>
