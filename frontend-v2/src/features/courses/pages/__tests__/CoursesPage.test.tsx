@@ -1,82 +1,118 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { CoursesPage } from '../CoursesPage';
 
-// Mock useCourses to return 13 courses (enough for 3 pages at 6/page)
-// Mix levels so filtering by Beginner still leaves multiple pages worth
-const mockCourses = Array.from({ length: 13 }, (_, i) => ({
-  id: String(i + 1),
-  title: `Course ${i + 1}`,
-  category: i % 2 === 0 ? 'Blockchain' : 'DeFi',
-  level: 'Beginner',
-  price: 10,
-}));
+// 13 courses → 3 pages at 6/page. Mixed categories, levels, and titles for filter tests.
+const mockCourses = Array.from({ length: 13 }, (_, i) => {
+  const index = i + 1;
+  let category = 'NFTs';
+  let level = 'Beginner';
+  let title = `Course ${index}`;
+
+  if (index <= 7) {
+    category = 'Blockchain';
+    level = 'Beginner';
+  } else if (index <= 10) {
+    category = 'DeFi';
+    level = 'Intermediate';
+  } else {
+    category = 'Smart Contracts';
+    level = 'Advanced';
+    title = `Advanced Soroban ${index}`;
+  }
+
+  return {
+    id: String(index),
+    title,
+    category,
+    level,
+    price: 10,
+  };
+});
 
 vi.mock('../../hooks', () => ({
   useCourses: () => ({ courses: mockCourses, isLoading: false, error: null }),
 }));
 
-// SectionContainer is a layout wrapper — keep it simple
 vi.mock('@/src/shared/components/layout/SectionContainer', () => ({
   SectionContainer: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
   ),
 }));
 
-describe('CoursesPage — pagination reset on filter change (#606)', () => {
+describe('CoursesPage — filter logic correctness', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders page 1 by default', () => {
+  it('renders all mock courses initially (first page)', () => {
     render(<CoursesPage />);
-    const page1Button = screen.getByRole('button', { name: /go to page 1/i });
-    expect(page1Button).toHaveAttribute('aria-current', 'page');
+
+    // Page 1 shows the first 6 courses (COURSES_PER_PAGE)
+    for (let i = 1; i <= 6; i++) {
+      expect(screen.getByRole('heading', { name: `Course ${i}` })).toBeInTheDocument();
+    }
+    expect(screen.getByRole('button', { name: /go to page 1/i })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
+    expect(screen.getByRole('button', { name: /go to page 2/i })).toBeInTheDocument();
   });
 
-  it('resets to page 1 when search query changes', async () => {
+  it('filters courses by title when typing in the search box', async () => {
     const user = userEvent.setup();
     render(<CoursesPage />);
 
-    // Navigate to page 2
-    await user.click(screen.getByRole('button', { name: /go to page 2/i }));
-    expect(screen.getByRole('button', { name: /go to page 2/i })).toHaveAttribute('aria-current', 'page');
+    await user.type(screen.getByPlaceholderText(/search courses/i), 'Advanced Soroban');
 
-    // Change search query — should reset to page 1
-    const searchInput = screen.getByPlaceholderText(/search courses/i);
-    await user.type(searchInput, 'Course');
-
-    expect(screen.getByRole('button', { name: /go to page 1/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 11' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 12' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 13' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Course 1' })).not.toBeInTheDocument();
   });
 
-  it('resets to page 1 when level filter changes', async () => {
+  it('shows only matching courses when a category is selected', async () => {
     const user = userEvent.setup();
     render(<CoursesPage />);
 
-    // Navigate to page 2
-    await user.click(screen.getByRole('button', { name: /go to page 2/i }));
-    expect(screen.getByRole('button', { name: /go to page 2/i })).toHaveAttribute('aria-current', 'page');
+    await user.click(screen.getByRole('checkbox', { name: 'DeFi' }));
 
-    // Select "Beginner" — keeps all courses visible, should reset to page 1
-    const beginnerRadio = screen.getByRole('radio', { name: 'Beginner' });
-    await user.click(beginnerRadio);
-
-    expect(screen.getByRole('button', { name: /go to page 1/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('heading', { name: 'Course 8' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Course 9' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Course 10' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Course 1' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Advanced Soroban/i })).not.toBeInTheDocument();
   });
 
-  it('resets to page 1 when a category filter is toggled', async () => {
+  it("shows only advanced courses when 'Advanced' level is selected", async () => {
     const user = userEvent.setup();
     render(<CoursesPage />);
 
-    // Navigate to page 2
+    await user.click(screen.getByRole('radio', { name: 'Advanced' }));
+
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 11' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 12' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Advanced Soroban 13' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Course 1' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Course 8' })).not.toBeInTheDocument();
+  });
+
+  it('resets pagination to page 1 when a filter changes', async () => {
+    const user = userEvent.setup();
+    render(<CoursesPage />);
+
     await user.click(screen.getByRole('button', { name: /go to page 2/i }));
-    expect(screen.getByRole('button', { name: /go to page 2/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: /go to page 2/i })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
 
-    // Toggle a category — should reset to page 1
-    const blockchainCheckbox = screen.getByRole('checkbox', { name: 'Blockchain' });
-    await user.click(blockchainCheckbox);
+    await user.type(screen.getByPlaceholderText(/search courses/i), 'Course');
 
-    expect(screen.getByRole('button', { name: /go to page 1/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: /go to page 1/i })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
   });
 });
