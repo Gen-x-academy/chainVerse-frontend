@@ -137,7 +137,7 @@ export function CourseCard({
           <Button
             onClick={onAddToCart}
             size="sm"
-            className="bg-[var(--dt-primary)] hover:bg-[var(--dt-primary-hover)] text-white font-semibold gap-2 group/btn"
+            className="min-h-[44px] min-w-[44px] bg-[var(--dt-primary)] hover:bg-[var(--dt-primary-hover)] text-white font-semibold gap-2 group/btn"
           >
             <ShoppingCart size={16} className="group-hover/btn:scale-110 transition-transform" />
             <span className="hidden sm:inline">Add</span>
