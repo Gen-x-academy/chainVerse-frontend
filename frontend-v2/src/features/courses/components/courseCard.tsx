@@ -1,6 +1,6 @@
 'use client';
 
-import { Star, Heart, ShoppingCart } from 'lucide-react';
+import { Star, Heart, ShoppingCart, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
@@ -69,8 +69,10 @@ export function CourseCard({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">{category}</span>
+          /* #784 — proper placeholder when no image is provided */
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+            <BookOpen className="text-white/70" size={32} aria-hidden="true" />
+            <span className="text-white/90 text-xs font-semibold uppercase tracking-wide">{category}</span>
           </div>
         )}
         {/* Wishlist Button */}

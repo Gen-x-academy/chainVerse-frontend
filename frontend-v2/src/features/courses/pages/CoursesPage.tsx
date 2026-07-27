@@ -1,8 +1,6 @@
 'use client';
 
-import React, { Suspense, useState, useEffect, useMemo } from 'react';
-import { Search } from 'lucide-react';
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { CourseFilters } from '../components/CourseFilters';
 import { CourseList } from '../components/CourseList';
@@ -32,8 +30,21 @@ function CourseGrid() {
   const [priceRange, setPriceRange] = useState(500);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const { courses, isLoading, error } = useCourses();
+
+  // #783 — press "/" to focus the search input (like GitHub / Notion / Linear)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   // #269 — reset to page 1 whenever any filter changes
   useEffect(() => {
@@ -82,12 +93,17 @@ function CourseGrid() {
             size={20}
           />
           <input
+            ref={searchRef}
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
+          {/* #783 — "/" shortcut hint badge */}
+          <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 rounded border border-gray-300 bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-gray-500 select-none">
+            /
+          </kbd>
         </div>
       </div>
 
