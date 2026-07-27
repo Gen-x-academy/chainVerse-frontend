@@ -45,6 +45,7 @@ export const RegisterPage: React.FC = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
+    // Wire registration to authService instead of console.log stub (#734)
     setApiError(null);
     try {
       await authService.register({ name: data.fullName, email: data.email, password: data.password });
