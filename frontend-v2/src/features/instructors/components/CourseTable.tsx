@@ -105,11 +105,13 @@ export const CourseTable: React.FC = () => {
           ))}
         </div>
       ) : (
-        <DataTable
-          data={courses}
-          columns={columns}
-          onRowClick={(row) => router.push(`/instructor/dashboard/courses/${row.id}`)}
-        />
+        <div className="overflow-x-auto">
+          <DataTable
+            data={courses}
+            columns={columns}
+            onRowClick={(row) => router.push(`/instructor/dashboard/courses/${row.id}`)}
+          />
+        </div>
       )}
 
       {/* Delete confirmation dialog */}

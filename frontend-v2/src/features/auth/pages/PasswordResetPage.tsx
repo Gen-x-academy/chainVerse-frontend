@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AuthForm } from '../components/AuthForm';
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/src/lib/api-client';
 
 const emailSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Please enter a valid email'),
@@ -44,7 +44,7 @@ export const PasswordResetPage: React.FC = () => {
   const onRequestReset = async (data: EmailFormData) => {
     setApiError(null);
     try {
-      await apiClient.post('/api/auth/password-reset/request', { email: data.email });
+      await apiClient.post('/auth/password-reset/request', { email: data.email });
       setSubmittedEmail(data.email);
       setStep('verify');
     } catch {
@@ -55,7 +55,7 @@ export const PasswordResetPage: React.FC = () => {
   const onVerifyCode = async (data: CodeFormData) => {
     setApiError(null);
     try {
-      await apiClient.post('/api/auth/password-reset/verify', {
+      await apiClient.post('/auth/password-reset/verify', {
         email: submittedEmail,
         code: data.code,
       });
@@ -71,7 +71,7 @@ export const PasswordResetPage: React.FC = () => {
   const onResetPassword = async (data: ResetFormData) => {
     setApiError(null);
     try {
-      await apiClient.post('/api/auth/password-reset/confirm', {
+      await apiClient.post('/auth/password-reset/confirm', {
         email: submittedEmail,
         code: verifiedCode,
         password: data.password,

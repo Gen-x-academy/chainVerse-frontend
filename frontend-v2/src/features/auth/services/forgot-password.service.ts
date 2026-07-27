@@ -21,11 +21,11 @@ export type ForgotPasswordResponse = {
 
 export const forgotPasswordService = {
   request: (dto: ForgotPasswordRequestDto) =>
-    apiClient.post<ForgotPasswordResponse>('/api/auth/password-reset/request', dto),
+    apiClient.post<ForgotPasswordResponse>('/auth/password-reset/request', dto),
 
   verify: (dto: ForgotPasswordVerifyDto) =>
-    apiClient.post<ForgotPasswordResponse>('/api/auth/password-reset/verify', dto),
+    apiClient.post<ForgotPasswordResponse>('/auth/password-reset/verify', dto),
 
   confirm: (dto: ForgotPasswordConfirmDto) =>
-    apiClient.post<ForgotPasswordResponse>('/api/auth/password-reset/confirm', dto),
+    apiClient.post<ForgotPasswordResponse>('/auth/password-reset/confirm', dto),
 };

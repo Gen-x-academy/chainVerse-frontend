@@ -19,7 +19,7 @@ import {
   Github,
   Link,
 } from "lucide-react";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "@/src/lib/api-client";
 import { toast } from "sonner";
 
 const ContactUsPage = () => {

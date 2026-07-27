@@ -16,12 +16,12 @@ function getSessionCookie(): string | null {
 
 export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/login', payload);
+    const response = await apiClient.post<AuthResponse>('/auth/login', payload);
     return response;
   },
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/register', payload);
+    const response = await apiClient.post<AuthResponse>('/auth/register', payload);
     return response;
   },
 
@@ -40,7 +40,7 @@ export const authService = {
    */
   logout: async (): Promise<void> => {
     try {
-      await apiClient.post('/api/auth/logout', {});
+      await apiClient.post('/auth/logout', {});
     } catch {
       // Intentionally swallowed — client logout must always complete.
     } finally {

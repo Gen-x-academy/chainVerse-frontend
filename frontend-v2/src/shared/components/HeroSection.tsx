@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
-import { BlockchainAnimation } from './animations/blockchain-animation';
 
 const HeroSection: React.FC = () => {
   return (
@@ -42,6 +41,11 @@ const HeroSection: React.FC = () => {
       </div>
       <div className="hidden min-[400px]:flex items-center justify-center">
         <BlockchainAnimation />
+      <div className="flex items-center justify-center">
+        {/* Temporary static visual — BlockchainAnimation will be ported from v1 */}
+        <div className="w-full h-64 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center">
+          <span className="text-white text-4xl">⛓️</span>
+        </div>
       </div>
     </div>
   );

@@ -1,1 +1,2 @@
-export { cn } from './utils';
+export { cn, formatDate } from './utils';
+export { queryClient, registerGlobalErrorHandler } from './query-client';
