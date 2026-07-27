@@ -57,4 +57,15 @@ export const authService = {
     if (!expiry) return false;
     return Date.now() < Number(expiry);
   },
+
+  /**
+   * Returns HTTP Authorization headers when a stored access token is available.
+   * Returns an empty object when unauthenticated so callers can spread the result
+   * safely without null-checks.
+   */
+  getAuthHeaders: (): Record<string, string> => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
+  },
 };
