@@ -5,7 +5,7 @@ import { FaWallet, FaGlobe, FaCog } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 text-gray-700 py-8 px-4 md:px-12 text-center md:text-left">
+    <footer className="bg-gray-100 text-gray-700 py-8 px-4 md:px-12 text-center">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         {/* Earn Crypto */}
         <div className="flex flex-col items-center">

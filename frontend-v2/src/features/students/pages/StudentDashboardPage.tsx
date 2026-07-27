@@ -88,12 +88,12 @@ export const StudentDashboardPage: React.FC = () => {
                     key={index}
                     className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
                         <p className="text-gray-600 text-sm font-medium mb-1">{stat.label}</p>
                         <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                       </div>
-                      <div className={`${STAT_COLORS[index]} p-3 rounded-lg`}>
+                      <div className={`${STAT_COLORS[index]} p-3 rounded-lg flex-shrink-0`}>
                         <Icon size={24} />
                       </div>
                     </div>

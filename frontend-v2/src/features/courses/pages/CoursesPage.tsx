@@ -2,6 +2,8 @@
 
 import React, { Suspense, useState, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
+import React, { Suspense, useState, useEffect } from 'react';
+import { Search, SlidersHorizontal } from 'lucide-react';
 import { CourseFilters } from '../components/CourseFilters';
 import { CourseList } from '../components/CourseList';
 import { CourseCardSkeleton } from '../components/CourseCardSkeleton';
@@ -16,6 +18,7 @@ function CourseGrid() {
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [priceRange, setPriceRange] = useState(500);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { courses, isLoading, error } = useCourses();
 
@@ -81,17 +84,27 @@ function CourseGrid() {
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <CourseFilters
-          selectedCategories={selectedCategories}
-          selectedLevel={selectedLevel}
-          priceRange={priceRange}
-          onCategoryChange={setSelectedCategories}
-          onLevelChange={setSelectedLevel}
-          onPriceChange={setPriceRange}
-        />
+      <button
+        className="lg:hidden flex items-center gap-2 px-4 py-2 border rounded-lg mb-4"
+        onClick={() => setShowFilters(!showFilters)}
+      >
+        <SlidersHorizontal size={18} />
+        Filters {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+      </button>
 
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row gap-8 min-w-0">
+        <div className={`${showFilters ? 'block' : 'hidden'} lg:block`}>
+          <CourseFilters
+            selectedCategories={selectedCategories}
+            selectedLevel={selectedLevel}
+            priceRange={priceRange}
+            onCategoryChange={setSelectedCategories}
+            onLevelChange={setSelectedLevel}
+            onPriceChange={setPriceRange}
+          />
+        </div>
+
+        <div className="flex-1 min-w-0">
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: COURSES_PER_PAGE }).map((_, i) => (
