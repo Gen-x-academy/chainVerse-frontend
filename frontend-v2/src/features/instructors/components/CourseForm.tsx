@@ -58,8 +58,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
     <form className="space-y-6" onSubmit={handleSubmit((data) => onSubmit(data, isEditing ? 'update' : 'publish'))}>
       {/* Title */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+        <label htmlFor="course-title" className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
         <input
+          id="course-title"
           type="text"
           placeholder="Course title"
           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
@@ -72,8 +73,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+        <label htmlFor="course-description" className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
         <textarea
+          id="course-description"
           rows={4}
           placeholder="Course description"
           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition resize-none ${
@@ -87,8 +89,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
       {/* Category & Level */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+          <label htmlFor="course-category" className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
           <select
+            id="course-category"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
               errors.category ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
             }`}
@@ -103,8 +106,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Level</label>
+          <label htmlFor="course-level" className="block text-sm font-semibold text-gray-700 mb-2">Level</label>
           <select
+            id="course-level"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
               errors.level ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
             }`}
@@ -121,8 +125,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
 
       {/* Price */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Price ($)</label>
+        <label htmlFor="course-price" className="block text-sm font-semibold text-gray-700 mb-2">Price ($)</label>
         <input
+          id="course-price"
           type="number"
           step="0.01"
           min="0"
@@ -137,8 +142,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({
 
       {/* Thumbnail URL */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Thumbnail URL</label>
+        <label htmlFor="course-thumbnail" className="block text-sm font-semibold text-gray-700 mb-2">Thumbnail URL</label>
         <input
+          id="course-thumbnail"
           type="text"
           placeholder="https://example.com/image.jpg"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
