@@ -62,7 +62,7 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
 const RevenueChartSkeleton: React.FC = () => (
   <div className="animate-pulse" role="status" aria-label="Loading revenue chart">
     {/* Stat row */}
-    <div className="flex gap-6 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
       {Array.from({ length: 3 }, (_, i) => (
         <div key={i} className="flex-1 space-y-2">
           <div className="h-3 w-20 bg-gray-200 rounded-full" />
@@ -204,7 +204,7 @@ export const RevenueChart: React.FC = () => {
         data && (
           <>
             {/* ── Summary Stats ── */}
-            <div className="flex gap-6 mb-6 flex-wrap border-b border-gray-50 pb-5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-3">
               <Stat
                 label="Total Revenue"
                 value={`${data.summary.total.toLocaleString()} XLM`}
@@ -223,20 +223,20 @@ export const RevenueChart: React.FC = () => {
                 label="Peak Month"
                 value={data.summary.peakMonth}
               />
-              {/* Inline growth badge */}
-              <div className="flex items-center self-center ml-auto">
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full",
-                    growthPositive
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-rose-50 text-rose-700"
-                  )}
-                >
-                  <GrowthIcon size={12} aria-hidden="true" />
-                  {growthPositive ? "+" : ""}{data.summary.growth}% this period
-                </span>
-              </div>
+            </div>
+            {/* Growth badge row */}
+            <div className="border-b border-gray-50 pb-5 mb-6">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full",
+                  growthPositive
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-rose-50 text-rose-700"
+                )}
+              >
+                <GrowthIcon size={12} aria-hidden="true" />
+                {growthPositive ? "+" : ""}{data.summary.growth}% this period
+              </span>
             </div>
 
             {/* ── Chart ── */}
