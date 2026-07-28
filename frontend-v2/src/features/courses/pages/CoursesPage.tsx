@@ -84,6 +84,14 @@ function CourseGrid() {
     [filtered, currentPage]
   );
 
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedCategories([]);
+    setSelectedLevel('All');
+    setPriceRange(500);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <div className="mb-8">
@@ -141,7 +149,7 @@ function CourseGrid() {
               ))}
             </div>
           ) : (
-            <CourseList courses={paginated} />
+            <CourseList courses={paginated} onClearFilters={handleClearFilters} />
           )}
 
           {!isLoading && totalPages > 1 && (

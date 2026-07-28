@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Star } from 'lucide-react';
-import { EmptyState } from '@/src/shared/components/ui/EmptyState';
+import { BookOpen, Star } from 'lucide-react';
 import Link from 'next/link';
 
 interface CourseItem {
@@ -19,15 +18,25 @@ interface CourseItem {
 
 interface CourseListProps {
   courses: CourseItem[];
+  onClearFilters?: () => void;
 }
 
-export const CourseList: React.FC<CourseListProps> = ({ courses }) => {
+export const CourseList: React.FC<CourseListProps> = ({ courses, onClearFilters }) => {
   if (courses.length === 0) {
     return (
-      <EmptyState
-        title="No courses found"
-        description="Try adjusting your filters."
-      />
+      <div className="col-span-full flex flex-col items-center justify-center py-16 gap-4">
+        <BookOpen size={48} className="text-gray-300" />
+        <p className="text-gray-500 text-lg font-medium">No courses match your filters</p>
+        {onClearFilters && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="text-indigo-600 hover:underline text-sm"
+          >
+            Clear all filters
+          </button>
+        )}
+      </div>
     );
   }
 
