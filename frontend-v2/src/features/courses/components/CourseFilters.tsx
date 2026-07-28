@@ -38,8 +38,13 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Category</h3>
           <div className="space-y-2">
             {CATEGORIES.map((category) => (
-              <label key={category} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={category}
+                htmlFor={`category-${category}`}
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <input
+                  id={`category-${category}`}
                   type="checkbox"
                   checked={selectedCategories.includes(category)}
                   onChange={() => handleCategoryToggle(category)}
@@ -56,8 +61,13 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Level</h3>
           <div className="space-y-2">
             {LEVELS.map((level) => (
-              <label key={level} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={level}
+                htmlFor={`level-${level}`}
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <input
+                  id={`level-${level}`}
                   type="radio"
                   name="level"
                   checked={selectedLevel === level}

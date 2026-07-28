@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { BookOpen, Clock, Trophy, TrendingUp } from 'lucide-react';
 import { UserActivityChart } from '../components/UserActivityChart';
 import { studentService } from '../services/student.service';
-import { useSession } from '@/src/features/auth/hooks/useSession';
+import { useAuthStore } from '@/src/store/authStore';
 import type { Student, EnrollmentRecord } from '../types/students.types';
 
 interface DashboardStats {
@@ -23,14 +23,14 @@ const STAT_COLORS = [
 ];
 
 export const StudentDashboardPage: React.FC = () => {
-  const { token } = useSession();
+  const authUser = useAuthStore((state) => state.user);
   const [student, setStudent] = useState<Student | null>(null);
   const [enrollments, setEnrollments] = useState<EnrollmentRecord[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    if (!authUser) return;
     setIsLoading(true);
     Promise.all([
       studentService.list(1, 1),
@@ -49,7 +49,7 @@ export const StudentDashboardPage: React.FC = () => {
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [token]);
+  }, [authUser]);
 
   const statItems = stats
     ? [
@@ -60,7 +60,7 @@ export const StudentDashboardPage: React.FC = () => {
       ]
     : [];
 
-  const firstName = student?.firstName ?? 'there';
+  const firstName = authUser?.firstName ?? 'there';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,9 +108,9 @@ export const StudentDashboardPage: React.FC = () => {
           <section aria-labelledby="course-progress-heading" className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-8">
             <Suspense fallback={<div className="h-48 bg-gray-200 rounded-lg animate-pulse" />}>
               <h2 id="course-progress-heading" className="text-lg font-semibold text-gray-900 mb-4">
-                Course Progress
+                Enrolled Courses
               </h2>
-              <ul className="space-y-4" aria-label="Enrolled course progress">
+              <ul className="space-y-4" aria-label="Enrolled course cards">
                 {enrollments.map((enrollment) => (
                   <li key={enrollment.courseId}>
                     <div className="flex justify-between items-center mb-1">
@@ -129,6 +129,36 @@ export const StudentDashboardPage: React.FC = () => {
                         className="bg-indigo-600 h-2 rounded-full"
                         style={{ width: `${enrollment.progress}%` }}
                       />
+                    {/* Issue #706: Responsive course card with proper image sizing and text truncation */}
+                    <div className="flex gap-4 items-start">
+                      {/* Responsive image: smaller on mobile, normal on sm+ */}
+                      <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg flex-shrink-0 bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                        <BookOpen className="w-8 h-8 sm:w-12 sm:h-12 text-white" aria-hidden="true" />
+                      </div>
+                      {/* Content area: min-w-0 allows text to truncate properly on narrow screens */}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex justify-between items-center gap-2">
+                          <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
+                            {enrollment.courseId}
+                          </h3>
+                          <span className="text-sm text-gray-500 flex-shrink-0" aria-hidden="true">
+                            {enrollment.progress}%
+                          </span>
+                        </div>
+                        <div
+                          role="progressbar"
+                          aria-valuenow={enrollment.progress}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`${enrollment.courseId} progress`}
+                          className="w-full bg-gray-200 rounded-full h-2 overflow-hidden"
+                        >
+                          <div
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${enrollment.progress}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </li>
                 ))}

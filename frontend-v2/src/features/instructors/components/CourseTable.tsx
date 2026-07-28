@@ -70,7 +70,7 @@ export const CourseTable: React.FC = () => {
       render: (_, row) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => router.push(`/instructor/dashboard/courses/${row.id}/edit`)}
+            onClick={() => router.push(`/instructors/courses/${row.id}/edit`)}
             className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
             aria-label="Edit course"
           >
@@ -109,7 +109,7 @@ export const CourseTable: React.FC = () => {
           <DataTable
             data={courses}
             columns={columns}
-            onRowClick={(row) => router.push(`/instructor/dashboard/courses/${row.id}`)}
+            onRowClick={(row) => router.push(`/instructors/courses/${row.id}`)}
           />
         </div>
       )}
