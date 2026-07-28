@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { BookOpen, Clock, Trophy, TrendingUp } from 'lucide-react';
 import { UserActivityChart } from '../components/UserActivityChart';
 import { studentService } from '../services/student.service';
-import { useSession } from '@/src/features/auth/hooks/useSession';
+import { useAuthStore } from '@/src/store/authStore';
 import type { Student, EnrollmentRecord } from '../types/students.types';
 
 interface DashboardStats {
@@ -23,14 +23,14 @@ const STAT_COLORS = [
 ];
 
 export const StudentDashboardPage: React.FC = () => {
-  const { token } = useSession();
+  const authUser = useAuthStore((state) => state.user);
   const [student, setStudent] = useState<Student | null>(null);
   const [enrollments, setEnrollments] = useState<EnrollmentRecord[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    if (!authUser) return;
     setIsLoading(true);
     Promise.all([
       studentService.list(1, 1),
@@ -49,7 +49,7 @@ export const StudentDashboardPage: React.FC = () => {
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [token]);
+  }, [authUser]);
 
   const statItems = stats
     ? [
@@ -60,7 +60,7 @@ export const StudentDashboardPage: React.FC = () => {
       ]
     : [];
 
-  const firstName = student?.firstName ?? 'there';
+  const firstName = authUser?.firstName ?? 'there';
 
   return (
     <div className="min-h-screen bg-gray-50">
