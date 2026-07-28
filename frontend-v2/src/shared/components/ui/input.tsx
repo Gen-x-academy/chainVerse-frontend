@@ -53,7 +53,7 @@ export const Input: React.FC<InputProps> = ({
         aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-hint` : undefined}
         className={clsx(
           'w-full px-3 py-2 border rounded-md transition',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+          'focus-ring',
           error
             ? 'border-red-500 focus-visible:ring-red-500 bg-red-50'
             : 'border-gray-300 focus-visible:ring-blue-500 bg-white',

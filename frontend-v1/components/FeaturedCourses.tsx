@@ -51,7 +51,7 @@ const FeaturedCourses: React.FC = () => {
   ];
 
   return (
-    <section className="lg:md:py-12 py-8 bg-gray-50">
+    <section className="py-8 md:py-12 bg-gray-50">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold mb-2">Featured Courses</h2>
         <p className="text-gray-600">Start your blockchain journey today</p>

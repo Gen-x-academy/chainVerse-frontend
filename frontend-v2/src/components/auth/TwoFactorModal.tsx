@@ -52,7 +52,7 @@ export function BiometricLoginView({
 
       <button
         onClick={onSwitchToEmail}
-        className="text-sm text-gray-900 hover:text-gray-700 focus:outline-none focus:underline"
+        className="text-sm text-gray-900 hover:text-gray-700 focus-ring"
       >
         Having trouble? Use email login
       </button>

@@ -56,7 +56,7 @@ export const CourseFilterBar: React.FC<CourseFilterBarProps> = ({ onSearch, onFi
               placeholder="Search courses, instructors, topics..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus-ring focus:border-transparent"
             />
           </div>
 
@@ -64,7 +64,7 @@ export const CourseFilterBar: React.FC<CourseFilterBarProps> = ({ onSearch, onFi
           <select
             value={filters.sortBy}
             onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-            className="hidden md:block px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="hidden md:block px-4 py-3 border border-gray-300 rounded-lg focus-ring focus:border-transparent"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>

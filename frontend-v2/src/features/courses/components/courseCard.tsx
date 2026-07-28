@@ -81,7 +81,7 @@ export function CourseCard({
           onClick={() => toggle(String(id))}
           aria-label={wishlisted ? `Remove ${title} from wishlist` : `Add ${title} to wishlist`}
           aria-pressed={wishlisted}
-          className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all hover:scale-110"
+          className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all hover:scale-110 focus-ring"
         >
           <Heart
             size={18}

@@ -80,6 +80,12 @@ export default async function RootLayout({
           "min-h-screen bg-background font-sans antialiased"
         )}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-indigo-600 text-white px-4 py-2 rounded-lg z-50"
+        >
+          Skip to main content
+        </a>
         {!healthy && (
           <div
             role="status"
@@ -91,7 +97,9 @@ export default async function RootLayout({
             unavailable.
           </div>
         )}
-        <Providers>{children}</Providers>
+        <main id="main-content">
+          <Providers>{children}</Providers>
+        </main>
       </body>
     </html>
   );

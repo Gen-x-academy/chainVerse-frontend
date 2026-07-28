@@ -6,20 +6,37 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib';
 import { ConnectWalletButton } from '@/src/shared/components/ConnectWalletButton';
 import { colors } from '@/src/shared/constants/design-tokens';
+import { useAuthStore } from '@/src/store/authStore';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { isAuthenticated, user } = useAuthStore();
 
   useEffect(() => { setIsOpen(false); }, [pathname]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const navLinks = [
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/courses', label: 'Courses' },
-    { href: '/students', label: 'Students' },
-  ];
+  // Build nav links based on auth state and role (closes #732)
+  const navLinks: { href: string; label: string }[] = (() => {
+    if (!isAuthenticated) {
+      return [
+        { href: '/login', label: 'Login' },
+        { href: '/register', label: 'Register' },
+      ];
+    }
+    if (user?.role === 'instructor') {
+      return [
+        { href: '/instructors/dashboard', label: 'Instructor Dashboard' },
+        { href: '/courses', label: 'My Courses' },
+      ];
+    }
+    // student (and admin fallback)
+    return [
+      { href: '/dashboard', label: 'Dashboard' },
+      { href: '/my-courses', label: 'My Courses' },
+    ];
+  })();
 
   const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK;
 
@@ -47,6 +64,7 @@ export const Navbar = () => {
                 href={link.href}
                 className={cn(
                   'text-gray-600 hover:text-[var(--dt-primary)] transition-colors font-medium',
+                  // Highlight active route with primary colour + bottom border (#733)
                   pathname === link.href && 'text-[var(--dt-primary)] font-semibold border-b-2 border-[var(--dt-primary)]'
                 )}
               >
@@ -61,7 +79,7 @@ export const Navbar = () => {
             <button
               onClick={toggleMenu}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none min-h-[44px] min-w-[44px]"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus-ring min-h-[44px] min-w-[44px]"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -94,6 +112,7 @@ export const Navbar = () => {
         aria-hidden={!isOpen}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-100">
+          {/* Auth-aware links: unauthenticated → Login/Register; student → Dashboard/My Courses; instructor → Instructor Dashboard/My Courses (#732) */}
           {navLinks.map((link) => (
             <Link
               key={link.href}

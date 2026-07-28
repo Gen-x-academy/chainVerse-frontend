@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { colors } from '@/src/shared/constants/design-tokens';
+import { focusRing } from '@/src/shared/constants/a11y';
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -27,7 +28,8 @@ export const Button: React.FC<ButtonProps> = ({
         ...style,
       } as React.CSSProperties}
       className={clsx(
-        "px-4 py-2 rounded-md transition focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "px-4 py-2 rounded-md transition",
+        focusRing,
         variantStyles[variant],
         className,
       )}
