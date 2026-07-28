@@ -73,7 +73,9 @@ See [`.env.example`](.env.example) for a complete template.
 | `npm run analyze`    | Production build with `@next/bundle-analyzer` enabled (opens bundle map).    |
 | `npm test`           | Runs the Vitest unit-test suite once and exits.                              |
 | `npm run test:watch` | Runs Vitest in interactive watch mode.                                       |
-| `npm run test:e2e`   | Runs the Playwright end-to-end tests (requires a running dev server).         |
+| `npm run test:e2e`   | Runs the Playwright end-to-end tests (starts/reuses the dev server).          |
+| `npm run test:e2e:visual` | Runs visual regression screenshots for critical journeys.                 |
+| `npm run test:e2e:visual:update` | Regenerates screenshot baselines after intentional UI changes.   |
 
 A typical validation loop before opening a PR:
 
@@ -191,8 +193,30 @@ the top-level `test/` directory.
 npm run test:e2e
 ```
 
-Playwright specs live in `e2e/`. The dev server must be running on port 3000
-before executing these tests.
+Playwright specs live in `e2e/`. The config starts (or reuses) the Next.js
+dev server on port 3000.
+
+### Visual regression (Playwright screenshots)
+
+Critical journeys — landing, auth, catalog, course detail, dashboards, wallet,
+checkout/payment, loading, and error states — are covered at desktop (`1280×720`)
+and mobile (`390×844`) widths, including light/dark theme variants where theming
+applies.
+
+```bash
+npm run test:e2e:visual          # compare against committed baselines
+npm run test:e2e:visual:update   # refresh baselines after intentional UI changes
+```
+
+Helpers live in `e2e/helpers/visual.ts` (API mocks, session cookie, theme, motion
+freeze). Baselines are stored next to the spec under
+`e2e/visual-regression.spec.ts-snapshots/`. Screenshot pixels are
+platform-sensitive (fonts); prefer regenerating on Linux/CI when baselines drift
+without a real layout change.
+
+**Checkout page** — `app/(main)/checkout/page.tsx` is the cart → pay destination
+used by `CartModal`. An empty cart renders a stable payment empty-state for
+visual coverage.
 
 ---
 
