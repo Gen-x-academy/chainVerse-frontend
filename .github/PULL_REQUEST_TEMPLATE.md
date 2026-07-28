@@ -1,19 +1,19 @@
-## Description  
-<!-- Provide a brief summary of the changes in this PR. Explain what was modified and why. -->  
+## What does this PR do?
 
-## Related Issues  
-<!-- Link any related issues using `Closes #issue_number` or `Fixes #issue_number`. This helps track bugs and feature requests. -->  
+## Related issue
+Closes #
 
-## Changes Made  
-- [ ] <!-- List key changes made in this PR. Use bullet points for clarity. -->  
+## Type of change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Responsiveness fix
+- [ ] Refactor
+- [ ] Test
 
-## How to Test  
-<!-- Explain how a reviewer can test these changes. Provide commands, steps, or expected results if applicable. -->  
+## How was this tested?
+- [ ] Unit tests added/updated
+- [ ] Tested on mobile (< 375px)
+- [ ] Tested on tablet (768px)
+- [ ] Tested on desktop (1280px+)
 
-## Screenshots (if applicable)  
-<!-- If your PR affects the UI, upload screenshots to show the changes visually. -->  
-
-## Checklist  
-- [ ] My code follows the project's coding style.  
-- [ ] I have tested these changes locally.  
-- [ ] Documentation has been updated where necessary.  
+## Screenshots (for UI changes)
