@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { CourseForm, CourseFormData } from '@/features/instructors/components/CourseForm';
 import { courseService } from '@/features/courses/services/course.service';
+import { useCancellableTimeout } from '@/src/hooks/useCancellableTimeout';
 
 export default function CreateCoursePage() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const redirectTimeout = useCancellableTimeout();
 
   const handleSubmit = async (data: CourseFormData, action: 'draft' | 'publish' | 'update') => {
     setLoading(true);
@@ -19,7 +21,7 @@ export default function CreateCoursePage() {
         price: data.price,
       });
       setToast({ type: 'success', message: `Course ${action === 'publish' ? 'published' : 'saved as draft'} successfully!` });
-      setTimeout(() => {
+      redirectTimeout.schedule(() => {
         window.location.href = '/instructors/dashboard';
       }, 1500);
     } catch {

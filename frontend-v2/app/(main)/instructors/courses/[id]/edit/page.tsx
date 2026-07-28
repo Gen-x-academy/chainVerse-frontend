@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CourseForm, CourseFormData } from '@/features/instructors/components/CourseForm';
 import { useCourseById, useUpdateCourse, useRemoveCourse } from '@/features/courses/hooks/useCourses';
+import { useCancellableTimeout } from '@/src/hooks/useCancellableTimeout';
 
 export default function EditCoursePage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const redirectTimeout = useCancellableTimeout();
 
   const { data: course, isLoading, error } = useCourseById(courseId);
   const updateCourse = useUpdateCourse();
@@ -23,7 +25,7 @@ export default function EditCoursePage() {
         payload: { title: data.title, description: data.description, thumbnailUrl: data.thumbnailUrl, price: data.price },
       });
       setToast({ type: 'success', message: 'Course updated successfully!' });
-      setTimeout(() => router.push('/instructors/dashboard'), 1500);
+      redirectTimeout.schedule(() => router.push('/instructors/dashboard'), 1500);
     } catch {
       setToast({ type: 'error', message: 'Failed to update course. Please try again.' });
     }
