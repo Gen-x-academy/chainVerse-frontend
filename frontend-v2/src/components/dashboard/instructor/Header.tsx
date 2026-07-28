@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                     <input
                         type="text"
                         placeholder="Search everything..."
-                        className="pl-12 pr-4 py-2.5 w-64 xl:w-72 rounded-xl border border-gray-100 bg-gray-50/50 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-300"
+                        className="pl-12 pr-4 py-2.5 w-64 xl:w-72 rounded-xl border border-gray-100 bg-gray-50/50 text-sm focus-ring focus:border-indigo-500 focus:bg-white transition-all duration-300"
                     />
                 </div>
 
@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                         <button
                             id="profile-menu-button"
                             onClick={toggleProfile}
-                            className="flex items-center gap-3 cursor-pointer group focus:outline-none"
+                            className="flex items-center gap-3 cursor-pointer group focus-ring"
                             aria-haspopup="true"
                             aria-expanded={isProfileOpen}
                             aria-label="Open profile menu"

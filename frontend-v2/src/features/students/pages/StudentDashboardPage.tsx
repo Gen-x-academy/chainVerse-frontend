@@ -113,6 +113,22 @@ export const StudentDashboardPage: React.FC = () => {
               <ul className="space-y-4" aria-label="Enrolled course cards">
                 {enrollments.map((enrollment) => (
                   <li key={enrollment.courseId}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium text-gray-700">{enrollment.courseId}</span>
+                      <span className="text-sm text-gray-500" aria-hidden="true">{enrollment.progress}%</span>
+                    </div>
+                    <div
+                      role="progressbar"
+                      aria-valuenow={enrollment.progress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${enrollment.courseId} — ${enrollment.progress}% complete`}
+                      className="w-full bg-gray-200 rounded-full h-2"
+                    >
+                      <div
+                        className="bg-indigo-600 h-2 rounded-full"
+                        style={{ width: `${enrollment.progress}%` }}
+                      />
                     {/* Issue #706: Responsive course card with proper image sizing and text truncation */}
                     <div className="flex gap-4 items-start">
                       {/* Responsive image: smaller on mobile, normal on sm+ */}

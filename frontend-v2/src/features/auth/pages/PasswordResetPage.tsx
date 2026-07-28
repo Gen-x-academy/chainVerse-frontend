@@ -103,10 +103,10 @@ export const PasswordResetPage: React.FC = () => {
             type="text"
             placeholder="123456"
             maxLength={6}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition tracking-widest text-center text-lg ${
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition tracking-widest text-center text-lg ${
               codeForm.formState.errors.code
                 ? 'border-red-300 focus-visible:ring-red-500'
-                : 'border-gray-300 focus-visible:ring-blue-500'
+                : 'border-gray-300'
             }`}
             {...codeForm.register('code')}
           />
@@ -117,7 +117,7 @@ export const PasswordResetPage: React.FC = () => {
         <button
           type="submit"
           disabled={codeForm.formState.isSubmitting}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-ring"
         >
           {codeForm.formState.isSubmitting ? (
             <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Verifying...</>
@@ -153,10 +153,10 @@ export const PasswordResetPage: React.FC = () => {
             id="password"
             type="password"
             placeholder="••••••••"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
               resetForm.formState.errors.password
                 ? 'border-red-300 focus-visible:ring-red-500'
-                : 'border-gray-300 focus-visible:ring-blue-500'
+                : 'border-gray-300'
             }`}
             {...resetForm.register('password')}
           />
@@ -172,10 +172,10 @@ export const PasswordResetPage: React.FC = () => {
             id="confirmPassword"
             type="password"
             placeholder="••••••••"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
               resetForm.formState.errors.confirmPassword
                 ? 'border-red-300 focus-visible:ring-red-500'
-                : 'border-gray-300 focus-visible:ring-blue-500'
+                : 'border-gray-300'
             }`}
             {...resetForm.register('confirmPassword')}
           />
@@ -186,7 +186,7 @@ export const PasswordResetPage: React.FC = () => {
         <button
           type="submit"
           disabled={resetForm.formState.isSubmitting}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-ring"
         >
           {resetForm.formState.isSubmitting ? (
             <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Resetting...</>
@@ -215,10 +215,10 @@ export const PasswordResetPage: React.FC = () => {
           id="email"
           type="email"
           placeholder="you@example.com"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
             emailForm.formState.errors.email
               ? 'border-red-300 focus-visible:ring-red-500'
-              : 'border-gray-300 focus-visible:ring-blue-500'
+              : 'border-gray-300'
           }`}
           {...emailForm.register('email')}
         />
@@ -229,7 +229,7 @@ export const PasswordResetPage: React.FC = () => {
       <button
         type="submit"
         disabled={emailForm.formState.isSubmitting}
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-ring"
       >
         {emailForm.formState.isSubmitting ? (
           <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Sending...</>

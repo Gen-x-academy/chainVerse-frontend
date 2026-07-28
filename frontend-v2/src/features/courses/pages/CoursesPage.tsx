@@ -106,7 +106,7 @@ function CourseGrid() {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg bg-white focus-ring focus:border-transparent"
           />
           {/* #783 — "/" shortcut hint badge */}
           <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 rounded border border-gray-300 bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-gray-500 select-none">

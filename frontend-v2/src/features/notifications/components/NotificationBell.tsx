@@ -79,7 +79,7 @@ export function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-lg hover:bg-gray-100 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+        className="relative p-2 rounded-lg hover:bg-gray-100 transition focus-ring"
       >
         <Bell size={20} className="text-gray-600" />
         {unreadCount > 0 && (

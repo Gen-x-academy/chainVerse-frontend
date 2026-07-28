@@ -127,7 +127,7 @@ export default function NotificationsPage() {
                   {!n.isRead && (
                     <button
                       onClick={() => markRead(n.id)}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap focus-ring rounded"
                     >
                       Mark read
                     </button>

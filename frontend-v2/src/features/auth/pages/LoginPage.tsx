@@ -77,8 +77,8 @@ export const LoginPage: React.FC = () => {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition ${
-            errors.email ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300 focus-visible:ring-blue-500'
+          className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
+            errors.email ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
           }`}
           {...register('email')}
         />
@@ -98,8 +98,8 @@ export const LoginPage: React.FC = () => {
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             autoComplete="current-password"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition pr-12 ${
-              errors.password ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300 focus-visible:ring-blue-500'
+            className={`w-full px-4 py-3 border rounded-lg focus-ring transition pr-12 ${
+              errors.password ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
             }`}
             {...register('password')}
           />
@@ -107,7 +107,7 @@ export const LoginPage: React.FC = () => {
             type="button"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition focus-ring rounded"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -119,6 +119,7 @@ export const LoginPage: React.FC = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
+        <Link href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium focus-ring rounded">
         <Link href="/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
           Forgot password?
         </Link>
@@ -128,7 +129,7 @@ export const LoginPage: React.FC = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-ring"
       >
         {isSubmitting ? (
           <>
@@ -143,6 +144,7 @@ export const LoginPage: React.FC = () => {
       {/* Sign Up Link */}
       <p className="text-center text-gray-600 text-sm">
         Don&apos;t have an account?{' '}
+        <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold focus-ring rounded">
         <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
           Sign up
         </Link>
