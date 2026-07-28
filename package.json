@@ -1,8 +1,18 @@
 {
   "private": true,
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "workspaces": [
+    "frontend-v2"
+  ],
   "scripts": {
-    "dev": "cd frontend-v2 && npm run dev",
-    "build": "cd frontend-v2 && npm run build",
-    "install:all": "cd frontend-v2 && npm install"
+    "install:all": "npm ci --workspaces",
+    "dev": "npm run dev --workspace frontend-v2",
+    "build": "npm run build --workspace frontend-v2",
+    "lint": "npm run lint --workspace frontend-v2",
+    "typecheck": "npm exec --workspace frontend-v2 -- tsc --noEmit",
+    "test": "npm run test --workspace frontend-v2",
+    "e2e": "npm run test:e2e --workspace frontend-v2"
   }
 }
