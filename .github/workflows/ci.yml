@@ -15,3 +15,9 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm test
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:3002
