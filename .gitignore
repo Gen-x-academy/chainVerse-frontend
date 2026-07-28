@@ -1,5 +1,8 @@
 .env
 
+# dependencies (workspace hoist may place these at repo root)
+node_modules/
+
 # logs
 *.log
 debug.log

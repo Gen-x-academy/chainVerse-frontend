@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import NextLink from "next/link";
 import {
   Building2,
   Mail,
@@ -17,10 +18,65 @@ import {
   Twitter,
   Linkedin,
   Github,
-  Link,
 } from "lucide-react";
 import { apiClient } from "@/src/lib/api-client";
 import { toast } from "sonner";
+import {
+  getContactConfig,
+  type ContactChannelId,
+  type SocialChannelId,
+  type SiteLinkId,
+} from "@/src/shared/constants/contact-config";
+
+const CHANNEL_ICONS: Record<ContactChannelId, React.ReactNode> = {
+  email: <Mail className="h-6 w-6" />,
+  phone: <Phone className="h-6 w-6" />,
+  office: <MapPin className="h-6 w-6" />,
+  hours: <Clock className="h-6 w-6" />,
+};
+
+const SOCIAL_ICONS: Record<SocialChannelId, React.ReactNode> = {
+  twitter: <Twitter className="h-5 w-5" />,
+  linkedin: <Linkedin className="h-5 w-5" />,
+  github: <Github className="h-5 w-5" />,
+};
+
+function isExternalHref(href: string): boolean {
+  return (
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  );
+}
+
+function ConfigLink({
+  href,
+  className,
+  children,
+  ...rest
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
+  if (isExternalHref(href)) {
+    return (
+      <a
+        href={href}
+        className={className}
+        {...(href.startsWith("http")
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+        {...rest}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <NextLink href={href} className={className} {...rest}>
+      {children}
+    </NextLink>
+  );
+}
 
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
@@ -34,6 +90,13 @@ const ContactUsPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { channels, socials, siteLinks } = useMemo(() => getContactConfig(), []);
+
+  const helpCenter = siteLinks.find((l) => l.id === "helpCenter");
+  const footerLinks = siteLinks.filter((l) =>
+    (["privacy", "terms", "support"] as SiteLinkId[]).includes(l.id)
+  );
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -85,44 +148,10 @@ const ContactUsPage = () => {
     }
   };
 
-  const contactInfo = [
-    {
-      icon: <Mail className="h-6 w-6" />,
-      title: "Email",
-      content: "support@managehub.com",
-      link: "mailto:support@managehub.com",
-    },
-    {
-      icon: <Phone className="h-6 w-6" />,
-      title: "Phone",
-      content: "+234 800 000 0000",
-      link: "tel:+2348000000000",
-    },
-    {
-      icon: <MapPin className="h-6 w-6" />,
-      title: "Office",
-      content: "Abuja, FCT, Nigeria",
-      link: null,
-    },
-    {
-      icon: <Clock className="h-6 w-6" />,
-      title: "Business Hours",
-      content: "Mon - Fri: 9:00 AM - 6:00 PM WAT",
-      link: null,
-    },
-  ];
-
-  const socialLinks = [
-    { icon: <Twitter className="h-5 w-5" />, label: "Twitter", href: "#" },
-    { icon: <Linkedin className="h-5 w-5" />, label: "LinkedIn", href: "#" },
-    { icon: <Github className="h-5 w-5" />, label: "GitHub", href: "#" },
-  ];
-
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center px-4 py-12">
         <div className="max-w-md w-full space-y-8">
-          {/* Header */}
           <div className="text-center">
             <div className="flex justify-center items-center mb-6">
               <div className="bg-gray-900 p-3 rounded-xl">
@@ -132,7 +161,6 @@ const ContactUsPage = () => {
             <h1 className="text-3xl font-bold text-gray-900">ManageHub</h1>
           </div>
 
-          {/* Success Card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="text-center space-y-6">
               <div className="flex justify-center">
@@ -146,19 +174,20 @@ const ContactUsPage = () => {
                   Message Sent Successfully!
                 </h2>
                 <p className="text-gray-600">
-                  Thank you for reaching out to us. We've received your message
+                  Thank you for reaching out to us. We&apos;ve received your message
                   and our team will get back to you within 24-48 hours.
                 </p>
               </div>
 
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <p className="text-sm text-gray-900">
-                  We've sent a confirmation email to{" "}
+                  We&apos;ve sent a confirmation email to{" "}
                   <span className="font-medium">{formData.email}</span>
                 </p>
               </div>
 
               <button
+                type="button"
                 onClick={() => {
                   setIsSubmitted(false);
                   setFormData({
@@ -175,12 +204,12 @@ const ContactUsPage = () => {
                 Send Another Message
               </button>
 
-              <Link
+              <NextLink
                 href="/"
                 className="block text-gray-700 hover:text-gray-900 font-medium transition-colors"
               >
                 Back to Home
-              </Link>
+              </NextLink>
             </div>
           </div>
         </div>
@@ -191,7 +220,6 @@ const ContactUsPage = () => {
   return (
     <div className="min-h-screen bg-[#faf9f7] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-6">
             <div className="bg-gray-900 p-3 rounded-xl">
@@ -202,13 +230,12 @@ const ContactUsPage = () => {
             Get in Touch
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Have questions about ManageHub? We'd love to hear from you. Send us
-            a message and we'll respond as soon as possible.
+            Have questions about ManageHub? We&apos;d love to hear from you. Send us
+            a message and we&apos;ll respond as soon as possible.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
               <div className="flex items-center mb-6">
@@ -219,7 +246,6 @@ const ContactUsPage = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Full Name */}
                 <div>
                   <label
                     htmlFor="fullName"
@@ -252,7 +278,6 @@ const ContactUsPage = () => {
                   )}
                 </div>
 
-                {/* Email and Phone */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label
@@ -312,7 +337,6 @@ const ContactUsPage = () => {
                   </div>
                 </div>
 
-                {/* Company */}
                 <div>
                   <label
                     htmlFor="company"
@@ -338,7 +362,6 @@ const ContactUsPage = () => {
                   </div>
                 </div>
 
-                {/* Subject */}
                 <div>
                   <label
                     htmlFor="subject"
@@ -371,7 +394,6 @@ const ContactUsPage = () => {
                   )}
                 </div>
 
-                {/* Message */}
                 <div>
                   <label
                     htmlFor="message"
@@ -390,7 +412,7 @@ const ContactUsPage = () => {
                       errors.message ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Tell us more about your inquiry..."
-                  ></textarea>
+                  />
                   {errors.message && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
@@ -402,15 +424,15 @@ const ContactUsPage = () => {
                   </p>
                 </div>
 
-                {/* Submit Button */}
                 <button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus-ring transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
                       Sending...
                     </>
                   ) : (
@@ -424,92 +446,97 @@ const ContactUsPage = () => {
             </div>
           </div>
 
-          {/* Contact Information Sidebar */}
           <div className="space-y-6">
-            {/* Contact Info Cards */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                Contact Information
-              </h3>
-              <div className="space-y-4">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start">
-                    <div className="bg-gray-100 p-2 rounded-lg flex-shrink-0">
-                      <div className="text-gray-700">{info.icon}</div>
+            {channels.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Contact Information
+                </h3>
+                <div className="space-y-4">
+                  {channels.map((info) => (
+                    <div key={info.id} className="flex items-start">
+                      <div className="bg-gray-100 p-2 rounded-lg flex-shrink-0">
+                        <div className="text-gray-700">
+                          {CHANNEL_ICONS[info.id]}
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-900">
+                          {info.title}
+                        </p>
+                        {info.href ? (
+                          <ConfigLink
+                            href={info.href}
+                            className="text-sm text-gray-600 hover:text-gray-700 transition-colors"
+                          >
+                            {info.content}
+                          </ConfigLink>
+                        ) : (
+                          <p className="text-sm text-gray-600">{info.content}</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        {info.title}
-                      </p>
-                      {info.link ? (
-                        <a
-                          href={info.link}
-                          className="text-sm text-gray-600 hover:text-gray-700 transition-colors"
-                        >
-                          {info.content}
-                        </a>
-                      ) : (
-                        <p className="text-sm text-gray-600">{info.content}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Social Media */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                Follow Us
-              </h3>
-              <div className="flex gap-3">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="bg-gray-100 p-3 rounded-lg hover:bg-gray-900 hover:text-white text-gray-600 transition-colors"
-                    aria-label={social.label}
-                  >
-                    {social.icon}
-                  </a>
-                ))}
+            {socials.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Follow Us
+                </h3>
+                <div className="flex gap-3">
+                  {socials.map((social) => (
+                    <ConfigLink
+                      key={social.id}
+                      href={social.href}
+                      className="bg-gray-100 p-3 rounded-lg hover:bg-gray-900 hover:text-white text-gray-600 transition-colors"
+                      aria-label={social.label}
+                    >
+                      {SOCIAL_ICONS[social.id]}
+                    </ConfigLink>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Help Box */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Need Quick Help?
-              </h3>
-              <p className="text-sm text-gray-700 mb-4">
-                Check out our documentation and FAQ section for instant answers
-                to common questions.
-              </p>
-              <a
-                href="#"
-                className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-600"
-              >
-                Visit Help Center
-                <span className="ml-1">→</span>
-              </a>
-            </div>
+            {helpCenter && (
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  Need Quick Help?
+                </h3>
+                <p className="text-sm text-gray-700 mb-4">
+                  Check out our documentation and FAQ section for instant answers
+                  to common questions.
+                </p>
+                <ConfigLink
+                  href={helpCenter.href}
+                  className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-600"
+                >
+                  {helpCenter.label}
+                  <span className="ml-1">→</span>
+                </ConfigLink>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-12 text-sm text-gray-500">
           <p>© 2026 ManageHub. All rights reserved.</p>
-          <div className="mt-2 space-x-4">
-            <a href="#" className="hover:text-gray-700">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-gray-700">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-gray-700">
-              Support
-            </a>
-          </div>
+          {footerLinks.length > 0 && (
+            <div className="mt-2 space-x-4">
+              {footerLinks.map((link) => (
+                <ConfigLink
+                  key={link.id}
+                  href={link.href}
+                  className="hover:text-gray-700"
+                >
+                  {link.label}
+                </ConfigLink>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

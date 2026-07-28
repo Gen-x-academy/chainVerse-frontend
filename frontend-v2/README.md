@@ -57,6 +57,19 @@ runtime config instead.
 | `NEXT_PUBLIC_CONTRACT_COURSE_REGISTRY`| ◻️       | (Soroban contract ID)                            | Address of the course registry contract.          |
 | `NEXT_PUBLIC_CONTRACT_ESCROW`         | ◻️       | (Soroban contract ID)                            | Address of the escrow contract for paid courses.  |
 | `NEXT_PUBLIC_SENTRY_DSN`              | ◻️       | `https://...@sentry.io/...`                      | Optional Sentry DSN for client-side error reporting. |
+| `NEXT_PUBLIC_CONTACT_EMAIL`           | ◻️       | `support@chainverse.app`                         | Contact page email. Invalid/empty values hide the channel. |
+| `NEXT_PUBLIC_CONTACT_PHONE`           | ◻️       | `+234 800 000 0000`                              | Contact page phone (display + `tel:` link). Hidden when empty. |
+| `NEXT_PUBLIC_CONTACT_OFFICE`          | ◻️       | `Abuja, FCT, Nigeria`                            | Office address text (display only). Hidden when empty. |
+| `NEXT_PUBLIC_CONTACT_HOURS`           | ◻️       | `Mon - Fri: 9:00 AM - 6:00 PM WAT`               | Business hours text. Hidden when empty. |
+| `NEXT_PUBLIC_SOCIAL_TWITTER_URL`      | ◻️       | `https://twitter.com/...`                        | Twitter/X profile URL (`http`/`https` only). Hidden when empty/`#`. |
+| `NEXT_PUBLIC_SOCIAL_LINKEDIN_URL`     | ◻️       | `https://linkedin.com/company/...`               | LinkedIn URL. Hidden when empty/`#`. |
+| `NEXT_PUBLIC_SOCIAL_GITHUB_URL`       | ◻️       | `https://github.com/...`                         | GitHub URL. Hidden when empty/`#`. |
+| `NEXT_PUBLIC_HELP_CENTER_URL`         | ◻️       | `/docs` or absolute URL                          | “Visit Help Center” link. Section hidden when unset. |
+| `NEXT_PUBLIC_PRIVACY_POLICY_URL`      | ◻️       | `/privacy`                                       | Contact footer privacy link. Hidden when unset. |
+| `NEXT_PUBLIC_TERMS_OF_SERVICE_URL`    | ◻️       | `/terms`                                         | Contact footer terms link. Hidden when unset. |
+| `NEXT_PUBLIC_SUPPORT_URL`             | ◻️       | `mailto:support@chainverse.app`                  | Contact footer support link. Hidden when unset. |
+
+Contact/social links are validated in `src/shared/constants/contact-config.ts`. Unavailable channels are omitted from the UI so no control navigates to `#`.
 
 See [`.env.example`](.env.example) for a complete template.
 
