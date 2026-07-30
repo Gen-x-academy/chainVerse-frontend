@@ -10,7 +10,9 @@
     "analyze": "ANALYZE=true next build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:visual": "playwright test visual-regression",
+    "test:e2e:visual:update": "playwright test visual-regression --update-snapshots"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.3.0",
