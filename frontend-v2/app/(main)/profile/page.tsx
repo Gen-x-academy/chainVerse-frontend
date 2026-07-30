@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useCancellableTimeout } from '@/src/hooks/useCancellableTimeout';
 
 interface ProfileFormValues {
   firstName: string;
@@ -30,6 +31,8 @@ export default function ProfilePage() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [passwordStatus, setPasswordStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const saveStatusTimeout = useCancellableTimeout();
+  const passwordStatusTimeout = useCancellableTimeout();
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +50,7 @@ export default function ProfilePage() {
         }),
       });
       setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      saveStatusTimeout.schedule(() => setSaveStatus('idle'), 3000);
     } catch {
       setSaveStatus('error');
     }
@@ -77,7 +80,7 @@ export default function ProfilePage() {
       });
       setPasswordStatus('saved');
       setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setTimeout(() => setPasswordStatus('idle'), 3000);
+      passwordStatusTimeout.schedule(() => setPasswordStatus('idle'), 3000);
     } catch {
       setPasswordStatus('error');
     }

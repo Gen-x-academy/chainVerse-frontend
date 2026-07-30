@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Award, Download, Share2, Loader2 } from 'lucide-react';
 import { useWallet } from '@/src/context/WalletContext';
 import { useSession } from '@/src/features/auth/hooks/useSession';
+import { useCancellableTimeout } from '@/src/hooks/useCancellableTimeout';
 
 interface Certificate {
   courseId: string;
@@ -88,17 +89,18 @@ export default function CertificatesPage() {
   const { token } = useSession();
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(false);
+  const { schedule: scheduleLoad } = useCancellableTimeout();
 
   useEffect(() => {
     if (!publicKey || !token) return;
     setLoading(true);
     // TODO: fetch completed courses from backend, then call contracts.getCertificate() for each
     // Using mock data until contract integration is ready
-    setTimeout(() => {
+    scheduleLoad(() => {
       setCerts(MOCK_CERTIFICATES);
       setLoading(false);
     }, 500);
-  }, [publicKey, token]);
+  }, [publicKey, token, scheduleLoad]);
 
   if (!isConnected || !publicKey) {
     return (
