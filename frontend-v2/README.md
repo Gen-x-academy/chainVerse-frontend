@@ -57,6 +57,15 @@ runtime config instead.
 | `NEXT_PUBLIC_CONTRACT_COURSE_REGISTRY`| ◻️       | (Soroban contract ID)                            | Address of the course registry contract.          |
 | `NEXT_PUBLIC_CONTRACT_ESCROW`         | ◻️       | (Soroban contract ID)                            | Address of the escrow contract for paid courses.  |
 | `NEXT_PUBLIC_SENTRY_DSN`              | ◻️       | `https://...@sentry.io/...`                      | Optional Sentry DSN for client-side error reporting. |
+| `NEXT_PUBLIC_PRIVACY_POLICY_URL`      | ◻️       | `/privacy`                                       | Privacy Policy link used by the footer newsletter consent copy. |
+| `NEXT_PUBLIC_NEWSLETTER_UNSUBSCRIBE_URL` | ◻️    | `/unsubscribe`                                   | Unsubscribe link shown in newsletter success/consent UI. |
+
+### Newsletter subscription
+
+The footer newsletter posts to `POST {NEXT_PUBLIC_API_BASE_URL}/newsletter/subscribe` with
+`{ email, consent: true, consentedAt, source: "footer" }`. The UI requires an explicit consent
+checkbox, validates email client-side, throttles rapid resubmits (30s), and surfaces API
+`409` (duplicate) and `429` (rate limit) responses.
 
 See [`.env.example`](.env.example) for a complete template.
 
