@@ -1,16 +1,19 @@
-export type Course = {
+export interface Course {
   id: string;
   title: string;
-  description?: string;
+  description: string;
+  instructor: string;
+  category: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  price: number;
+  currency: string;
+  rating: number;
+  students: number;
+  image: string;
   thumbnailUrl?: string;
   instructorId?: string;
-  instructor?: string;
-  category?: string;
-  level?: string;
-  rating?: number;
   studentCount?: number;
-  price?: number;
-};
+}
 
 export type CourseListResponse = {
   data: Course[];

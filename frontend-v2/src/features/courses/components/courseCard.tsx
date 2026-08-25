@@ -8,35 +8,27 @@ import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
 import { StarRating } from '@/src/shared/components/ui/StarRating';
+import type { Course } from '../types';
 
-interface CourseCardProps {
-  id: number;
-  category: string;
+export interface CourseCardProps extends Partial<Course> {
+  id: string | number;
   title: string;
-  rating: number;
-  description: string;
-  instructor: string;
-  level: string;
-  price: number;
-  currency: string;
-  image: string;
+  onAddToCart?: () => void;
 }
 
 export function CourseCard({
   id,
   title,
-  rating,
-  description,
-  instructor,
-  level,
-  price,
-  currency,
-  image,
-  category,
+  rating = 0,
+  description = '',
+  instructor = '',
+  level = 'Beginner',
+  price = 0,
+  currency = '$',
+  image = '',
+  category = '',
   onAddToCart,
-}: CourseCardProps & {
-  onAddToCart?: () => void;
-}) {
+}: CourseCardProps) {
   const toggle = useWishlistStore((s) => s.toggle);
   const isWishlisted = useWishlistStore((s) => s.isWishlisted);
   const wishlisted = isWishlisted(String(id));
