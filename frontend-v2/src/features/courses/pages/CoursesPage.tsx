@@ -46,7 +46,7 @@ function CourseGrid() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // #269 — reset to page 1 whenever any filter changes
+  // #725 — reset to page 1 whenever any filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategories, selectedLevel, priceRange]);
