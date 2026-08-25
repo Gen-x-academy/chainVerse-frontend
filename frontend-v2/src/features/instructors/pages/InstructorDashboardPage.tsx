@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { AnalyticsCards } from '../components/AnalyticsCards';
+import { AnalyticsGrid } from '@/src/components/dashboard/instructor/AnalyticsGrid';
 import { RevenueChart } from '../components/RevenueChart';
 import { CourseTable } from '../components/CourseTable';
 import { SectionContainer } from '@/shared/components/layout/SectionContainer';
@@ -43,7 +43,7 @@ export function InstructorDashboardPage() {
         {/* Stats Cards */}
         <div className="mb-8">
           <Suspense fallback={<SectionFallback rows={4} />}>
-            <AnalyticsCards />
+            <AnalyticsGrid />
           </Suspense>
         </div>
 

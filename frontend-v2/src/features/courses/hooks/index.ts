@@ -7,3 +7,5 @@ export {
   useUpdateCourse,
   useRemoveCourse,
 } from './useCourses';
+export { useFeaturedCourses } from './useFeaturedCourses';
+

@@ -2,10 +2,12 @@
 
 import React from 'react';
 
-const CATEGORIES = ['Blockchain', 'DeFi', 'NFTs', 'Smart Contracts'];
-const LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+const DEFAULT_CATEGORIES = ['Blockchain', 'DeFi', 'NFTs', 'Smart Contracts'];
+const DEFAULT_LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-interface CourseFiltersProps {
+export interface CourseFiltersProps {
+  categories?: string[];
+  levels?: string[];
   selectedCategories: string[];
   selectedLevel: string;
   priceRange: number;
@@ -15,6 +17,8 @@ interface CourseFiltersProps {
 }
 
 export const CourseFilters: React.FC<CourseFiltersProps> = ({
+  categories = DEFAULT_CATEGORIES,
+  levels = DEFAULT_LEVELS,
   selectedCategories,
   selectedLevel,
   priceRange,
@@ -37,7 +41,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Category</h3>
           <div className="space-y-2">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <label
                 key={category}
                 htmlFor={`category-${category}`}
@@ -60,7 +64,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Level</h3>
           <div className="space-y-2">
-            {LEVELS.map((level) => (
+            {levels.map((level) => (
               <label
                 key={level}
                 htmlFor={`level-${level}`}

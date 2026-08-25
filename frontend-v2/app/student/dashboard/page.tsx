@@ -1,8 +1,9 @@
 import React from "react";
-import { Clock, Users } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Users, Clock, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RevenueChart } from "@/src/features/instructors/components/RevenueChart";
+import { AnalyticsGrid } from "@/src/components/dashboard/instructor/AnalyticsGrid";
+
 
 // ─── Empty-state placeholder ──────────────────────────────────────────────────
 

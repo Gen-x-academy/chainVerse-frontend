@@ -3,52 +3,14 @@ import React from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { CourseCard } from '@/src/features/courses/components/courseCard';
+import { CourseCardSkeleton } from '@/src/features/courses/components/CourseCardSkeleton';
 import { toast } from './ui/use-toast';
 import { useCartStore } from '@/store/cartStore';
+import { useFeaturedCourses } from '@/src/features/courses/hooks/useFeaturedCourses';
 
 const FeaturedCourses: React.FC = () => {
   const addToCart = useCartStore((state) => state.addToCart);
-  const courses = [
-    {
-      id: 1,
-      category: 'Blockchain basics',
-      title: 'Stellar Blockchain Fundamentals',
-      rating: 2.8,
-      description:
-        'Learn the basics of Stellar blockchain, its architecture, and use cases.',
-      instructor: 'Alex Johnson',
-      level: 'Beginner',
-      price: 100,
-      currency: 'XLM',
-      image: '/cart.svg',
-    },
-    {
-      id: 2,
-      category: 'Smart Contracts',
-      title: 'Smart Contracts with Soroban',
-      rating: 4.6,
-      description:
-        "Master Stellar's smart contract platform Soroban and build decentralized applications.",
-      instructor: 'Maria Garcia',
-      level: 'Intermediate',
-      price: 250,
-      currency: 'XLM',
-      image: '/cart.svg',
-    },
-    {
-      id: 3,
-      category: 'Web3 Development',
-      title: 'Web3 Development Masterclass',
-      rating: 4.9,
-      description:
-        'Comprehensive guide to building Web3 applications on multiple blockchain platforms',
-      instructor: 'David Chen',
-      level: 'Advanced',
-      price: 400,
-      currency: 'XLM',
-      image: '/cart.svg',
-    },
-  ];
+  const { data: courses = [], isLoading } = useFeaturedCourses();
 
   return (
     <section className="py-8 md:py-12 bg-gray-50">
@@ -57,27 +19,45 @@ const FeaturedCourses: React.FC = () => {
         <p className="text-gray-600">Start your blockchain journey today</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {courses.map((course) => (
-          <CourseCard
-            key={course.id}
-            {...course}
-            onAddToCart={() => {
-              const added = addToCart({
-                id: course.id,
-                title: course.title,
-                price: course.price,
-                currency: course.currency,
-                image: course.image,
-              });
-              if (!added) {
-                toast({
-                  title: 'Already in cart',
-                  description: 'This course is already in your cart.',
+        {isLoading ? (
+          <>
+            <CourseCardSkeleton />
+            <CourseCardSkeleton />
+            <CourseCardSkeleton />
+          </>
+        ) : (
+          courses.map((course) => (
+            <CourseCard
+              key={course.id}
+              id={typeof course.id === 'string' ? parseInt(course.id, 10) || 0 : course.id}
+              category={course.category ?? 'General'}
+              title={course.title}
+              rating={course.rating ?? 0}
+              description={course.description ?? ''}
+              instructor={course.instructor ?? 'Instructor'}
+              level={course.level ?? 'All'}
+              price={course.price ?? 0}
+              currency="XLM"
+              image={course.thumbnailUrl ?? '/cart.svg'}
+              onAddToCart={() => {
+                const added = addToCart({
+                  id: String(course.id),
+                  title: course.title,
+                  price: course.price ?? 0,
+                  currency: 'XLM',
+                  image: course.thumbnailUrl ?? '/cart.svg',
+                  quantity: 1,
                 });
-              }
-            }}
-          />
-        ))}
+                if (!added) {
+                  toast({
+                    title: 'Already in cart',
+                    description: 'This course is already in your cart.',
+                  });
+                }
+              }}
+            />
+          ))
+        )}
       </div>
 
       <div className="text-center mt-10">
@@ -95,3 +75,4 @@ const FeaturedCourses: React.FC = () => {
 };
 
 export default FeaturedCourses;
+
