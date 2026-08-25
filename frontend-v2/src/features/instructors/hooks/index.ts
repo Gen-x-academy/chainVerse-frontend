@@ -6,3 +6,5 @@ export {
   useUpdateInstructor,
   useRemoveInstructor,
 } from './useInstructors';
+export { useInstructorCourses } from './useInstructorCourses';
+

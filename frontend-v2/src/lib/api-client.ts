@@ -113,3 +113,5 @@ export const apiClient = {
   delete: <T>(path: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'DELETE' }),
 };
+
+export const authedClient = apiClient;

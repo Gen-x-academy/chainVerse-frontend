@@ -1,26 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Star } from 'lucide-react';
 import { EmptyState } from '@/src/shared/components/ui/EmptyState';
 import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
 import { BookOpen, Star } from 'lucide-react';
 import Link from 'next/link';
-
-interface CourseItem {
-  id: string;
-  title: string;
-  instructor?: string;
-  category?: string;
-  level?: string;
-  price?: number;
-  rating?: number;
-  students?: number;
-  image?: string;
-}
+import type { Course } from '../types';
 
 interface CourseListProps {
-  courses: CourseItem[];
+  courses: Course[];
   onClearFilters?: () => void;
 }
 
