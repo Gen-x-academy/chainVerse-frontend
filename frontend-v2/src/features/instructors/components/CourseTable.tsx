@@ -5,31 +5,21 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DataTable, TableColumn } from "@/components/ui/DataTable";
 import { courseService } from "@/src/features/courses/services/course.service";
+import { useInstructorCourses } from "../hooks/useInstructorCourses";
 import type { Course } from "@/src/features/courses/types";
 
 export const CourseTable: React.FC = () => {
   const router = useRouter();
+  const { data: fetchedCourses, isLoading, error: queryError } = useInstructorCourses();
   const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
-  const fetchCourses = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await courseService.list();
-      setCourses(res.data);
-    } catch {
-      setError("Failed to load courses. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+    if (fetchedCourses) {
+      setCourses(Array.isArray(fetchedCourses) ? fetchedCourses : []);
+    }
+  }, [fetchedCourses]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -92,9 +82,9 @@ export const CourseTable: React.FC = () => {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6">Your Courses</h2>
 
-      {error && (
+      {(error || (queryError ? "Failed to load courses. Please try again." : null)) && (
         <div className="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm">
-          {error}
+          {error || (queryError ? "Failed to load courses. Please try again." : null)}
         </div>
       )}
 
