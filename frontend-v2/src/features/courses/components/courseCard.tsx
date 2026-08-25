@@ -1,12 +1,13 @@
 'use client';
 
-import { Star, Heart, ShoppingCart, BookOpen } from 'lucide-react';
+import { Heart, ShoppingCart, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { useWishlistStore } from '@/src/store/wishlist-store';
 import { colors } from '@/src/shared/constants/design-tokens';
 import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
+import { StarRating } from '@/src/shared/components/ui/StarRating';
 
 interface CourseCardProps {
   id: number;
@@ -39,24 +40,6 @@ export function CourseCard({
   const toggle = useWishlistStore((s) => s.toggle);
   const isWishlisted = useWishlistStore((s) => s.isWishlisted);
   const wishlisted = isWishlisted(String(id));
-
-  const renderStars = () => {
-    const stars = [];
-    const fullStars = Math.floor(rating ?? 0);
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        stars.push(
-          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-        );
-      } else {
-        stars.push(
-          <Star key={i} className="w-4 h-4 fill-gray-200 text-gray-300" />
-        );
-      }
-    }
-    return stars;
-  };
 
   return (
     <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-[var(--dt-primary)]/20 group" style={{ '--dt-primary': colors.primary, '--dt-primary-hover': colors.primaryHover } as React.CSSProperties}>
@@ -108,7 +91,7 @@ export function CourseCard({
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-600">By {instructor}</p>
           <div className="flex items-center gap-1">
-            <div className="flex gap-0.5" aria-hidden="true">{renderStars()}</div>
+            <StarRating rating={rating} />
             <span className="sr-only">Rated {rating} out of 5 stars</span>
             <span className="text-xs font-semibold text-gray-700 ml-1" aria-hidden="true">{rating}</span>
           </div>
