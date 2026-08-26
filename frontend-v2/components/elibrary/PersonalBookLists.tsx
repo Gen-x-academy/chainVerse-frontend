@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
+// Toast functionality will be added when the component is integrated into the app's toast system
 import { useBookListsStore, BookList, BookListItem } from "@/src/store/booklists-store";
 import { Plus, Trash2, Edit3, Share2, Lock, Globe, GripVertical, Copy, Check, Eye, EyeOff } from "lucide-react";
 
