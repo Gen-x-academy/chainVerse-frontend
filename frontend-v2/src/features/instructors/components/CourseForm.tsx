@@ -68,6 +68,14 @@ export const CourseForm: React.FC<CourseFormProps> = ({
       level: '',
       price: 0,
       thumbnailUrl: '',
+      accessibility: {
+        largePrint: false,
+        braille: false,
+        dyslexiaFriendly: false,
+        captioned: false,
+        transcript: false,
+        screenReaderCompatible: false,
+      },
       ...defaultValues,
     },
   });
