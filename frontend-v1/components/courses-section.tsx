@@ -491,15 +491,8 @@ export function CoursesSection() {
     'All',
     ...Array.from(new Set(courses.map((c) => c.category))),
   ];
-  const uniqueLevels = Array.from(new Set(courses.map((c) => c.level)));
 
   // Handle filtering
-  const handleLevelChange = (level: string) => {
-    setSelectedLevels((prev) =>
-      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
-    );
-  };
-
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
   };
