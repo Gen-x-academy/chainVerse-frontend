@@ -1,17 +1,16 @@
-import type { Author } from '../types/author.types';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { libraryFetch } from './library-api';
+import type { Author, AuthorBooksResponse, AuthorSummary } from '../types/author.types';
 
 export const authorService = {
-  async getAuthor(id: string): Promise<Author> {
-    const res = await fetch(`${API_BASE}/authors/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch author');
-    return res.json();
-  },
+  getAuthor: (id: string) => libraryFetch<Author>(`/library/authors/${id}`),
 
-  async getAuthorBooks(id: string) {
-    const res = await fetch(`${API_BASE}/authors/${id}/books`);
-    if (!res.ok) throw new Error('Failed to fetch author books');
-    return res.json();
-  },
+  getAuthorBooks: (id: string, page = 1, limit = 12) =>
+    libraryFetch<AuthorBooksResponse>(
+      `/library/authors/${id}/books?page=${page}&limit=${limit}`
+    ),
+
+  searchAuthors: (query: string, page = 1, limit = 12) =>
+    libraryFetch<{ data: AuthorSummary[]; total: number; page: number; limit: number }>(
+      `/library/authors?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
+    ),
 };
