@@ -97,6 +97,281 @@ export function CoursesSection() {
     publicationDates: [],
   });
 
+  // Calculate all facet counts from a list of courses
+  const calculateFacetCounts = (courseList: Course[]) => {
+    // Count occurrences of each value for each facet
+    const formatCounts: Record<string, number> = {};
+    const availabilityCounts: Record<string, number> = {};
+    const languageCounts: Record<string, number> = {};
+    const subjectCounts: Record<string, number> = {};
+    const audienceCounts: Record<string, number> = {};
+    const locationCounts: Record<string, number> = {};
+    const levelCounts: Record<string, number> = {};
+    const pubDateCounts: Record<string, number> = {};
+
+    courseList.forEach(course => {
+      // Format
+      formatCounts[course.format] = (formatCounts[course.format] || 0) + 1;
+      
+      // Availability
+      availabilityCounts[course.availability] = (availabilityCounts[course.availability] || 0) + 1;
+      
+      // Language
+      languageCounts[course.language] = (languageCounts[course.language] || 0) + 1;
+      
+      // Subject
+      subjectCounts[course.subject] = (subjectCounts[course.subject] || 0) + 1;
+      
+      // Audience
+      audienceCounts[course.audience] = (audienceCounts[course.audience] || 0) + 1;
+      
+      // Location
+      locationCounts[course.location] = (locationCounts[course.location] || 0) + 1;
+      
+      // Level
+      levelCounts[course.level] = (levelCounts[course.level] || 0) + 1;
+      
+      // Publication date - group by year
+      const year = new Date(course.publicationDate).getFullYear().toString();
+      pubDateCounts[year] = (pubDateCounts[year] || 0) + 1;
+    });
+
+    // Format into FacetOptionCount objects with proper labels
+    const formatLabels: Record<string, string> = {
+      video: 'Video Course',
+      book: 'eBook',
+      audio: 'Audio Book',
+      workshop: 'Workshop'
+    };
+
+    const availabilityLabels: Record<string, string> = {
+      available: 'Available Now',
+      'coming-soon': 'Coming Soon',
+      unavailable: 'Currently Unavailable'
+    };
+
+    const locationLabels: Record<string, string> = {
+      Online: 'Online Only',
+      'In-Person': 'In-Person',
+      Hybrid: 'Hybrid'
+    };
+
+    // Convert to FacetOptionCount arrays and mark unavailable options as disabled if they have 0 count
+    setFacetOptions({
+      formats: Object.entries(formatCounts).map(([value, count]) => ({
+        value,
+        label: formatLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      availabilities: Object.entries(availabilityCounts).map(([value, count]) => ({
+        value,
+        label: availabilityLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      languages: Object.entries(languageCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      subjects: Object.entries(subjectCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      audiences: Object.entries(audienceCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      locations: Object.entries(locationCounts).map(([value, count]) => ({
+        value,
+        label: locationLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      levels: Object.entries(levelCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      publicationDates: Object.entries(pubDateCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      }))
+    });
+  };
+
+  // Apply all filters to courses
+  const applyFilters = (allCourses: Course[]) => {
+    let result = [...allCourses];
+
+    // Search filter
+    if (search) {
+      const searchLower = search.toLowerCase();
+      result = result.filter(course => 
+        course.title.toLowerCase().includes(searchLower) ||
+        course.description.toLowerCase().includes(searchLower) ||
+        course.instructor.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Category filter
+    if (selectedCategory !== 'All') {
+      result = result.filter(course => course.category === selectedCategory);
+    }
+
+    // Level filter
+    if (selectedLevels.length > 0) {
+      result = result.filter(course => selectedLevels.includes(course.level));
+    }
+
+    // Format filter
+    if (selectedFormats.length > 0) {
+      result = result.filter(course => selectedFormats.includes(course.format));
+    }
+
+    // Availability filter
+    if (selectedAvailabilities.length > 0) {
+      result = result.filter(course => selectedAvailabilities.includes(course.availability));
+    }
+
+    // Language filter
+    if (selectedLanguages.length > 0) {
+      result = result.filter(course => selectedLanguages.includes(course.language));
+    }
+
+    // Subject filter
+    if (selectedSubjects.length > 0) {
+      result = result.filter(course => selectedSubjects.includes(course.subject));
+    }
+
+    // Audience filter
+    if (selectedAudiences.length > 0) {
+      result = result.filter(course => selectedAudiences.includes(course.audience));
+    }
+
+    // Location filter
+    if (selectedLocations.length > 0) {
+      result = result.filter(course => selectedLocations.includes(course.location));
+    }
+
+    // Publication date filter
+    if (selectedPublicationDates.length > 0) {
+      result = result.filter(course => {
+        const year = new Date(course.publicationDate).getFullYear().toString();
+        return selectedPublicationDates.includes(year);
+      });
+    }
+
+    return result;
+  };
+
+  // Get all active filters for display
+  const getActiveFilters = () => {
+    const filters: { key: string; label: string; value: string; valueLabel: string }[] = [];
+    
+    const addFilter = (key: string, label: string, values: string[], labelMap?: Record<string, string>) => {
+      values.forEach(value => {
+        filters.push({
+          key,
+          label,
+          value,
+          valueLabel: labelMap?.[value] || value
+        });
+      });
+    };
+
+    const formatLabels: Record<string, string> = {
+      video: 'Video Course',
+      book: 'eBook',
+      audio: 'Audio Book',
+      workshop: 'Workshop'
+    };
+
+    const availabilityLabels: Record<string, string> = {
+      available: 'Available Now',
+      'coming-soon': 'Coming Soon',
+      unavailable: 'Currently Unavailable'
+    };
+
+    const locationLabels: Record<string, string> = {
+      Online: 'Online Only',
+      'In-Person': 'In-Person',
+      Hybrid: 'Hybrid'
+    };
+
+    addFilter('format', 'Format', selectedFormats, formatLabels);
+    addFilter('availability', 'Availability', selectedAvailabilities, availabilityLabels);
+    addFilter('language', 'Language', selectedLanguages);
+    addFilter('subject', 'Subject', selectedSubjects);
+    addFilter('audience', 'Audience', selectedAudiences);
+    addFilter('location', 'Location', selectedLocations, locationLabels);
+    addFilter('level', 'Level', selectedLevels);
+    addFilter('publicationDate', 'Year', selectedPublicationDates);
+
+    return filters;
+  };
+
+  // Remove a single filter
+  const handleRemoveFilter = (key: string, value: string) => {
+    switch (key) {
+      case 'format':
+        setSelectedFormats(prev => prev.filter(v => v !== value));
+        break;
+      case 'availability':
+        setSelectedAvailabilities(prev => prev.filter(v => v !== value));
+        break;
+      case 'language':
+        setSelectedLanguages(prev => prev.filter(v => v !== value));
+        break;
+      case 'subject':
+        setSelectedSubjects(prev => prev.filter(v => v !== value));
+        break;
+      case 'audience':
+        setSelectedAudiences(prev => prev.filter(v => v !== value));
+        break;
+      case 'location':
+        setSelectedLocations(prev => prev.filter(v => v !== value));
+        break;
+      case 'level':
+        setSelectedLevels(prev => prev.filter(v => v !== value));
+        break;
+      case 'publicationDate':
+        setSelectedPublicationDates(prev => prev.filter(v => v !== value));
+        break;
+    }
+  };
+
+  // Clear all filters
+  const handleClearAllFilters = () => {
+    setSelectedFormats([]);
+    setSelectedAvailabilities([]);
+    setSelectedLanguages([]);
+    setSelectedSubjects([]);
+    setSelectedAudiences([]);
+    setSelectedLocations([]);
+    setSelectedLevels([]);
+    setSelectedPublicationDates([]);
+    setSelectedCategory('All');
+    setSearch('');
+  };
+
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } =
@@ -138,18 +413,26 @@ export function CoursesSection() {
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
         const response = await fetch('/data/courses.json');
         if (!response.ok) {
           throw new Error('Failed to fetch courses');
         }
         const data = await response.json();
         setCourses(data.courses || []);
-        setError(null);
+        calculateFacetCounts(data.courses || []);
+        const filtered = applyFilters(data.courses || []);
+        setFilteredCourses(filtered);
       } catch (err) {
         console.error('Error fetching courses:', err);
         setError('Failed to load courses. Please try again later.');
+        toast({
+          title: 'Error',
+          description: 'Failed to load courses. Please try again later.',
+          variant: 'destructive',
+        });
       } finally {
         setIsLoading(false);
       }
@@ -158,46 +441,44 @@ export function CoursesSection() {
     fetchCourses();
   }, []);
 
-  // Filtering Logic
+  // Update filtered courses whenever filters change
   useEffect(() => {
-    if (!courses.length) return;
-
-    let result = courses.filter((course) => {
-      const searchLower = search.toLowerCase();
-      return (
-        course.title.toLowerCase().includes(searchLower) ||
-        course.category.toLowerCase().includes(searchLower) ||
-        course.instructor.toLowerCase().includes(searchLower)
-      );
-    });
-
-    if (selectedLevels.length > 0) {
-      result = result.filter((course) => selectedLevels.includes(course.level));
+    if (courses.length > 0) {
+      const filtered = applyFilters(courses);
+      switch (sortBy) {
+        case 'newest':
+          filtered.sort((a, b) => b.id - a.id);
+          break;
+        case 'price-low':
+          filtered.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-high':
+          filtered.sort((a, b) => b.price - a.price);
+          break;
+        case 'rating':
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+      }
+      setFilteredCourses(filtered);
+      setTotalPages(Math.ceil(filtered.length / coursesPerPage));
+      setCurrentPage(1);
+      // Recalculate facet counts based on currently filtered courses to update available options
+      calculateFacetCounts(filtered);
     }
-
-    if (selectedCategory !== 'All') {
-      result = result.filter((course) => course.category === selectedCategory);
-    }
-
-    switch (sortBy) {
-      case 'newest':
-        result = result.sort((a, b) => b.id - a.id);
-        break;
-      case 'price-low':
-        result = result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result = result.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        result = result.sort((a, b) => b.rating - a.rating);
-        break;
-    }
-
-    setFilteredCourses(result);
-    setTotalPages(Math.ceil(result.length / coursesPerPage));
-    setCurrentPage(1);
-  }, [courses, search, selectedLevels, selectedCategory, sortBy]);
+  }, [
+    courses, 
+    search, 
+    sortBy, 
+    selectedCategory, 
+    selectedLevels,
+    selectedFormats,
+    selectedAvailabilities,
+    selectedLanguages,
+    selectedSubjects,
+    selectedAudiences,
+    selectedLocations,
+    selectedPublicationDates
+  ]);
 
   // Get current page courses
   const currentCourses = filteredCourses.slice(
