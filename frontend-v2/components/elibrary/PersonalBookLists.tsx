@@ -53,16 +53,9 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
       await renameList(listId, editingName.trim());
       setEditingListId(null);
       setEditingName("");
-      toast({
-        title: "List renamed",
-        description: "List has been renamed successfully.",
-      });
+      console.log("List renamed successfully");
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to rename list. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Failed to rename list");
     }
   };
 
