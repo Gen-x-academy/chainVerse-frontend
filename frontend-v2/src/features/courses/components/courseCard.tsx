@@ -102,12 +102,31 @@ export function CourseCard({
         {/* Description */}
         <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
 
-        {/* Level Badge */}
-        <div className="flex items-center gap-2">
+        {/* Level & Accessibility Badges */}
+        <div className="flex flex-wrap items-center gap-2">
           <span
             className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getLevelBadgeClass(level)}`}
           >
             {formatLevel(level)}
+          </span>
+          {/* Accessibility badges - show only first 2 to avoid clutter */}
+          {accessibility && Object.entries(accessibility)
+            .filter(([_, value]) => value === true)
+            .slice(0, 2)
+            .map(([key]) => (
+              <span
+                key={key}
+                className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-700"
+                title={accessibilityLabels[key] || key}
+              >
+                <BadgeCheck className="w-3 h-3" />
+                {accessibilityLabels[key] || key}
+              </span>
+            ))}
+          {/* Show more indicator if there are more than 2 */}
+          {accessibility && Object.entries(accessibility).filter(([_, value]) => value === true).length > 2 && (
+            <span className="text-xs text-gray-500">+{Object.entries(accessibility).filter(([_, value]) => value === true).length - 2} more</span>
+          )}
           </span>
         </div>
 
