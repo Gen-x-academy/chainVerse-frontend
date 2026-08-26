@@ -7,6 +7,7 @@ import { CourseList } from '../components/CourseList';
 import { CourseCardSkeleton } from '../components/CourseCardSkeleton';
 import { useCourses } from '../hooks';
 import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
+import type { AccessibilityFeatures } from '../types';
 
 const COURSES_PER_PAGE = 6;
 
@@ -28,6 +29,7 @@ function CourseGrid() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [priceRange, setPriceRange] = useState(500);
+  const [selectedAccessibility, setSelectedAccessibility] = useState<(keyof AccessibilityFeatures)[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,7 @@ function CourseGrid() {
   // #725 — reset to page 1 whenever any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategories, selectedLevel, priceRange]);
+  }, [searchQuery, selectedCategories, selectedLevel, priceRange, selectedAccessibility]);
 
   const filtered = useMemo(
     () =>
