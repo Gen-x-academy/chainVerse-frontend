@@ -182,6 +182,32 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         />
       </div>
 
+      {/* Accessibility Features */}
+      <div className="border border-gray-200 rounded-lg p-5">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Accessibility Features</h3>
+        <p className="text-sm text-gray-600 mb-4">Select which accessibility features your course supports:</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {ACCESSIBILITY_OPTIONS.map((option) => (
+            <label
+              key={option.key}
+              htmlFor={`accessibility-${option.key}`}
+              className="flex items-start gap-3 cursor-pointer"
+            >
+              <input
+                id={`accessibility-${option.key}`}
+                type="checkbox"
+                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                {...register(`accessibility.${option.key}` as const)}
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-800">{option.label}</span>
+                <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* Actions */}
       <div className="flex items-center gap-3 pt-4">
         {isEditing ? (
