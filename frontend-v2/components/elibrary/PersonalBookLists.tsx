@@ -65,16 +65,9 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
       await deleteList(listId);
       if (selectedList?.id === listId) setSelectedList(null);
       setDeleteConfirmId(null);
-      toast({
-        title: "List deleted",
-        description: "List has been deleted permanently.",
-      });
+      console.log("List deleted permanently");
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to delete list. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Failed to delete list");
     }
   };
 
@@ -89,19 +82,12 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
       setNewBookTitle("");
       setNewBookAuthor("");
       setShowAddBookDialog(false);
-      toast({
-        title: "Book added",
-        description: `"${newBookTitle}" has been added to the list.`,
-      });
+      console.log(`Book "${newBookTitle}" added to the list`);
       // Refresh selected list
       const updatedList = useBookListsStore.getState().getList(selectedList.id);
       if (updatedList) setSelectedList(updatedList);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to add book. It might already be in the list.",
-        variant: "destructive",
-      });
+      console.error("Failed to add book - it might already be in the list");
     }
   };
 
@@ -110,19 +96,12 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
     if (!selectedList) return;
     try {
       await removeBookFromList(selectedList.id, bookId);
-      toast({
-        title: "Book removed",
-        description: "Book has been removed from the list.",
-      });
+      console.log("Book removed from the list");
       // Refresh selected list
       const updatedList = useBookListsStore.getState().getList(selectedList.id);
       if (updatedList) setSelectedList(updatedList);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to remove book. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Failed to remove book");
     }
   };
 
@@ -130,19 +109,12 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
   const handleTogglePrivacy = async (listId: string) => {
     try {
       await togglePrivacy(listId);
-      toast({
-        title: "Privacy updated",
-        description: "List privacy settings have been updated.",
-      });
+      console.log("Privacy settings updated");
       // Refresh selected list
       const updatedList = useBookListsStore.getState().getList(listId);
       if (updatedList) setSelectedList(updatedList);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to update privacy settings.",
-        variant: "destructive",
-      });
+      console.error("Failed to update privacy settings");
     }
   };
 
@@ -153,19 +125,12 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
       await navigator.clipboard.writeText(shareLink);
       setCopiedShareLink(listId);
       setTimeout(() => setCopiedShareLink(null), 2000);
-      toast({
-        title: "Share link copied",
-        description: "Share link has been copied to your clipboard.",
-      });
+      console.log("Share link copied to clipboard");
       // Refresh selected list
       const updatedList = useBookListsStore.getState().getList(listId);
       if (updatedList) setSelectedList(updatedList);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to generate share link.",
-        variant: "destructive",
-      });
+      console.error("Failed to generate share link");
     }
   };
 
