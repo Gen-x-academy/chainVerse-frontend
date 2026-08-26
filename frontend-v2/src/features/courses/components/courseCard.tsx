@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, ShoppingCart, BookOpen } from 'lucide-react';
+import { Heart, ShoppingCart, BookOpen, BadgeCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
@@ -9,6 +9,15 @@ import { colors } from '@/src/shared/constants/design-tokens';
 import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
 import { StarRating } from '@/src/shared/components/ui/StarRating';
 import type { Course } from '../types';
+
+const accessibilityLabels: Record<string, string> = {
+  largePrint: 'Large Print',
+  braille: 'Braille',
+  dyslexiaFriendly: 'Dyslexia-Friendly',
+  captioned: 'Closed Captions',
+  transcript: 'Transcripts',
+  screenReaderCompatible: 'Screen Reader',
+};
 
 export interface CourseCardProps extends Partial<Course> {
   id: string | number;
@@ -27,8 +36,9 @@ export function CourseCard({
   currency = '$',
   image = '',
   category = '',
+  accessibility,
   onAddToCart,
-}: CourseCardProps) {
+}: CourseCardProps & { accessibility?: Course['accessibility'] }) {
   const toggle = useWishlistStore((s) => s.toggle);
   const isWishlisted = useWishlistStore((s) => s.isWishlisted);
   const wishlisted = isWishlisted(String(id));
