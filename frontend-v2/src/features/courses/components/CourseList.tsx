@@ -33,40 +33,25 @@ export const CourseList: React.FC<CourseListProps> = ({ courses, onClearFilters 
   return (
     <section aria-label="Course listings">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {courses.map((course) => (
-        <Link
-          key={course.id}
-          href={`/courses/${course.id}`}
-          className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition block"
-        >
-          <div className="h-40 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">{course.category}</span>
+        {courses.map((course) => (
+          <div key={course.id} className="relative">
+            <a href={`/courses/${course.id}`} className="block">
+              <CourseCard
+                id={course.id}
+                title={course.title}
+                rating={course.rating}
+                description={course.description}
+                instructor={course.instructor}
+                level={course.level}
+                price={course.price}
+                image={course.image}
+                category={course.category}
+                accessibility={course.accessibility}
+              />
+            </a>
           </div>
-
-          <div className="p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getLevelBadgeClass(course.level)}`}>
-                {formatLevel(course.level)}
-              </span>
-              <span className="text-lg font-bold text-indigo-600">
-                {(course.price ?? 0) > 0 ? `$${(course.price as number).toFixed(2)}` : 'Free'}
-              </span>
-            </div>
-
-            <h3 className="text-base font-bold text-gray-900 line-clamp-2">{course.title}</h3>
-            <p className="text-xs text-gray-600">By {course.instructor}</p>
-
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-              <div className="flex items-center gap-1">
-                <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-semibold text-gray-700">{course.rating ?? 0}</span>
-              </div>
-              <span className="text-xs text-gray-500">{course.students} students</span>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
+        ))}
+      </div>
     </section>
   );
 };
