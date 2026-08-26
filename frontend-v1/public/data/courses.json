@@ -428,7 +428,14 @@
       "level": "Advanced",
       "price": 370,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "workshop",
+      "availability": "available",
+      "language": "English",
+      "subject": "NFTs",
+      "audience": "Game Developers",
+      "publicationDate": "2024-03-20",
+      "location": "In-Person"
     },
     {
       "id": 24,
@@ -440,7 +447,14 @@
       "level": "Intermediate",
       "price": 280,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Smart Contracts",
+      "audience": "Developers",
+      "publicationDate": "2023-12-01",
+      "location": "Online"
     },
     {
       "id": 25,
@@ -452,7 +466,14 @@
       "level": "Advanced",
       "price": 310,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "Spanish",
+      "subject": "Governance",
+      "audience": "Managers",
+      "publicationDate": "2024-01-18",
+      "location": "Hybrid"
     },
     {
       "id": 26,
@@ -464,7 +485,14 @@
       "level": "Beginner",
       "price": 90,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "English",
+      "subject": "History",
+      "audience": "Beginners",
+      "publicationDate": "2023-04-10",
+      "location": "Online"
     },
     {
       "id": 27,
@@ -476,7 +504,14 @@
       "level": "Intermediate",
       "price": 250,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Interoperability",
+      "audience": "Developers",
+      "publicationDate": "2024-02-05",
+      "location": "Online"
     },
     {
       "id": 28,
@@ -488,7 +523,14 @@
       "level": "Intermediate",
       "price": 240,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "coming-soon",
+      "language": "English",
+      "subject": "Development",
+      "audience": "QA Engineers",
+      "publicationDate": "2024-06-01",
+      "location": "Online"
     },
     {
       "id": 29,
@@ -497,6 +539,17 @@
       "rating": 4.8,
       "description": "Learn techniques for analyzing blockchain data and extracting actionable insights using modern tools.",
       "instructor": "Oscar Sullivan",
+      "level": "Intermediate",
+      "price": 275,
+      "currency": "XLM",
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Analytics",
+      "audience": "Data Scientists",
+      "publicationDate": "2024-01-22",
+      "location": "Online"
       "level": "Intermediate",
       "price": 270,
       "currency": "XLM",
