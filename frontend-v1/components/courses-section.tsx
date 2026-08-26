@@ -575,9 +575,93 @@ export function CoursesSection() {
           )}
         </div>
 
-        {/* Sort Dropdown */}
-        <div className="flex items-center justify-between w-full">
-          <div className="ml-4 flex self-end items-center gap-2">
+        {/* Top bar with search, sort, and mobile filter button */}
+        <div className="flex items-center justify-between w-full mb-4">
+          <div className="flex items-center gap-4">
+            <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {getActiveFilters().length > 0 && (
+                    <Badge variant="secondary" className="ml-1 bg-blue-100 text-blue-800">
+                      {getActiveFilters().length}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                <h2 className="text-lg font-semibold mb-4">Filters</h2>
+                <FacetGroup>
+                  {/* Mobile facets - same as desktop */}
+                  <Facet
+                    title="Format"
+                    options={facetOptions.formats}
+                    selectedValues={selectedFormats}
+                    onChange={setSelectedFormats}
+                    isLoading={isLoading}
+                    defaultCollapsed={false}
+                  />
+                  <Facet
+                    title="Availability"
+                    options={facetOptions.availabilities}
+                    selectedValues={selectedAvailabilities}
+                    onChange={setSelectedAvailabilities}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Language"
+                    options={facetOptions.languages}
+                    selectedValues={selectedLanguages}
+                    onChange={setSelectedLanguages}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Subject"
+                    options={facetOptions.subjects}
+                    selectedValues={selectedSubjects}
+                    onChange={setSelectedSubjects}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Audience"
+                    options={facetOptions.audiences}
+                    selectedValues={selectedAudiences}
+                    onChange={setSelectedAudiences}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Location"
+                    options={facetOptions.locations}
+                    selectedValues={selectedLocations}
+                    onChange={setSelectedLocations}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Level"
+                    options={facetOptions.levels}
+                    selectedValues={selectedLevels}
+                    onChange={setSelectedLevels}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Publication Year"
+                    options={facetOptions.publicationDates}
+                    selectedValues={selectedPublicationDates}
+                    onChange={setSelectedPublicationDates}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                </FacetGroup>
+              </SheetContent>
+            </Sheet>
+
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[200px]">
                 <img src="/3vertical.png" alt="Sort" />
@@ -591,25 +675,88 @@ export function CoursesSection() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-2">
-            {uniqueLevels.map((level) => (
-              <div key={level} className="flex items-center space-x-3">
-                <Checkbox
-                  id={`level-${level}`}
-                  checked={selectedLevels.includes(level)}
-                  onCheckedChange={() => handleLevelChange(level)}
-                />
-                <label
-                  htmlFor={`level-${level}`}
-                  className="ml-2 cursor-pointer"
-                >
-                  {level}
-                </label>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
+
+      <div className="flex gap-6">
+        {/* Desktop sidebar with all facets - hidden on mobile */}
+        <aside className="hidden lg:block w-[300px] flex-shrink-0">
+          <FacetGroup>
+            <Facet
+              title="Format"
+              options={facetOptions.formats}
+              selectedValues={selectedFormats}
+              onChange={setSelectedFormats}
+              isLoading={isLoading}
+              defaultCollapsed={false}
+            />
+            <Facet
+              title="Availability"
+              options={facetOptions.availabilities}
+              selectedValues={selectedAvailabilities}
+              onChange={setSelectedAvailabilities}
+              isLoading={isLoading}
+              defaultCollapsed={false}
+            />
+            <Facet
+              title="Language"
+              options={facetOptions.languages}
+              selectedValues={selectedLanguages}
+              onChange={setSelectedLanguages}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Subject"
+              options={facetOptions.subjects}
+              selectedValues={selectedSubjects}
+              onChange={setSelectedSubjects}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Audience"
+              options={facetOptions.audiences}
+              selectedValues={selectedAudiences}
+              onChange={setSelectedAudiences}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Location"
+              options={facetOptions.locations}
+              selectedValues={selectedLocations}
+              onChange={setSelectedLocations}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Level"
+              options={facetOptions.levels}
+              selectedValues={selectedLevels}
+              onChange={setSelectedLevels}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Publication Year"
+              options={facetOptions.publicationDates}
+              selectedValues={selectedPublicationDates}
+              onChange={setSelectedPublicationDates}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+          </FacetGroup>
+        </aside>
+
+        {/* Main content area with courses */}
+        <main className="flex-1 min-w-0">
+          {/* Active filters bar */}
+          <ActiveFilters
+            filters={getActiveFilters()}
+            onRemove={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
 
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[400px]">
