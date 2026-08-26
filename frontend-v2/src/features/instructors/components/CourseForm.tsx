@@ -6,6 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal } from '@/src/shared/components/ui/Modal';
 
+const accessibilitySchema = z.object({
+  largePrint: z.boolean().default(false),
+  braille: z.boolean().default(false),
+  dyslexiaFriendly: z.boolean().default(false),
+  captioned: z.boolean().default(false),
+  transcript: z.boolean().default(false),
+  screenReaderCompatible: z.boolean().default(false),
+});
+
 const courseSchema = z.object({
   title: z.string().min(1, 'Title is required').min(3, 'Title must be at least 3 characters'),
   description: z.string().min(1, 'Description is required').min(10, 'Description must be at least 10 characters'),
@@ -13,6 +22,7 @@ const courseSchema = z.object({
   level: z.string().min(1, 'Level is required'),
   price: z.coerce.number().min(0, 'Price must be 0 or more'),
   thumbnailUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  accessibility: accessibilitySchema.optional(),
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;
