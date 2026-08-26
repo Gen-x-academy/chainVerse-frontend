@@ -1,3 +1,12 @@
+export interface AccessibilityFeatures {
+  largePrint?: boolean;
+  braille?: boolean;
+  dyslexiaFriendly?: boolean;
+  captioned?: boolean;
+  transcript?: boolean;
+  screenReaderCompatible?: boolean;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -13,6 +22,7 @@ export interface Course {
   thumbnailUrl?: string;
   instructorId?: string;
   studentCount?: number;
+  accessibility?: AccessibilityFeatures;
 }
 
 export type CourseListResponse = {
@@ -26,4 +36,5 @@ export type CoursePayload = {
   thumbnailUrl?: string;
   instructorId?: string;
   price?: number;
+  accessibility?: AccessibilityFeatures;
 };
