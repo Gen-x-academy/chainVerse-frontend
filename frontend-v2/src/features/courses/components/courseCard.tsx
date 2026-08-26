@@ -127,7 +127,6 @@ export function CourseCard({
           {accessibility && Object.entries(accessibility).filter(([_, value]) => value === true).length > 2 && (
             <span className="text-xs text-gray-500">+{Object.entries(accessibility).filter(([_, value]) => value === true).length - 2} more</span>
           )}
-          </span>
         </div>
 
         {/* Price & Button */}
