@@ -844,6 +844,8 @@ export function CoursesSection() {
           )}
         </>
       )}
+      </main>
+      </div>
       <div className="flex md:flex-row flex-col items-center justify-between mt-10">
         <p>© 2025 ChainVerse Academy. All rights reserved.</p>
         <div className="flex items-center gap-10">
