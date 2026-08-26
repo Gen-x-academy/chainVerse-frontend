@@ -314,7 +314,14 @@
       "level": "Advanced",
       "price": 340,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Interoperability",
+      "audience": "Developers",
+      "publicationDate": "2024-02-10",
+      "location": "Online"
     },
     {
       "id": 18,
@@ -326,7 +333,14 @@
       "level": "Intermediate",
       "price": 260,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "German",
+      "subject": "Economics",
+      "audience": "Researchers",
+      "publicationDate": "2023-11-20",
+      "location": "Online"
     },
     {
       "id": 19,
@@ -338,7 +352,14 @@
       "level": "Intermediate",
       "price": 270,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Scalability",
+      "audience": "Developers",
+      "publicationDate": "2024-01-05",
+      "location": "Hybrid"
     },
     {
       "id": 20,
@@ -350,7 +371,14 @@
       "level": "Intermediate",
       "price": 290,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "coming-soon",
+      "language": "Japanese",
+      "subject": "Development",
+      "audience": "Mobile Developers",
+      "publicationDate": "2024-05-01",
+      "location": "Online"
     },
     {
       "id": 21,
@@ -362,7 +390,14 @@
       "level": "Beginner",
       "price": 120,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "English",
+      "subject": "Security",
+      "audience": "Beginners",
+      "publicationDate": "2023-06-15",
+      "location": "Online"
     },
     {
       "id": 22,
@@ -374,7 +409,14 @@
       "level": "Advanced",
       "price": 390,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "unavailable",
+      "language": "English",
+      "subject": "DeFi",
+      "audience": "Developers",
+      "publicationDate": "2023-05-20",
+      "location": "In-Person"
     },
     {
       "id": 23,
