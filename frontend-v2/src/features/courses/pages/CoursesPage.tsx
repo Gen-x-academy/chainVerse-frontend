@@ -67,12 +67,9 @@ function CourseGrid() {
           (course.level ?? '').toLowerCase() === selectedLevel.toLowerCase();
         const matchesPrice =
           course.price == null || course.price <= priceRange;
-        const matchesAccessibility =
-          selectedAccessibility.length === 0 ||
-          selectedAccessibility.every((key) => course.accessibility?.[key] === true);
-        return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesAccessibility;
+        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
       }),
-    [courses, searchQuery, selectedCategories, selectedLevel, priceRange, selectedAccessibility]
+    [courses, searchQuery, selectedCategories, selectedLevel, priceRange]
   );
 
   const totalPages = useMemo(
@@ -94,6 +91,7 @@ function CourseGrid() {
     setSelectedCategories([]);
     setSelectedLevel('All');
     setPriceRange(500);
+    setSelectedAccessibility([]);
     setCurrentPage(1);
   };
 
@@ -131,7 +129,7 @@ function CourseGrid() {
         onClick={() => setShowFilters(!showFilters)}
       >
         <SlidersHorizontal size={18} />
-        Filters {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+        Filters {(selectedCategories.length + selectedAccessibility.length) > 0 && `(${selectedCategories.length + selectedAccessibility.length})`}
       </button>
 
       <div className="flex flex-col lg:flex-row gap-8 min-w-0">
