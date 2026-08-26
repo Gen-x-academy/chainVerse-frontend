@@ -34,15 +34,25 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
   selectedCategories,
   selectedLevel,
   priceRange,
+  selectedAccessibility,
   onCategoryChange,
   onLevelChange,
   onPriceChange,
+  onAccessibilityChange,
 }) => {
   const handleCategoryToggle = (category: string) => {
     if (selectedCategories.includes(category)) {
       onCategoryChange(selectedCategories.filter((c) => c !== category));
     } else {
       onCategoryChange([...selectedCategories, category]);
+    }
+  };
+
+  const handleAccessibilityToggle = (key: keyof AccessibilityFeatures) => {
+    if (selectedAccessibility.includes(key)) {
+      onAccessibilityChange(selectedAccessibility.filter((k) => k !== key));
+    } else {
+      onAccessibilityChange([...selectedAccessibility, key]);
     }
   };
 
