@@ -20,7 +20,6 @@ interface PersonalBookListsProps {
 
 export function PersonalBookLists({ className }: PersonalBookListsProps) {
   const { lists, isLoading, error, createList, renameList, deleteList, addBookToList, removeBookFromList, reorderBooks, togglePrivacy, generateShareLink, clearError } = useBookListsStore();
-  const { toast } = useToast();
   
   const [selectedList, setSelectedList] = useState<BookList | null>(null);
   const [newListName, setNewListName] = useState("");
@@ -41,16 +40,9 @@ export function PersonalBookLists({ className }: PersonalBookListsProps) {
       await createList(newListName.trim());
       setNewListName("");
       setShowCreateDialog(false);
-      toast({
-        title: "List created",
-        description: `"${newListName}" has been created successfully.`,
-      });
+      console.log(`List "${newListName}" created successfully`);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to create list. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Failed to create list");
     }
   };
 
