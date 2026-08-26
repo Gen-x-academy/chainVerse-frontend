@@ -138,9 +138,11 @@ function CourseGrid() {
             selectedCategories={selectedCategories}
             selectedLevel={selectedLevel}
             priceRange={priceRange}
+            selectedAccessibility={selectedAccessibility}
             onCategoryChange={setSelectedCategories}
             onLevelChange={setSelectedLevel}
             onPriceChange={setPriceRange}
+            onAccessibilityChange={setSelectedAccessibility}
           />
         </div>
 
