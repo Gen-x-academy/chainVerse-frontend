@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { EmptyState } from '@/src/shared/components/ui/EmptyState';
-import { getLevelBadgeClass, formatLevel } from '@/lib/utils';
+import { CourseCard } from './courseCard';
 import { BookOpen, Star } from 'lucide-react';
-import Link from 'next/link';
 import type { Course } from '../types';
 
 interface CourseListProps {
