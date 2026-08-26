@@ -6,3 +6,4 @@ export { CourseCard } from './courseCard';
 export { CourseCardSkeleton } from './CourseCardSkeleton';
 export { CourseList } from './CourseList';
 export { CourseFilters } from './CourseFilters';
+export { AccessibilityFeatures } from './AccessibilityFeatures';
