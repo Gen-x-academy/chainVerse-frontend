@@ -1,9 +1,19 @@
 'use client';
 
 import React from 'react';
+import type { AccessibilityFeatures } from '../types';
 
 const DEFAULT_CATEGORIES = ['Blockchain', 'DeFi', 'NFTs', 'Smart Contracts'];
 const DEFAULT_LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+
+const ACCESSIBILITY_OPTIONS: { key: keyof AccessibilityFeatures; label: string }[] = [
+  { key: 'largePrint', label: 'Large Print' },
+  { key: 'braille', label: 'Braille' },
+  { key: 'dyslexiaFriendly', label: 'Dyslexia-Friendly' },
+  { key: 'captioned', label: 'Closed Captions' },
+  { key: 'transcript', label: 'Transcripts' },
+  { key: 'screenReaderCompatible', label: 'Screen Reader Compatible' },
+];
 
 export interface CourseFiltersProps {
   categories?: string[];
@@ -11,9 +21,11 @@ export interface CourseFiltersProps {
   selectedCategories: string[];
   selectedLevel: string;
   priceRange: number;
+  selectedAccessibility: (keyof AccessibilityFeatures)[];
   onCategoryChange: (categories: string[]) => void;
   onLevelChange: (level: string) => void;
   onPriceChange: (price: number) => void;
+  onAccessibilityChange: (accessibility: (keyof AccessibilityFeatures)[]) => void;
 }
 
 export const CourseFilters: React.FC<CourseFiltersProps> = ({

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Star, Users, Clock, BookOpen } from 'lucide-react';
 import { useCourseById } from '@/features/courses/hooks/useCourses';
+import { AccessibilityFeatures } from '@/features/courses/components';
 
 export default function CourseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -90,6 +91,9 @@ export default function CourseDetailPage() {
               <li className="flex items-center gap-2"><Star className="w-4 h-4 text-indigo-500" /> Certificate of completion (NFT)</li>
             </ul>
           </div>
+
+          {/* Accessibility features */}
+          <AccessibilityFeatures accessibility={course.accessibility} />
         </div>
 
         {/* Sidebar */}
