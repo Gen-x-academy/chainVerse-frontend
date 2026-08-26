@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ArrowUp, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,11 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { CourseCard } from '@/components/courseCard';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from './ui/use-toast';
 import { useCartStore } from '@/store/cartStore';
+import { Facet, FacetGroup, ActiveFilters } from '@/components/ui/facet';
 
 interface Course {
   id: number;
@@ -29,6 +30,22 @@ interface Course {
   price: number;
   currency: string;
   image: string;
+  format: string;
+  availability: string;
+  language: string;
+  subject: string;
+  audience: string;
+  publicationDate: string;
+  location: string;
+}
+
+// Type for facet option counts
+interface FacetOptionCount {
+  value: string;
+  label: string;
+  count: number;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 export function CoursesSection() {
@@ -38,7 +55,6 @@ export function CoursesSection() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -48,6 +64,38 @@ export function CoursesSection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const coursesPerPage = 12;
   const addToCart = useCartStore((state) => state.addToCart);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // New facet state
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+  const [selectedAvailabilities, setSelectedAvailabilities] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedAudiences, setSelectedAudiences] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedPublicationDates, setSelectedPublicationDates] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+
+  // Facet options with counts
+  const [facetOptions, setFacetOptions] = useState<{
+    formats: FacetOptionCount[];
+    availabilities: FacetOptionCount[];
+    languages: FacetOptionCount[];
+    subjects: FacetOptionCount[];
+    audiences: FacetOptionCount[];
+    locations: FacetOptionCount[];
+    levels: FacetOptionCount[];
+    publicationDates: FacetOptionCount[];
+  }>({
+    formats: [],
+    availabilities: [],
+    languages: [],
+    subjects: [],
+    audiences: [],
+    locations: [],
+    levels: [],
+    publicationDates: [],
+  });
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
