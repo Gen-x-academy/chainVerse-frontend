@@ -10,4 +10,5 @@
 export * from './auth';
 export * from './courses';
 export * from './instructors';
+export * from './notifications';
 export * from './students';

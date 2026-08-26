@@ -1,3 +1,3 @@
-export { RelatedBooks } from './RelatedBooks';
-export { AccountStatusBanner } from './AccountStatusBanner';
-export type { AccountStatus } from './AccountStatusBanner';
+export { SearchAutocomplete } from './SearchAutocomplete';
+export { FacetedFilter } from './FacetedFilter';
+export type { Facet, FacetOption } from './FacetedFilter';
