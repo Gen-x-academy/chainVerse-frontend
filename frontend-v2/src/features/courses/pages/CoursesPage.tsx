@@ -67,9 +67,12 @@ function CourseGrid() {
           (course.level ?? '').toLowerCase() === selectedLevel.toLowerCase();
         const matchesPrice =
           course.price == null || course.price <= priceRange;
-        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+        const matchesAccessibility =
+          selectedAccessibility.length === 0 ||
+          selectedAccessibility.every((key) => course.accessibility?.[key] === true);
+        return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesAccessibility;
       }),
-    [courses, searchQuery, selectedCategories, selectedLevel, priceRange]
+    [courses, searchQuery, selectedCategories, selectedLevel, priceRange, selectedAccessibility]
   );
 
   const totalPages = useMemo(
