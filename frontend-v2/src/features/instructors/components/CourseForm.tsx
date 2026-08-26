@@ -37,6 +37,14 @@ interface CourseFormProps {
 
 const CATEGORIES = ['Blockchain', 'DeFi', 'NFTs', 'Smart Contracts', 'Web3'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+const ACCESSIBILITY_OPTIONS = [
+  { key: 'largePrint', label: 'Large Print', description: 'Course materials available in large print format' },
+  { key: 'braille', label: 'Braille', description: 'Course content available in braille format' },
+  { key: 'dyslexiaFriendly', label: 'Dyslexia-Friendly', description: 'Optimized formatting for readers with dyslexia' },
+  { key: 'captioned', label: 'Closed Captions', description: 'All video content includes accurate closed captions' },
+  { key: 'transcript', label: 'Transcripts Available', description: 'Full text transcripts for all audio/video content' },
+  { key: 'screenReaderCompatible', label: 'Screen Reader Compatible', description: 'Fully compatible with popular screen readers' },
+] as const;
 
 export const CourseForm: React.FC<CourseFormProps> = ({
   defaultValues,
