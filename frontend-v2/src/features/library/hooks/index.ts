@@ -1,3 +1,4 @@
+export { useLibrarianPermissions, hasLibrarianPermission, canViewCostData, canManageAcquisitions } from './useLibrarianPermissions';
 export { useAuthor, useAuthorBooks } from './useAuthor';
 export {
   useBook,
