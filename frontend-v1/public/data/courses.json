@@ -10,7 +10,14 @@
       "level": "Beginner",
       "price": 100,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Blockchain",
+      "audience": "Students",
+      "publicationDate": "2024-01-15",
+      "location": "Online"
     },
     {
       "id": 2,
@@ -22,7 +29,14 @@
       "level": "Intermediate",
       "price": 250,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "Spanish",
+      "subject": "Smart Contracts",
+      "audience": "Developers",
+      "publicationDate": "2024-02-20",
+      "location": "Online"
     },
     {
       "id": 3,
@@ -34,7 +48,14 @@
       "level": "Advanced",
       "price": 400,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "coming-soon",
+      "language": "English",
+      "subject": "Web3",
+      "audience": "Professionals",
+      "publicationDate": "2024-03-10",
+      "location": "In-Person"
     },
     {
       "id": 4,
@@ -46,7 +67,14 @@
       "level": "Beginner",
       "price": 150,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "French",
+      "subject": "Economics",
+      "audience": "Students",
+      "publicationDate": "2023-11-05",
+      "location": "Online"
     },
     {
       "id": 5,
@@ -58,7 +86,14 @@
       "level": "Intermediate",
       "price": 200,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "NFTs",
+      "audience": "Creators",
+      "publicationDate": "2024-01-28",
+      "location": "Hybrid"
     },
     {
       "id": 6,
@@ -70,7 +105,14 @@
       "level": "Advanced",
       "price": 300,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "unavailable",
+      "language": "Mandarin",
+      "subject": "DeFi",
+      "audience": "Developers",
+      "publicationDate": "2023-09-15",
+      "location": "Online"
     },
     {
       "id": 7,
@@ -82,7 +124,14 @@
       "level": "Advanced",
       "price": 350,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Security",
+      "audience": "Professionals",
+      "publicationDate": "2024-02-01",
+      "location": "Online"
     },
     {
       "id": 8,
@@ -94,7 +143,14 @@
       "level": "Beginner",
       "price": 80,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "Spanish",
+      "subject": "Blockchain",
+      "audience": "Beginners",
+      "publicationDate": "2023-08-20",
+      "location": "Online"
     },
     {
       "id": 9,
@@ -106,7 +162,14 @@
       "level": "Intermediate",
       "price": 220,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Tokenomics",
+      "audience": "Developers",
+      "publicationDate": "2024-01-10",
+      "location": "In-Person"
     },
     {
       "id": 10,
@@ -118,7 +181,14 @@
       "level": "Advanced",
       "price": 380,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "coming-soon",
+      "language": "Korean",
+      "subject": "Smart Contracts",
+      "audience": "Professionals",
+      "publicationDate": "2024-04-01",
+      "location": "Online"
     },
     {
       "id": 11,
@@ -130,7 +200,14 @@
       "level": "Intermediate",
       "price": 280,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Development",
+      "audience": "Developers",
+      "publicationDate": "2023-12-15",
+      "location": "Hybrid"
     },
     {
       "id": 12,
@@ -142,7 +219,14 @@
       "level": "Intermediate",
       "price": 230,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "Spanish",
+      "subject": "Governance",
+      "audience": "Managers",
+      "publicationDate": "2024-02-25",
+      "location": "Online"
     },
     {
       "id": 13,
@@ -154,7 +238,14 @@
       "level": "Advanced",
       "price": 320,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "unavailable",
+      "language": "English",
+      "subject": "DeFi",
+      "audience": "Traders",
+      "publicationDate": "2023-10-08",
+      "location": "Online"
     },
     {
       "id": 14,
@@ -166,7 +257,14 @@
       "level": "Beginner",
       "price": 180,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "workshop",
+      "availability": "available",
+      "language": "French",
+      "subject": "NFTs",
+      "audience": "Creators",
+      "publicationDate": "2024-03-15",
+      "location": "In-Person"
     },
     {
       "id": 15,
@@ -178,7 +276,14 @@
       "level": "Intermediate",
       "price": 240,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "available",
+      "language": "English",
+      "subject": "Business",
+      "audience": "Executives",
+      "publicationDate": "2023-07-22",
+      "location": "Hybrid"
     },
     {
       "id": 16,
@@ -190,7 +295,14 @@
       "level": "Advanced",
       "price": 360,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Privacy",
+      "audience": "Researchers",
+      "publicationDate": "2024-01-30",
+      "location": "Online"
     },
     {
       "id": 17,
@@ -202,7 +314,14 @@
       "level": "Advanced",
       "price": 340,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Interoperability",
+      "audience": "Developers",
+      "publicationDate": "2024-02-10",
+      "location": "Online"
     },
     {
       "id": 18,
@@ -214,7 +333,14 @@
       "level": "Intermediate",
       "price": 260,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "German",
+      "subject": "Economics",
+      "audience": "Researchers",
+      "publicationDate": "2023-11-20",
+      "location": "Online"
     },
     {
       "id": 19,
@@ -226,7 +352,14 @@
       "level": "Intermediate",
       "price": 270,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Scalability",
+      "audience": "Developers",
+      "publicationDate": "2024-01-05",
+      "location": "Hybrid"
     },
     {
       "id": 20,
@@ -238,7 +371,14 @@
       "level": "Intermediate",
       "price": 290,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "coming-soon",
+      "language": "Japanese",
+      "subject": "Development",
+      "audience": "Mobile Developers",
+      "publicationDate": "2024-05-01",
+      "location": "Online"
     },
     {
       "id": 21,
@@ -250,7 +390,14 @@
       "level": "Beginner",
       "price": 120,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "English",
+      "subject": "Security",
+      "audience": "Beginners",
+      "publicationDate": "2023-06-15",
+      "location": "Online"
     },
     {
       "id": 22,
@@ -262,7 +409,14 @@
       "level": "Advanced",
       "price": 390,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "unavailable",
+      "language": "English",
+      "subject": "DeFi",
+      "audience": "Developers",
+      "publicationDate": "2023-05-20",
+      "location": "In-Person"
     },
     {
       "id": 23,
@@ -274,7 +428,14 @@
       "level": "Advanced",
       "price": 370,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "workshop",
+      "availability": "available",
+      "language": "English",
+      "subject": "NFTs",
+      "audience": "Game Developers",
+      "publicationDate": "2024-03-20",
+      "location": "In-Person"
     },
     {
       "id": 24,
@@ -286,7 +447,14 @@
       "level": "Intermediate",
       "price": 280,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Smart Contracts",
+      "audience": "Developers",
+      "publicationDate": "2023-12-01",
+      "location": "Online"
     },
     {
       "id": 25,
@@ -298,7 +466,14 @@
       "level": "Advanced",
       "price": 310,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "Spanish",
+      "subject": "Governance",
+      "audience": "Managers",
+      "publicationDate": "2024-01-18",
+      "location": "Hybrid"
     },
     {
       "id": 26,
@@ -310,7 +485,14 @@
       "level": "Beginner",
       "price": 90,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "audio",
+      "availability": "available",
+      "language": "English",
+      "subject": "History",
+      "audience": "Beginners",
+      "publicationDate": "2023-04-10",
+      "location": "Online"
     },
     {
       "id": 27,
@@ -322,7 +504,14 @@
       "level": "Intermediate",
       "price": 250,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Interoperability",
+      "audience": "Developers",
+      "publicationDate": "2024-02-05",
+      "location": "Online"
     },
     {
       "id": 28,
@@ -334,7 +523,14 @@
       "level": "Intermediate",
       "price": 240,
       "currency": "XLM",
-      "image": "/cart.svg"
+      "image": "/cart.svg",
+      "format": "book",
+      "availability": "coming-soon",
+      "language": "English",
+      "subject": "Development",
+      "audience": "QA Engineers",
+      "publicationDate": "2024-06-01",
+      "location": "Online"
     },
     {
       "id": 29,
@@ -343,6 +539,17 @@
       "rating": 4.8,
       "description": "Learn techniques for analyzing blockchain data and extracting actionable insights using modern tools.",
       "instructor": "Oscar Sullivan",
+      "level": "Intermediate",
+      "price": 275,
+      "currency": "XLM",
+      "image": "/cart.svg",
+      "format": "video",
+      "availability": "available",
+      "language": "English",
+      "subject": "Analytics",
+      "audience": "Data Scientists",
+      "publicationDate": "2024-01-22",
+      "location": "Online"
       "level": "Intermediate",
       "price": 270,
       "currency": "XLM",

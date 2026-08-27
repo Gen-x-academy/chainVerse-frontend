@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ArrowUp, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,11 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { CourseCard } from '@/components/courseCard';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from './ui/use-toast';
 import { useCartStore } from '@/store/cartStore';
+import { Facet, FacetGroup, ActiveFilters } from '@/components/ui/facet';
 
 interface Course {
   id: number;
@@ -29,6 +30,22 @@ interface Course {
   price: number;
   currency: string;
   image: string;
+  format: string;
+  availability: string;
+  language: string;
+  subject: string;
+  audience: string;
+  publicationDate: string;
+  location: string;
+}
+
+// Type for facet option counts
+interface FacetOptionCount {
+  value: string;
+  label: string;
+  count: number;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 export function CoursesSection() {
@@ -38,7 +55,6 @@ export function CoursesSection() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -48,6 +64,313 @@ export function CoursesSection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const coursesPerPage = 12;
   const addToCart = useCartStore((state) => state.addToCart);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // New facet state
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+  const [selectedAvailabilities, setSelectedAvailabilities] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedAudiences, setSelectedAudiences] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedPublicationDates, setSelectedPublicationDates] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+
+  // Facet options with counts
+  const [facetOptions, setFacetOptions] = useState<{
+    formats: FacetOptionCount[];
+    availabilities: FacetOptionCount[];
+    languages: FacetOptionCount[];
+    subjects: FacetOptionCount[];
+    audiences: FacetOptionCount[];
+    locations: FacetOptionCount[];
+    levels: FacetOptionCount[];
+    publicationDates: FacetOptionCount[];
+  }>({
+    formats: [],
+    availabilities: [],
+    languages: [],
+    subjects: [],
+    audiences: [],
+    locations: [],
+    levels: [],
+    publicationDates: [],
+  });
+
+  // Calculate all facet counts from a list of courses
+  const calculateFacetCounts = (courseList: Course[]) => {
+    // Count occurrences of each value for each facet
+    const formatCounts: Record<string, number> = {};
+    const availabilityCounts: Record<string, number> = {};
+    const languageCounts: Record<string, number> = {};
+    const subjectCounts: Record<string, number> = {};
+    const audienceCounts: Record<string, number> = {};
+    const locationCounts: Record<string, number> = {};
+    const levelCounts: Record<string, number> = {};
+    const pubDateCounts: Record<string, number> = {};
+
+    courseList.forEach(course => {
+      // Format
+      formatCounts[course.format] = (formatCounts[course.format] || 0) + 1;
+      
+      // Availability
+      availabilityCounts[course.availability] = (availabilityCounts[course.availability] || 0) + 1;
+      
+      // Language
+      languageCounts[course.language] = (languageCounts[course.language] || 0) + 1;
+      
+      // Subject
+      subjectCounts[course.subject] = (subjectCounts[course.subject] || 0) + 1;
+      
+      // Audience
+      audienceCounts[course.audience] = (audienceCounts[course.audience] || 0) + 1;
+      
+      // Location
+      locationCounts[course.location] = (locationCounts[course.location] || 0) + 1;
+      
+      // Level
+      levelCounts[course.level] = (levelCounts[course.level] || 0) + 1;
+      
+      // Publication date - group by year
+      const year = new Date(course.publicationDate).getFullYear().toString();
+      pubDateCounts[year] = (pubDateCounts[year] || 0) + 1;
+    });
+
+    // Format into FacetOptionCount objects with proper labels
+    const formatLabels: Record<string, string> = {
+      video: 'Video Course',
+      book: 'eBook',
+      audio: 'Audio Book',
+      workshop: 'Workshop'
+    };
+
+    const availabilityLabels: Record<string, string> = {
+      available: 'Available Now',
+      'coming-soon': 'Coming Soon',
+      unavailable: 'Currently Unavailable'
+    };
+
+    const locationLabels: Record<string, string> = {
+      Online: 'Online Only',
+      'In-Person': 'In-Person',
+      Hybrid: 'Hybrid'
+    };
+
+    // Convert to FacetOptionCount arrays and mark unavailable options as disabled if they have 0 count
+    setFacetOptions({
+      formats: Object.entries(formatCounts).map(([value, count]) => ({
+        value,
+        label: formatLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      availabilities: Object.entries(availabilityCounts).map(([value, count]) => ({
+        value,
+        label: availabilityLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      languages: Object.entries(languageCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      subjects: Object.entries(subjectCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      audiences: Object.entries(audienceCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      locations: Object.entries(locationCounts).map(([value, count]) => ({
+        value,
+        label: locationLabels[value] || value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      levels: Object.entries(levelCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      })),
+      publicationDates: Object.entries(pubDateCounts).map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+        disabled: count === 0,
+        disabledReason: count === 0 ? 'No courses match your current filters' : undefined
+      }))
+    });
+  };
+
+  // Apply all filters to courses
+  const applyFilters = (allCourses: Course[]) => {
+    let result = [...allCourses];
+
+    // Search filter
+    if (search) {
+      const searchLower = search.toLowerCase();
+      result = result.filter(course => 
+        course.title.toLowerCase().includes(searchLower) ||
+        course.description.toLowerCase().includes(searchLower) ||
+        course.instructor.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Category filter
+    if (selectedCategory !== 'All') {
+      result = result.filter(course => course.category === selectedCategory);
+    }
+
+    // Level filter
+    if (selectedLevels.length > 0) {
+      result = result.filter(course => selectedLevels.includes(course.level));
+    }
+
+    // Format filter
+    if (selectedFormats.length > 0) {
+      result = result.filter(course => selectedFormats.includes(course.format));
+    }
+
+    // Availability filter
+    if (selectedAvailabilities.length > 0) {
+      result = result.filter(course => selectedAvailabilities.includes(course.availability));
+    }
+
+    // Language filter
+    if (selectedLanguages.length > 0) {
+      result = result.filter(course => selectedLanguages.includes(course.language));
+    }
+
+    // Subject filter
+    if (selectedSubjects.length > 0) {
+      result = result.filter(course => selectedSubjects.includes(course.subject));
+    }
+
+    // Audience filter
+    if (selectedAudiences.length > 0) {
+      result = result.filter(course => selectedAudiences.includes(course.audience));
+    }
+
+    // Location filter
+    if (selectedLocations.length > 0) {
+      result = result.filter(course => selectedLocations.includes(course.location));
+    }
+
+    // Publication date filter
+    if (selectedPublicationDates.length > 0) {
+      result = result.filter(course => {
+        const year = new Date(course.publicationDate).getFullYear().toString();
+        return selectedPublicationDates.includes(year);
+      });
+    }
+
+    return result;
+  };
+
+  // Get all active filters for display
+  const getActiveFilters = () => {
+    const filters: { key: string; label: string; value: string; valueLabel: string }[] = [];
+    
+    const addFilter = (key: string, label: string, values: string[], labelMap?: Record<string, string>) => {
+      values.forEach(value => {
+        filters.push({
+          key,
+          label,
+          value,
+          valueLabel: labelMap?.[value] || value
+        });
+      });
+    };
+
+    const formatLabels: Record<string, string> = {
+      video: 'Video Course',
+      book: 'eBook',
+      audio: 'Audio Book',
+      workshop: 'Workshop'
+    };
+
+    const availabilityLabels: Record<string, string> = {
+      available: 'Available Now',
+      'coming-soon': 'Coming Soon',
+      unavailable: 'Currently Unavailable'
+    };
+
+    const locationLabels: Record<string, string> = {
+      Online: 'Online Only',
+      'In-Person': 'In-Person',
+      Hybrid: 'Hybrid'
+    };
+
+    addFilter('format', 'Format', selectedFormats, formatLabels);
+    addFilter('availability', 'Availability', selectedAvailabilities, availabilityLabels);
+    addFilter('language', 'Language', selectedLanguages);
+    addFilter('subject', 'Subject', selectedSubjects);
+    addFilter('audience', 'Audience', selectedAudiences);
+    addFilter('location', 'Location', selectedLocations, locationLabels);
+    addFilter('level', 'Level', selectedLevels);
+    addFilter('publicationDate', 'Year', selectedPublicationDates);
+
+    return filters;
+  };
+
+  // Remove a single filter
+  const handleRemoveFilter = (key: string, value: string) => {
+    switch (key) {
+      case 'format':
+        setSelectedFormats(prev => prev.filter(v => v !== value));
+        break;
+      case 'availability':
+        setSelectedAvailabilities(prev => prev.filter(v => v !== value));
+        break;
+      case 'language':
+        setSelectedLanguages(prev => prev.filter(v => v !== value));
+        break;
+      case 'subject':
+        setSelectedSubjects(prev => prev.filter(v => v !== value));
+        break;
+      case 'audience':
+        setSelectedAudiences(prev => prev.filter(v => v !== value));
+        break;
+      case 'location':
+        setSelectedLocations(prev => prev.filter(v => v !== value));
+        break;
+      case 'level':
+        setSelectedLevels(prev => prev.filter(v => v !== value));
+        break;
+      case 'publicationDate':
+        setSelectedPublicationDates(prev => prev.filter(v => v !== value));
+        break;
+    }
+  };
+
+  // Clear all filters
+  const handleClearAllFilters = () => {
+    setSelectedFormats([]);
+    setSelectedAvailabilities([]);
+    setSelectedLanguages([]);
+    setSelectedSubjects([]);
+    setSelectedAudiences([]);
+    setSelectedLocations([]);
+    setSelectedLevels([]);
+    setSelectedPublicationDates([]);
+    setSelectedCategory('All');
+    setSearch('');
+  };
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -90,18 +413,26 @@ export function CoursesSection() {
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
         const response = await fetch('/data/courses.json');
         if (!response.ok) {
           throw new Error('Failed to fetch courses');
         }
         const data = await response.json();
         setCourses(data.courses || []);
-        setError(null);
+        calculateFacetCounts(data.courses || []);
+        const filtered = applyFilters(data.courses || []);
+        setFilteredCourses(filtered);
       } catch (err) {
         console.error('Error fetching courses:', err);
         setError('Failed to load courses. Please try again later.');
+        toast({
+          title: 'Error',
+          description: 'Failed to load courses. Please try again later.',
+          variant: 'destructive',
+        });
       } finally {
         setIsLoading(false);
       }
@@ -110,46 +441,44 @@ export function CoursesSection() {
     fetchCourses();
   }, []);
 
-  // Filtering Logic
+  // Update filtered courses whenever filters change
   useEffect(() => {
-    if (!courses.length) return;
-
-    let result = courses.filter((course) => {
-      const searchLower = search.toLowerCase();
-      return (
-        course.title.toLowerCase().includes(searchLower) ||
-        course.category.toLowerCase().includes(searchLower) ||
-        course.instructor.toLowerCase().includes(searchLower)
-      );
-    });
-
-    if (selectedLevels.length > 0) {
-      result = result.filter((course) => selectedLevels.includes(course.level));
+    if (courses.length > 0) {
+      const filtered = applyFilters(courses);
+      switch (sortBy) {
+        case 'newest':
+          filtered.sort((a, b) => b.id - a.id);
+          break;
+        case 'price-low':
+          filtered.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-high':
+          filtered.sort((a, b) => b.price - a.price);
+          break;
+        case 'rating':
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+      }
+      setFilteredCourses(filtered);
+      setTotalPages(Math.ceil(filtered.length / coursesPerPage));
+      setCurrentPage(1);
+      // Recalculate facet counts based on currently filtered courses to update available options
+      calculateFacetCounts(filtered);
     }
-
-    if (selectedCategory !== 'All') {
-      result = result.filter((course) => course.category === selectedCategory);
-    }
-
-    switch (sortBy) {
-      case 'newest':
-        result = result.sort((a, b) => b.id - a.id);
-        break;
-      case 'price-low':
-        result = result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result = result.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        result = result.sort((a, b) => b.rating - a.rating);
-        break;
-    }
-
-    setFilteredCourses(result);
-    setTotalPages(Math.ceil(result.length / coursesPerPage));
-    setCurrentPage(1);
-  }, [courses, search, selectedLevels, selectedCategory, sortBy]);
+  }, [
+    courses, 
+    search, 
+    sortBy, 
+    selectedCategory, 
+    selectedLevels,
+    selectedFormats,
+    selectedAvailabilities,
+    selectedLanguages,
+    selectedSubjects,
+    selectedAudiences,
+    selectedLocations,
+    selectedPublicationDates
+  ]);
 
   // Get current page courses
   const currentCourses = filteredCourses.slice(
@@ -162,15 +491,8 @@ export function CoursesSection() {
     'All',
     ...Array.from(new Set(courses.map((c) => c.category))),
   ];
-  const uniqueLevels = Array.from(new Set(courses.map((c) => c.level)));
 
   // Handle filtering
-  const handleLevelChange = (level: string) => {
-    setSelectedLevels((prev) =>
-      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
-    );
-  };
-
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
   };
@@ -246,9 +568,93 @@ export function CoursesSection() {
           )}
         </div>
 
-        {/* Sort Dropdown */}
-        <div className="flex items-center justify-between w-full">
-          <div className="ml-4 flex self-end items-center gap-2">
+        {/* Top bar with search, sort, and mobile filter button */}
+        <div className="flex items-center justify-between w-full mb-4">
+          <div className="flex items-center gap-4">
+            <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {getActiveFilters().length > 0 && (
+                    <Badge variant="secondary" className="ml-1 bg-blue-100 text-blue-800">
+                      {getActiveFilters().length}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                <h2 className="text-lg font-semibold mb-4">Filters</h2>
+                <FacetGroup>
+                  {/* Mobile facets - same as desktop */}
+                  <Facet
+                    title="Format"
+                    options={facetOptions.formats}
+                    selectedValues={selectedFormats}
+                    onChange={setSelectedFormats}
+                    isLoading={isLoading}
+                    defaultCollapsed={false}
+                  />
+                  <Facet
+                    title="Availability"
+                    options={facetOptions.availabilities}
+                    selectedValues={selectedAvailabilities}
+                    onChange={setSelectedAvailabilities}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Language"
+                    options={facetOptions.languages}
+                    selectedValues={selectedLanguages}
+                    onChange={setSelectedLanguages}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Subject"
+                    options={facetOptions.subjects}
+                    selectedValues={selectedSubjects}
+                    onChange={setSelectedSubjects}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Audience"
+                    options={facetOptions.audiences}
+                    selectedValues={selectedAudiences}
+                    onChange={setSelectedAudiences}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Location"
+                    options={facetOptions.locations}
+                    selectedValues={selectedLocations}
+                    onChange={setSelectedLocations}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Level"
+                    options={facetOptions.levels}
+                    selectedValues={selectedLevels}
+                    onChange={setSelectedLevels}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                  <Facet
+                    title="Publication Year"
+                    options={facetOptions.publicationDates}
+                    selectedValues={selectedPublicationDates}
+                    onChange={setSelectedPublicationDates}
+                    isLoading={isLoading}
+                    defaultCollapsed={true}
+                  />
+                </FacetGroup>
+              </SheetContent>
+            </Sheet>
+
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[200px]">
                 <img src="/3vertical.png" alt="Sort" />
@@ -262,25 +668,88 @@ export function CoursesSection() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-2">
-            {uniqueLevels.map((level) => (
-              <div key={level} className="flex items-center space-x-3">
-                <Checkbox
-                  id={`level-${level}`}
-                  checked={selectedLevels.includes(level)}
-                  onCheckedChange={() => handleLevelChange(level)}
-                />
-                <label
-                  htmlFor={`level-${level}`}
-                  className="ml-2 cursor-pointer"
-                >
-                  {level}
-                </label>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
+
+      <div className="flex gap-6">
+        {/* Desktop sidebar with all facets - hidden on mobile */}
+        <aside className="hidden lg:block w-[300px] flex-shrink-0">
+          <FacetGroup>
+            <Facet
+              title="Format"
+              options={facetOptions.formats}
+              selectedValues={selectedFormats}
+              onChange={setSelectedFormats}
+              isLoading={isLoading}
+              defaultCollapsed={false}
+            />
+            <Facet
+              title="Availability"
+              options={facetOptions.availabilities}
+              selectedValues={selectedAvailabilities}
+              onChange={setSelectedAvailabilities}
+              isLoading={isLoading}
+              defaultCollapsed={false}
+            />
+            <Facet
+              title="Language"
+              options={facetOptions.languages}
+              selectedValues={selectedLanguages}
+              onChange={setSelectedLanguages}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Subject"
+              options={facetOptions.subjects}
+              selectedValues={selectedSubjects}
+              onChange={setSelectedSubjects}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Audience"
+              options={facetOptions.audiences}
+              selectedValues={selectedAudiences}
+              onChange={setSelectedAudiences}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Location"
+              options={facetOptions.locations}
+              selectedValues={selectedLocations}
+              onChange={setSelectedLocations}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Level"
+              options={facetOptions.levels}
+              selectedValues={selectedLevels}
+              onChange={setSelectedLevels}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+            <Facet
+              title="Publication Year"
+              options={facetOptions.publicationDates}
+              selectedValues={selectedPublicationDates}
+              onChange={setSelectedPublicationDates}
+              isLoading={isLoading}
+              defaultCollapsed={true}
+            />
+          </FacetGroup>
+        </aside>
+
+        {/* Main content area with courses */}
+        <main className="flex-1 min-w-0">
+          {/* Active filters bar */}
+          <ActiveFilters
+            filters={getActiveFilters()}
+            onRemove={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
 
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[400px]">
@@ -368,6 +837,8 @@ export function CoursesSection() {
           )}
         </>
       )}
+      </main>
+      </div>
       <div className="flex md:flex-row flex-col items-center justify-between mt-10">
         <p>© 2025 ChainVerse Academy. All rights reserved.</p>
         <div className="flex items-center gap-10">
