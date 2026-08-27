@@ -15,4 +15,21 @@ export interface AuthorSummary {
   name: string;
   avatarUrl?: string;
   bookCount: number;
+  nationality?: string;
+}
+
+export interface AuthorBook {
+  id: string;
+  title: string;
+  coverUrl?: string;
+  year?: number;
+  format?: string;
+  isbn?: string;
+}
+
+export interface AuthorBooksResponse {
+  data: AuthorBook[];
+  total: number;
+  page: number;
+  limit: number;
 }
