@@ -1,3 +1,6 @@
+export { authorService } from './author.service';
+export { bookService, BookServiceError } from './book.service';
+export { isbnService } from './isbn.service';
 export * from './author.service';
 export * from './library.service';
 export { authorService } from './author.service';
