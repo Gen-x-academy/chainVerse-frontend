@@ -7,6 +7,7 @@ import { CourseList } from '../components/CourseList';
 import { CourseCardSkeleton } from '../components/CourseCardSkeleton';
 import { useCourses } from '../hooks';
 import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
+import type { AccessibilityFeatures } from '../types';
 
 const COURSES_PER_PAGE = 6;
 
@@ -28,6 +29,7 @@ function CourseGrid() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [priceRange, setPriceRange] = useState(500);
+  const [selectedAccessibility, setSelectedAccessibility] = useState<(keyof AccessibilityFeatures)[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,7 @@ function CourseGrid() {
   // #725 — reset to page 1 whenever any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategories, selectedLevel, priceRange]);
+  }, [searchQuery, selectedCategories, selectedLevel, priceRange, selectedAccessibility]);
 
   const filtered = useMemo(
     () =>
@@ -89,6 +91,7 @@ function CourseGrid() {
     setSelectedCategories([]);
     setSelectedLevel('All');
     setPriceRange(500);
+    setSelectedAccessibility([]);
     setCurrentPage(1);
   };
 
@@ -126,7 +129,7 @@ function CourseGrid() {
         onClick={() => setShowFilters(!showFilters)}
       >
         <SlidersHorizontal size={18} />
-        Filters {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+        Filters {(selectedCategories.length + selectedAccessibility.length) > 0 && `(${selectedCategories.length + selectedAccessibility.length})`}
       </button>
 
       <div className="flex flex-col lg:flex-row gap-8 min-w-0">
@@ -135,9 +138,11 @@ function CourseGrid() {
             selectedCategories={selectedCategories}
             selectedLevel={selectedLevel}
             priceRange={priceRange}
+            selectedAccessibility={selectedAccessibility}
             onCategoryChange={setSelectedCategories}
             onLevelChange={setSelectedLevel}
             onPriceChange={setPriceRange}
+            onAccessibilityChange={setSelectedAccessibility}
           />
         </div>
 

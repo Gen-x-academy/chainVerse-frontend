@@ -6,6 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal } from '@/src/shared/components/ui/Modal';
 
+const accessibilitySchema = z.object({
+  largePrint: z.boolean().default(false),
+  braille: z.boolean().default(false),
+  dyslexiaFriendly: z.boolean().default(false),
+  captioned: z.boolean().default(false),
+  transcript: z.boolean().default(false),
+  screenReaderCompatible: z.boolean().default(false),
+});
+
 const courseSchema = z.object({
   title: z.string().min(1, 'Title is required').min(3, 'Title must be at least 3 characters'),
   description: z.string().min(1, 'Description is required').min(10, 'Description must be at least 10 characters'),
@@ -13,6 +22,7 @@ const courseSchema = z.object({
   level: z.string().min(1, 'Level is required'),
   price: z.coerce.number().min(0, 'Price must be 0 or more'),
   thumbnailUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  accessibility: accessibilitySchema.optional(),
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;
@@ -27,6 +37,14 @@ interface CourseFormProps {
 
 const CATEGORIES = ['Blockchain', 'DeFi', 'NFTs', 'Smart Contracts', 'Web3'];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+const ACCESSIBILITY_OPTIONS = [
+  { key: 'largePrint', label: 'Large Print', description: 'Course materials available in large print format' },
+  { key: 'braille', label: 'Braille', description: 'Course content available in braille format' },
+  { key: 'dyslexiaFriendly', label: 'Dyslexia-Friendly', description: 'Optimized formatting for readers with dyslexia' },
+  { key: 'captioned', label: 'Closed Captions', description: 'All video content includes accurate closed captions' },
+  { key: 'transcript', label: 'Transcripts Available', description: 'Full text transcripts for all audio/video content' },
+  { key: 'screenReaderCompatible', label: 'Screen Reader Compatible', description: 'Fully compatible with popular screen readers' },
+] as const;
 
 export const CourseForm: React.FC<CourseFormProps> = ({
   defaultValues,
@@ -50,6 +68,14 @@ export const CourseForm: React.FC<CourseFormProps> = ({
       level: '',
       price: 0,
       thumbnailUrl: '',
+      accessibility: {
+        largePrint: false,
+        braille: false,
+        dyslexiaFriendly: false,
+        captioned: false,
+        transcript: false,
+        screenReaderCompatible: false,
+      },
       ...defaultValues,
     },
   });
@@ -154,6 +180,32 @@ export const CourseForm: React.FC<CourseFormProps> = ({
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus-ring transition"
           {...register('thumbnailUrl')}
         />
+      </div>
+
+      {/* Accessibility Features */}
+      <div className="border border-gray-200 rounded-lg p-5">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Accessibility Features</h3>
+        <p className="text-sm text-gray-600 mb-4">Select which accessibility features your course supports:</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {ACCESSIBILITY_OPTIONS.map((option) => (
+            <label
+              key={option.key}
+              htmlFor={`accessibility-${option.key}`}
+              className="flex items-start gap-3 cursor-pointer"
+            >
+              <input
+                id={`accessibility-${option.key}`}
+                type="checkbox"
+                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                {...register(`accessibility.${option.key}` as const)}
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-800">{option.label}</span>
+                <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+              </div>
+            </label>
+          ))}
+        </div>
       </div>
 
       {/* Actions */}
