@@ -1,3 +1,18 @@
+export { LibrarianPageShell } from './LibrarianPageShell';
+export { BookFormStepper, BOOK_FORM_STEPS } from './BookFormStepper';
+export { BookCreateForm } from './BookCreateForm';
+export { BookEditForm } from './BookEditForm';
+export { BookConflictDialog } from './BookConflictDialog';
+export { BookStatusControls } from './BookStatusControls';
+export { ISBNLookupFlow } from './ISBNLookupFlow';
 export { SearchAutocomplete } from './SearchAutocomplete';
 export { FacetedFilter } from './FacetedFilter';
 export type { Facet, FacetOption } from './FacetedFilter';
+export { AuthorCard } from './AuthorCard';
+export { AuthorBibliography } from './AuthorBibliography';
+export { LoanTimeline } from './LoanTimeline';
+export { LoanActivityPanel } from './LoanActivityPanel';
+export { LibraryPagination } from './LibraryPagination';
+export { CatalogResults, CatalogResultsContainer } from './CatalogResults';
+export { ArchivedBookStatus } from './ArchivedBookStatus';
+export { ArchivedBooksPanel, RestoreBookDialog } from './ArchivedBooksPanel';
