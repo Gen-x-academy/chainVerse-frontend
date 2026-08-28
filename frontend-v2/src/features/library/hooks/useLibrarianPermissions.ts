@@ -10,7 +10,7 @@ const ROLE_PERMISSIONS: Record<string, LibrarianPermission[]> = {
   student: [],
 };
 
-/** Maps auth role to librarian section permissions. */
+/** Maps the authenticated user's role to their librarian section permissions. */
 export function useLibrarianPermissions(): LibrarianPermission[] {
   const role = useAuthStore((s) => s.user?.role);
   return useMemo(() => ROLE_PERMISSIONS[role ?? ''] ?? [], [role]);
@@ -23,31 +23,11 @@ export function hasLibrarianPermission(
   return permissions.includes(required);
 }
 
-/** Cost fields are restricted to admin and acquisitions roles. */
+/** Cost fields are restricted to admin role. */
 export function canViewCostData(role?: string): boolean {
   return role === 'admin';
 }
 
 export function canManageAcquisitions(permissions: LibrarianPermission[]): boolean {
   return permissions.includes('acquisitions') || permissions.includes('configuration');
-import type { LibrarianPermission } from '@/components/elibrary/LibrarianNav';
-import {
-  resolveLibrarianPermissions,
-  canPerformLibrarianAction,
-  type LibrarianAction,
-} from '../utils/librarian-permissions';
-
-/** Resolves librarian permissions from role until auth exposes explicit librarian grants. */
-export function useLibrarianPermissions(role?: string): LibrarianPermission[] {
-  return useMemo(() => resolveLibrarianPermissions(role ?? ''), [role]);
-}
-
-export function useCanPerformLibrarianAction(
-  permissions: LibrarianPermission[],
-  action: LibrarianAction
-): boolean {
-  return useMemo(
-    () => canPerformLibrarianAction(permissions, action),
-    [permissions, action]
-  );
 }
