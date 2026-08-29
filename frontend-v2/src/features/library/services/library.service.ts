@@ -63,13 +63,21 @@ export const libraryService = {
     return apiClient.get<StocktakeSession>(`${BASE}/stocktake/sessions/${sessionId}`);
   },
 
-  recordStocktakeScan(sessionId: string, barcode: string) {
-    return apiClient.post<StocktakeSession>(`${BASE}/stocktake/sessions/${sessionId}/scan`, {
+  /** Returns the signed-in staff member's resumable active session, if any. */
+  getCurrentStocktakeSession() {
+    return apiClient.get<StocktakeSession | null>(`${BASE}/stocktake/sessions/current`);
+  },
+
+  recordStocktakeScan(sessionId: string, barcode: string, idempotencyKey: string) {
+    return apiClient.post<StocktakeSession & { duplicate?: boolean }>(`${BASE}/stocktake/sessions/${sessionId}/scan`, {
       barcode,
+      idempotencyKey,
     });
   },
 
-  completeStocktake(sessionId: string) {
-    return apiClient.post<StocktakeSession>(`${BASE}/stocktake/sessions/${sessionId}/complete`, {});
+  completeStocktake(sessionId: string, discrepanciesReviewed: boolean) {
+    return apiClient.post<StocktakeSession>(`${BASE}/stocktake/sessions/${sessionId}/complete`, {
+      discrepanciesReviewed,
+    });
   },
 };

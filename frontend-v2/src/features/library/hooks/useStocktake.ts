@@ -6,8 +6,18 @@ import type { LocationSelection } from '../types/library.types';
 
 export const stocktakeKeys = {
   all: ['library', 'stocktake'] as const,
+  current: () => [...stocktakeKeys.all, 'current'] as const,
   session: (id: string) => [...stocktakeKeys.all, 'session', id] as const,
 };
+
+export function useCurrentStocktakeSession() {
+  return useQuery({
+    queryKey: stocktakeKeys.current(),
+    queryFn: () => libraryService.getCurrentStocktakeSession(),
+    staleTime: 0,
+    retry: false,
+  });
+}
 
 export function useStocktakeSession(sessionId: string | null) {
   return useQuery({
@@ -31,8 +41,8 @@ export function useStartStocktake() {
 export function useRecordStocktakeScan() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({ sessionId, barcode }: { sessionId: string; barcode: string }) =>
-      libraryService.recordStocktakeScan(sessionId, barcode),
+    mutationFn: ({ sessionId, barcode, idempotencyKey }: { sessionId: string; barcode: string; idempotencyKey: string }) =>
+      libraryService.recordStocktakeScan(sessionId, barcode, idempotencyKey),
     onSuccess: (session) => {
       client.setQueryData(stocktakeKeys.session(session.id), session);
     },
@@ -42,7 +52,8 @@ export function useRecordStocktakeScan() {
 export function useCompleteStocktake() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (sessionId: string) => libraryService.completeStocktake(sessionId),
+    mutationFn: ({ sessionId, discrepanciesReviewed }: { sessionId: string; discrepanciesReviewed: boolean }) =>
+      libraryService.completeStocktake(sessionId, discrepanciesReviewed),
     onSuccess: (session) => {
       client.setQueryData(stocktakeKeys.session(session.id), session);
     },
