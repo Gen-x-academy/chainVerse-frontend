@@ -25,6 +25,8 @@ export interface DonationIntakeWorkflowProps {
   matchesError?: string | null;
   canViewDonorDetails?: boolean;
   locationNodes?: LocationNode[];
+  locationsLoading?: boolean;
+  locationsError?: string | null;
   onSearchMatches?: (query: { isbn?: string; title?: string; author?: string }) => void;
   onSubmit?: (payload: {
     donor: DonorContact;
@@ -38,7 +40,7 @@ export interface DonationIntakeWorkflowProps {
     location?: LocationSelection;
     status: DonationAcceptanceStatus;
     rejectionReason?: string;
-  }) => Promise<{ success: boolean; error?: string }>;
+  }) => Promise<{ success: boolean; error?: string; reference?: string }>;
   className?: string;
 }
 
@@ -81,6 +83,8 @@ export function DonationIntakeWorkflow({
   matchesError,
   canViewDonorDetails = true,
   locationNodes = [],
+  locationsLoading,
+  locationsError,
   onSearchMatches,
   onSubmit,
   className,
@@ -128,7 +132,7 @@ export function DonationIntakeWorkflow({
         rejectionReason: acceptance === "rejected" ? rejectionReason : undefined,
       });
       if (result.success) {
-        setIntakeId(`DON-${Date.now()}`);
+        setIntakeId(result.reference ?? 'Recorded');
         setStep("success");
       } else {
         setSubmitError(result.error ?? "Failed to submit intake.");
@@ -213,7 +217,7 @@ export function DonationIntakeWorkflow({
               />
               Anonymous donation (hide donor from non-acquisitions staff)
             </label>
-            <div className="grid gap-3 sm:grid-cols-2">
+            {canViewDonorDetails ? <div className="grid gap-3 sm:grid-cols-2">
               <label className="text-sm">
                 Donor name
                 <input
@@ -234,7 +238,11 @@ export function DonationIntakeWorkflow({
                   onChange={(e) => setDonor((d) => ({ ...d, email: e.target.value }))}
                 />
               </label>
-            </div>
+            </div> : (
+              <p role="alert" className="text-sm text-muted-foreground">
+                Donor contact details are restricted to acquisitions staff.
+              </p>
+            )}
             <fieldset className="space-y-2 text-sm">
               <legend className="font-medium">Donor preferences</legend>
               {(
@@ -254,7 +262,7 @@ export function DonationIntakeWorkflow({
                 </label>
               ))}
             </fieldset>
-            <Button onClick={() => setStep("book")} disabled={!donor.name.trim()}>
+            <Button onClick={() => setStep("book")} disabled={!canViewDonorDetails || !donor.name.trim()}>
               Continue to book details
             </Button>
           </CardContent>
@@ -446,6 +454,8 @@ export function DonationIntakeWorkflow({
                   nodes={locationNodes}
                   selection={location}
                   onChange={setLocation}
+                  isLoading={locationsLoading}
+                  error={locationsError}
                 />
               </div>
             )}

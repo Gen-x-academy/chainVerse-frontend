@@ -106,4 +106,47 @@ describe("DonationIntakeWorkflow", () => {
     });
     expect(screen.queryByText("secret@example.com")).not.toBeInTheDocument();
   });
+
+  it("uses the server-issued intake reference after a successful submission", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn().mockResolvedValue({ success: true, reference: "donation-42" });
+    render(<DonationIntakeWorkflow matches={[]} onSubmit={onSubmit} canViewDonorDetails />);
+
+    await user.type(screen.getByLabelText("Donor name"), "Jane Donor");
+    await user.click(screen.getByText("Continue to book details"));
+    await user.type(screen.getByLabelText("Book title"), "Accepted Book");
+    await user.type(screen.getByLabelText("Book author"), "Author");
+    await user.click(screen.getByText("Search catalog matches"));
+    await user.click(screen.getByText("Continue to decision"));
+    await user.click(screen.getByText("Submit intake"));
+
+    await waitFor(() => expect(screen.getByText("Reference: donation-42")).toBeInTheDocument());
+  });
+
+  it("surfaces server-side rejection validation failures", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn().mockResolvedValue({ success: false, error: "Rejection reason is not permitted." });
+    render(<DonationIntakeWorkflow matches={[]} onSubmit={onSubmit} canViewDonorDetails />);
+
+    await user.type(screen.getByLabelText("Donor name"), "Jane Donor");
+    await user.click(screen.getByText("Continue to book details"));
+    await user.type(screen.getByLabelText("Book title"), "Rejected Book");
+    await user.type(screen.getByLabelText("Book author"), "Author");
+    await user.click(screen.getByText("Search catalog matches"));
+    await user.click(screen.getByText("Continue to decision"));
+    await user.click(screen.getByRole("button", { name: "rejected" }));
+    await user.type(screen.getByLabelText("Rejection reason"), "Damaged");
+    await user.click(screen.getByText("Submit intake"));
+
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Rejection reason is not permitted."));
+  });
+
+  it("does not expose donor fields without acquisitions permission", () => {
+    render(<DonationIntakeWorkflow canViewDonorDetails={false} />);
+
+    expect(screen.queryByLabelText("Donor name")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Donor email")).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("restricted to acquisitions staff");
+    expect(screen.getByText("Continue to book details")).toBeDisabled();
+  });
 });
