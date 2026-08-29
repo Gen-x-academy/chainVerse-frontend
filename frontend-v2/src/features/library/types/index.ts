@@ -9,3 +9,4 @@ export * from './library.types';
 export * from './loan.types';
 export * from './catalog.types';
 export * from './archive.types';
+export * from './reports.types';
