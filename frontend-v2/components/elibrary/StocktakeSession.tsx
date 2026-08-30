@@ -11,13 +11,12 @@ import type {
   LocationSelection,
   StocktakeDiscrepancy,
   StocktakeExpectedItem,
-  StocktakeScannedItem,
   StocktakeSession,
 } from "@/src/features/library/types/library.types";
 
 export type StocktakeStep = "location" | "scan" | "review" | "closed";
 
-const STORAGE_PREFIX = "elibrary-stocktake-session:";
+const ACTIVE_SESSION_KEY = "elibrary-stocktake-session:active";
 
 export interface StocktakeSessionProps {
   nodes: LocationNode[];
@@ -27,8 +26,8 @@ export interface StocktakeSessionProps {
   locationsLoading?: boolean;
   locationsError?: string | null;
   onStartSession?: (location: LocationSelection, locationLabel: string) => Promise<{ success: boolean; session?: StocktakeSession; error?: string }>;
-  onScan?: (barcode: string) => Promise<{ success: boolean; duplicate?: boolean; error?: string; item?: StocktakeScannedItem }>;
-  onComplete?: () => Promise<{ success: boolean; error?: string }>;
+  onScan?: (barcode: string) => Promise<{ success: boolean; duplicate?: boolean; error?: string; session?: StocktakeSession }>;
+  onComplete?: (discrepanciesReviewed: boolean) => Promise<{ success: boolean; error?: string; session?: StocktakeSession }>;
   className?: string;
 }
 
@@ -52,23 +51,33 @@ function locationLabelFromNodes(nodes: LocationNode[], selection: LocationSelect
   return labels.join(" / ");
 }
 
-function persistSession(session: StocktakeSession) {
+/**
+ * Browser storage is intentionally limited to a session identifier. The API is
+ * always the authority for its contents, so a stale device can never overwrite
+ * a newer server session when it reconnects.
+ */
+export function persistActiveStocktakeSessionId(sessionId: string) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(`${STORAGE_PREFIX}${session.id}`, JSON.stringify(session));
-    localStorage.setItem(`${STORAGE_PREFIX}active`, session.id);
+    localStorage.setItem(ACTIVE_SESSION_KEY, sessionId);
   } catch {
     /* ignore quota errors */
   }
 }
 
-export function loadPersistedStocktakeSession(): StocktakeSession | null {
+export function clearPersistedStocktakeSessionId() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
+export function loadPersistedStocktakeSessionId(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    const activeId = localStorage.getItem(`${STORAGE_PREFIX}active`);
-    if (!activeId) return null;
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}${activeId}`);
-    return raw ? (JSON.parse(raw) as StocktakeSession) : null;
+    return localStorage.getItem(ACTIVE_SESSION_KEY);
   } catch {
     return null;
   }
@@ -89,8 +98,8 @@ export function StocktakeSessionView({
 }: StocktakeSessionProps) {
   const [step, setStep] = useState<StocktakeStep>(session ? "scan" : "location");
   const [selection, setSelection] = useState<LocationSelection>(session?.location ?? {});
-  const [localSession, setLocalSession] = useState<StocktakeSession | null>(session);
   const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [scanFeedback, setScanFeedback] = useState<string | null>(null);
   const [reviewAcknowledged, setReviewAcknowledged] = useState(false);
   const [completing, setCompleting] = useState(false);
@@ -98,26 +107,25 @@ export function StocktakeSessionView({
 
   useEffect(() => {
     if (session) {
-      setLocalSession(session);
       setStep(session.status === "closed" ? "closed" : session.status === "review" ? "review" : "scan");
-      persistSession(session);
     }
   }, [session]);
 
-  const expectedCount = localSession?.expectedItems.length ?? 0;
-  const foundCount = localSession?.scannedItems.filter((i) => i.status === "found").length ?? 0;
-  const discrepancies: StocktakeDiscrepancy[] = localSession?.discrepancies ?? [];
+  const expectedCount = session?.expectedItems.length ?? 0;
+  const foundCount = session?.scannedItems.filter((i) => i.status === "found").length ?? 0;
+  const discrepancies: StocktakeDiscrepancy[] = session?.discrepancies ?? [];
 
   const handleStart = useCallback(async () => {
     if (!onStartSession || !selection.branchId) return;
     setStarting(true);
+    setStartError(null);
     const label = locationLabelFromNodes(nodes, selection);
     try {
       const result = await onStartSession(selection, label);
       if (result.success && result.session) {
-        setLocalSession(result.session);
-        persistSession(result.session);
         setStep("scan");
+      } else if (!result.success) {
+        setStartError(result.error ?? "Failed to start stocktake session.");
       }
     } finally {
       setStarting(false);
@@ -126,38 +134,17 @@ export function StocktakeSessionView({
 
   const handleScan = useCallback(
     async (barcode: string) => {
-      if (!onScan || !localSession) {
+      if (!onScan || !session) {
         return { success: false, error: "No active session" };
       }
       const result = await onScan(barcode);
-      if (result.success && result.item) {
-        setLocalSession((prev) => {
-          if (!prev) return prev;
-          const scannedItems = [...prev.scannedItems.filter((s) => s.barcode !== barcode), result.item!];
-          const expectedBarcodes = new Set(prev.expectedItems.map((e) => e.barcode));
-          const scannedBarcodes = new Set(scannedItems.map((s) => s.barcode));
-          const discrepancies: StocktakeDiscrepancy[] = [
-            ...prev.expectedItems
-              .filter((e) => !scannedBarcodes.has(e.barcode))
-              .map((e) => ({ barcode: e.barcode, title: e.title, type: "missing" as const })),
-            ...scannedItems
-              .filter((s) => s.status === "unexpected")
-              .map((s) => ({ barcode: s.barcode, title: s.title, type: "unexpected" as const })),
-          ];
-          const next: StocktakeSession = {
-            ...prev,
-            scannedItems,
-            discrepancies,
-            status: discrepancies.length > 0 ? "review" : prev.status,
-          };
-          persistSession(next);
-          return next;
-        });
-        setScanFeedback(`Found: ${result.item.title}`);
+      if (result.success && result.session) {
+        const scanned = result.session.scannedItems.find((item) => item.barcode === barcode);
+        setScanFeedback(result.duplicate ? `Already scanned: ${scanned?.title ?? barcode}` : `Found: ${scanned?.title ?? barcode}`);
       }
       return result;
     },
-    [onScan, localSession]
+    [onScan, session]
   );
 
   const handleComplete = useCallback(async () => {
@@ -169,21 +156,18 @@ export function StocktakeSessionView({
     setCompleting(true);
     setCompleteError(null);
     try {
-      const result = await onComplete();
-      if (result.success) {
+      const result = await onComplete(reviewAcknowledged || discrepancies.length === 0);
+      if (result.success && result.session?.status === "closed") {
         setStep("closed");
-        if (localSession) {
-          const closed = { ...localSession, status: "closed" as const };
-          persistSession(closed);
-          setLocalSession(closed);
-        }
+      } else if (result.success) {
+        setCompleteError("The server did not confirm that this session was closed.");
       } else {
         setCompleteError(result.error ?? "Failed to close session.");
       }
     } finally {
       setCompleting(false);
     }
-  }, [onComplete, discrepancies.length, reviewAcknowledged, localSession]);
+  }, [onComplete, discrepancies.length, reviewAcknowledged]);
 
   if (isLoading) {
     return (
@@ -209,7 +193,7 @@ export function StocktakeSessionView({
           <CardTitle>Stocktake session closed</CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-2">
-          <p>{localSession?.locationLabel}</p>
+          <p>{session?.locationLabel}</p>
           <p>
             Scanned {foundCount} of {expectedCount} expected items.
           </p>
@@ -250,6 +234,11 @@ export function StocktakeSessionView({
               isLoading={locationsLoading}
               error={locationsError}
             />
+            {startError && (
+              <div role="alert" className="text-sm text-destructive">
+                {startError}
+              </div>
+            )}
             <Button onClick={handleStart} disabled={!selection.branchId || starting}>
               {starting ? "Starting..." : "Start stocktake session"}
             </Button>
@@ -257,14 +246,14 @@ export function StocktakeSessionView({
         </Card>
       )}
 
-      {step === "scan" && localSession && (
+      {step === "scan" && session && (
         <div className="grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Scan expected copies</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">{localSession.locationLabel}</p>
+              <p className="text-sm text-muted-foreground">{session.locationLabel}</p>
               <p role="status" aria-live="polite" className="text-sm font-medium">
                 Progress: {foundCount} / {expectedCount} found
               </p>
@@ -280,12 +269,12 @@ export function StocktakeSessionView({
               <CardTitle>Expected items</CardTitle>
             </CardHeader>
             <CardContent>
-              {localSession.expectedItems.length === 0 ? (
+              {session.expectedItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No expected items for this location.</p>
               ) : (
                 <ul className="max-h-64 space-y-1 overflow-y-auto text-sm">
-                  {localSession.expectedItems.map((item: StocktakeExpectedItem) => {
-                    const scanned = localSession.scannedItems.some(
+                  {session.expectedItems.map((item: StocktakeExpectedItem) => {
+                    const scanned = session.scannedItems.some(
                       (s) => s.barcode === item.barcode && s.status === "found"
                     );
                     return (
@@ -307,7 +296,7 @@ export function StocktakeSessionView({
         </div>
       )}
 
-      {step === "review" && localSession && (
+      {step === "review" && session && (
         <Card>
           <CardHeader>
             <CardTitle>Discrepancy review</CardTitle>
