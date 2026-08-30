@@ -37,6 +37,8 @@ export interface DonationIntakePayload {
   condition: BookCondition;
   conditionNotes?: string;
   matchedCatalogId?: string;
+  /** Required for accepted donations and validated by the location service. */
+  location?: LocationSelection;
   status: DonationAcceptanceStatus;
   rejectionReason?: string;
 }

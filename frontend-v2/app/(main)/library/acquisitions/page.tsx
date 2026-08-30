@@ -1,101 +1,108 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { LibraryAdminLayout } from '@/components/elibrary/LibraryAdminLayout';
+import { useCallback, useEffect, useState } from 'react';
 import { AcquisitionQueue } from '@/components/elibrary/AcquisitionQueue';
-import { acquisitionsService } from '@/src/features/library/services/acquisitions.service';
-import type { AcquisitionQueueItem } from '@/src/features/library/types/acquisitions.types';
-
-/** #930: Acquisitions queue listing */
-export default function AcquisitionsPage() {
-  const [items, setItems] = useState<AcquisitionQueueItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    acquisitionsService.listQueue()
-      .then((data) => { if (!cancelled) setItems(data); })
-      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load'); })
-      .finally(() => { if (!cancelled) setIsLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
-
-  return (
-    <LibraryAdminLayout requiredPermission="acquisitions" activeHref="/library/acquisitions">
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Acquisitions</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Purchase intake and accession queue.
-            </p>
-          </div>
-          <Link
-            href="/library/acquisitions/new"
-            className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            New purchase intake
-          </Link>
-        </div>
-        <AcquisitionQueue items={items} isLoading={isLoading} error={error} />
-      </div>
-    </LibraryAdminLayout>
-import React, { useCallback, useState } from 'react';
 import { DonationIntakeWorkflow } from '@/components/elibrary/DonationIntakeWorkflow';
-import { LibrarianLayout } from '@/components/elibrary/LibrarianLayout';
-import {
-  MOCK_LOCATION_TREE,
-  mockSearchCatalogMatches,
-} from '@/src/features/library/utils/mockLibraryData';
-import type { CatalogMatch } from '@/src/features/library/types/library.types';
+import { LibraryAdminLayout } from '@/components/elibrary/LibraryAdminLayout';
+import { acquisitionsService } from '@/src/features/library/services/acquisitions.service';
+import { hasLibrarianPermission, useLibrarianPermissions } from '@/src/features/library/hooks/useLibrarianPermissions';
+import { libraryService } from '@/src/features/library/services/library.service';
+import type { AcquisitionQueueItem } from '@/src/features/library/types/acquisitions.types';
+import type { CatalogMatch, DonationIntakePayload, LocationNode } from '@/src/features/library/types/library.types';
 
+/** Donation intake and the acquisition queue it creates records for. */
 export default function AcquisitionsPage() {
+  const permissions = useLibrarianPermissions();
+  const canViewDonorDetails = hasLibrarianPermission(permissions, 'acquisitions');
+  const [items, setItems] = useState<AcquisitionQueueItem[]>([]);
+  const [queueLoading, setQueueLoading] = useState(true);
+  const [queueError, setQueueError] = useState<string | null>(null);
+  const [locationNodes, setLocationNodes] = useState<LocationNode[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(true);
+  const [locationsError, setLocationsError] = useState<string | null>(null);
   const [matches, setMatches] = useState<CatalogMatch[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
   const [matchesError, setMatchesError] = useState<string | null>(null);
 
-  const handleSearchMatches = useCallback((query: { isbn?: string; title?: string; author?: string }) => {
+  const refreshQueue = useCallback(async () => {
+    setQueueLoading(true);
+    setQueueError(null);
+    try {
+      setItems(await acquisitionsService.listQueue());
+    } catch (err) {
+      setQueueError(err instanceof Error ? err.message : 'Failed to load acquisitions.');
+    } finally {
+      setQueueLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void refreshQueue(); }, [refreshQueue]);
+
+  useEffect(() => {
+    let cancelled = false;
+    libraryService.getLocationTree()
+      .then((nodes) => { if (!cancelled) setLocationNodes(nodes); })
+      .catch((err) => { if (!cancelled) setLocationsError(err instanceof Error ? err.message : 'Failed to load locations.'); })
+      .finally(() => { if (!cancelled) setLocationsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const searchMatches = useCallback(async (query: { isbn?: string; title?: string; author?: string }) => {
     setMatchesLoading(true);
     setMatchesError(null);
     try {
-      const results = mockSearchCatalogMatches(query);
-      setMatches(results);
-      if (results.length === 0) setMatches([]);
-    } catch {
-      setMatchesError('Failed to search catalog.');
+      setMatches(await libraryService.searchCatalogMatches(query));
+    } catch (err) {
+      setMatches([]);
+      setMatchesError(err instanceof Error ? err.message : 'Failed to search catalog.');
     } finally {
       setMatchesLoading(false);
     }
   }, []);
 
-  const handleSubmit = useCallback(
-    async (payload: Parameters<NonNullable<React.ComponentProps<typeof DonationIntakeWorkflow>['onSubmit']>>[0]) => {
-      await new Promise((r) => setTimeout(r, 300));
-      if (payload.status === 'rejected' && !payload.rejectionReason?.trim()) {
-        return { success: false, error: 'Rejection reason required' };
+  const submitIntake = useCallback(async (payload: DonationIntakePayload) => {
+    try {
+      if (payload.status === 'accepted') {
+        if (!payload.location?.branchId) {
+          return { success: false, error: 'Select a location before accepting this donation.' };
+        }
+        const location = await libraryService.validateLocation(payload.location);
+        if (!location.valid) return { success: false, error: 'The selected location is no longer available.' };
       }
-      return { success: true };
-    },
-    []
-  );
+      const record = await libraryService.submitDonationIntake(payload);
+      await refreshQueue();
+      return { success: true, reference: record.id };
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to submit intake.' };
+    }
+  }, [refreshQueue]);
 
   return (
-    <LibrarianLayout
-      permissions={['acquisitions', 'catalog']}
-      activeHref="/library/acquisitions"
-      title="Acquisitions — Donation intake"
-    >
-      <DonationIntakeWorkflow
-        canViewDonorDetails
-        locationNodes={MOCK_LOCATION_TREE}
-        matches={matches}
-        matchesLoading={matchesLoading}
-        matchesError={matchesError}
-        onSearchMatches={handleSearchMatches}
-        onSubmit={handleSubmit}
-      />
-    </LibrarianLayout>
+    <LibraryAdminLayout requiredPermission="acquisitions" activeHref="/library/acquisitions">
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Donation intake</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Match donated books, record an acceptance decision, and create their acquisition record.</p>
+        </div>
+        <DonationIntakeWorkflow
+          matches={matches}
+          matchesLoading={matchesLoading}
+          matchesError={matchesError}
+          locationNodes={locationNodes}
+          locationsLoading={locationsLoading}
+          locationsError={locationsError}
+          canViewDonorDetails={canViewDonorDetails}
+          onSearchMatches={searchMatches}
+          onSubmit={submitIntake}
+        />
+        <section aria-labelledby="acquisition-queue-heading" className="space-y-3">
+          <div>
+            <h2 id="acquisition-queue-heading" className="text-xl font-semibold text-gray-900">Acquisition queue</h2>
+            <p className="text-sm text-muted-foreground">Newly accepted donations appear here for accessioning.</p>
+          </div>
+          <AcquisitionQueue items={items} isLoading={queueLoading} error={queueError} />
+        </section>
+      </div>
+    </LibraryAdminLayout>
   );
 }
