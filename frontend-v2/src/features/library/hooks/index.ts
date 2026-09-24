@@ -24,6 +24,7 @@ export {
   useLibraryCatalogSearch,
   catalogKeys,
 } from './useLibraryQuery';
+export { useCatalogSearch, SEARCH_DEBOUNCE_MS, SEARCH_QUERY_PARAM } from './useCatalogSearch';
 export {
   useConditionReport,
   useUpdateConditionReport,
