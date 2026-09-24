@@ -5,3 +5,7 @@ export * from './pages';
 export * from './rules';
 export * from './services';
 export * from './types';
+export * from './reviewer-pool';
+export * from './assignment';
+export * from './conflict';
+export * from './blind-review';
