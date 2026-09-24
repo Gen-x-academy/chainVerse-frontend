@@ -1,0 +1,7 @@
+[
+  { "name": "scholarship_rules", "version": "1.0.0", "columns": [{ "name": "applicationId", "type": "string", "nullable": false }, { "name": "applicantId", "type": "string", "nullable": false }, { "name": "scholarshipId", "type": "string", "nullable": false }, { "name": "status", "type": "string", "nullable": false }, { "name": "version", "type": "number", "nullable": false }] },
+  { "name": "decision", "version": "1.0.0", "columns": [{ "name": "applicationId", "type": "string", "nullable": false }, { "name": "passed", "type": "boolean", "nullable": false }, { "name": "decisionKey", "type": "string", "nullable": false }] },
+  { "name": "consent_record", "version": "1.0.0", "columns": [{ "name": "applicantId", "type": "string", "nullable": false }, { "name": "policyVersion", "type": "string", "nullable": false }, { "name": "grantedAt", "type": "string", "nullable": false }] },
+  { "name": "supporting_document", "version": "1.0.0", "columns": [{ "name": "applicantId", "type": "string", "nullable": false }, { "name": "documentKind", "type": "string", "nullable": false }, { "name": "permissionGranted", "type": "boolean", "nullable": false }] },
+  { "name": "program_wallet", "version": "1.0.0", "columns": [{ "name": "programId", "type": "string", "nullable": false }, { "name": "network", "type": "string", "nullable": false }, { "name": "address", "type": "string", "nullable": false }] }
+]
