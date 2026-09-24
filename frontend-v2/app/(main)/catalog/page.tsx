@@ -12,6 +12,13 @@ import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets'
 function CatalogPageContent() {
   const catalogSearch = useCatalogFacets({ limit: 24 });
   const { data: authorResults, isLoading: authorsLoading } = useAuthorSearch(catalogSearch.query);
+import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
+
+function CatalogPageContent() {
+  const catalogSearch = useCatalogSearch({ limit: 24 });
+  const { data: authorResults, isLoading: authorsLoading } = useAuthorSearch(
+    catalogSearch.debouncedQuery
+  );
 
   return (
     <SectionContainer className="py-12">
@@ -25,7 +32,9 @@ function CatalogPageContent() {
           value={catalogSearch.query}
           onChange={catalogSearch.setQuery}
           onSubmit={catalogSearch.setQuery}
+          suggestions={catalogSearch.suggestions}
           placeholder="Search by title, author, ISBN..."
+          isLoading={catalogSearch.isFetching}
         />
       </div>
 
@@ -67,7 +76,7 @@ function CatalogPageContent() {
 
         <main className="min-w-0 flex-1">
           <CatalogResults
-            query={catalogSearch.query}
+            query={catalogSearch.debouncedQuery}
             data={catalogSearch.data}
             isLoading={catalogSearch.isLoading}
             isError={catalogSearch.isError}

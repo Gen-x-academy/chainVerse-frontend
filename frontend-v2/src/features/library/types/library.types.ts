@@ -109,3 +109,61 @@ export interface StocktakeSession {
   discrepancies: StocktakeDiscrepancy[];
   status: 'active' | 'review' | 'closed';
 }
+
+// ─── Physical circulation / checkout (issue #951) ─────────────────────────────
+
+export type PatronStatus = 'active' | 'suspended' | 'blocked' | 'expired';
+
+/** Staff-visible patron summary resolved from a platform user id. */
+export interface PatronSummary {
+  id: string;
+  name?: string;
+  email?: string;
+  role: string;
+  status: PatronStatus;
+  activeLoans?: number;
+}
+
+/** Borrowing policy resolved by the backend for a patron. */
+export interface BorrowingPolicy {
+  patronId: string;
+  role: string;
+  status: PatronStatus;
+  maxActiveLoans: number;
+  maxRenewals: number;
+  loanPeriodDays: number;
+  maxActiveHolds: number;
+  policyApplied: 'default' | 'override';
+}
+
+export interface CheckoutEligibility {
+  eligible: boolean;
+  reasons?: string[];
+}
+
+export interface PhysicalCheckoutPayload {
+  barcode: string;
+  patronId: string;
+  staffId?: string;
+}
+
+/** Loan returned by POST /library/circulation/physical/checkout. */
+export interface PhysicalCheckoutResult {
+  id: string;
+  patronId: string;
+  bookId: string;
+  checkedOutAt: string;
+  dueDate: string;
+  status: string;
+}
+
+/** Confirmation rendered after a successful checkout. */
+export interface CheckoutReceipt {
+  loanId: string;
+  barcode: string;
+  copyTitle: string;
+  patronId: string;
+  patronName?: string;
+  dueDate: string;
+  checkedOutAt: string;
+}

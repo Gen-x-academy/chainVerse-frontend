@@ -9,6 +9,10 @@ import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets'
 
 function CatalogSearchContent() {
   const catalogSearch = useCatalogFacets({ limit: 24 });
+import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
+
+function CatalogSearchContent() {
+  const search = useCatalogSearch({ limit: 24 });
 
   return (
     <SectionContainer className="py-12">
@@ -23,6 +27,12 @@ function CatalogSearchContent() {
           onSubmit={catalogSearch.setQuery}
           placeholder="Search by title, author, ISBN, or keyword..."
           isLoading={catalogSearch.isFetching}
+          value={search.query}
+          onChange={search.setQuery}
+          onSubmit={search.setQuery}
+          suggestions={search.suggestions}
+          placeholder="Search by title, author, ISBN, or keyword..."
+          isLoading={search.isFetching}
         />
       </div>
 
@@ -34,6 +44,11 @@ function CatalogSearchContent() {
             onChange={catalogSearch.setFacets}
             isLoading={catalogSearch.isLoading}
             error={catalogSearch.error instanceof Error ? catalogSearch.error.message : null}
+            facets={search.facets}
+            selected={search.selectedFacets}
+            onChange={search.setFacets}
+            isLoading={search.isLoading}
+            error={search.error instanceof Error ? search.error.message : null}
           />
         </aside>
 
@@ -50,6 +65,17 @@ function CatalogSearchContent() {
             canGoNext={catalogSearch.canGoNext}
             onPrev={catalogSearch.goPrev}
             onNext={catalogSearch.goNext}
+            query={search.debouncedQuery}
+            data={search.data}
+            isLoading={search.isLoading}
+            isError={search.isError}
+            error={search.error}
+            isFetching={search.isFetching}
+            isPlaceholderData={search.isPlaceholderData}
+            canGoBack={search.canGoBack}
+            canGoNext={search.canGoNext}
+            onPrev={search.goPrev}
+            onNext={search.goNext}
           />
         </main>
       </div>

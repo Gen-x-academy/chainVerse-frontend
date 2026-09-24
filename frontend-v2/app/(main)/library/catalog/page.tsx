@@ -8,11 +8,13 @@ import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
 import { CatalogResults } from '@/src/features/library/components/CatalogResults';
 import { ArchivedBooksPanel } from '@/src/features/library/components/ArchivedBooksPanel';
 import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
+import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
 
 type CatalogView = 'active' | 'archived';
 
 function ActiveCatalogPanel() {
   const catalogSearch = useCatalogFacets({ limit: 24 });
+  const catalogSearch = useCatalogSearch({ limit: 24 });
 
   return (
     <>
@@ -21,7 +23,9 @@ function ActiveCatalogPanel() {
           value={catalogSearch.query}
           onChange={catalogSearch.setQuery}
           onSubmit={catalogSearch.setQuery}
+          suggestions={catalogSearch.suggestions}
           placeholder="Search catalog by title, author, ISBN…"
+          isLoading={catalogSearch.isFetching}
         />
       </div>
 
@@ -37,7 +41,7 @@ function ActiveCatalogPanel() {
         </aside>
         <div className="min-w-0 flex-1">
           <CatalogResults
-            query={catalogSearch.query}
+            query={catalogSearch.debouncedQuery}
             data={catalogSearch.data}
             isLoading={catalogSearch.isLoading}
             isError={catalogSearch.isError}
