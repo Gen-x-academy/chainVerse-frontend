@@ -1,40 +1,24 @@
 'use client';
 
-import React from 'react';
-import { SectionContainer } from '@/shared/components/layout/SectionContainer';
+import React, { Suspense } from 'react';
+import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
 import { SearchAutocomplete } from '@/src/features/library/components/SearchAutocomplete';
 import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
 import { CatalogResults } from '@/src/features/library/components/CatalogResults';
 import { AuthorCard } from '@/src/features/library/components/AuthorCard';
 import { useAuthorSearch } from '@/src/features/library/hooks/useAuthor';
-import { useLibraryCatalogSearch } from '@/src/features/library/hooks/useLibraryQuery';
-import type { Facet } from '@/src/features/library/components/FacetedFilter';
+import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
 
-const MOCK_FACETS: Facet[] = [
-  {
-    key: 'format',
-    label: 'Format',
-    options: [
-      { value: 'print', label: 'Print', count: 120 },
-      { value: 'ebook', label: 'E-book', count: 85 },
-      { value: 'audiobook', label: 'Audiobook', count: 42 },
-    ],
-  },
-  {
-    key: 'genre',
-    label: 'Genre',
-    options: [
-      { value: 'fiction', label: 'Fiction', count: 200 },
-      { value: 'non-fiction', label: 'Non-Fiction', count: 150 },
-      { value: 'science', label: 'Science', count: 60 },
-      { value: 'history', label: 'History', count: 45 },
-    ],
-  },
-];
-
-export default function CatalogPage() {
-  const catalogSearch = useLibraryCatalogSearch({ limit: 24 });
+function CatalogPageContent() {
+  const catalogSearch = useCatalogFacets({ limit: 24 });
   const { data: authorResults, isLoading: authorsLoading } = useAuthorSearch(catalogSearch.query);
+import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
+
+function CatalogPageContent() {
+  const catalogSearch = useCatalogSearch({ limit: 24 });
+  const { data: authorResults, isLoading: authorsLoading } = useAuthorSearch(
+    catalogSearch.debouncedQuery
+  );
 
   return (
     <SectionContainer className="py-12">
@@ -48,7 +32,9 @@ export default function CatalogPage() {
           value={catalogSearch.query}
           onChange={catalogSearch.setQuery}
           onSubmit={catalogSearch.setQuery}
+          suggestions={catalogSearch.suggestions}
           placeholder="Search by title, author, ISBN..."
+          isLoading={catalogSearch.isFetching}
         />
       </div>
 
@@ -80,15 +66,17 @@ export default function CatalogPage() {
       <div className="flex flex-col gap-8 lg:flex-row">
         <aside className="w-full flex-shrink-0 lg:w-64">
           <FacetedFilter
-            facets={MOCK_FACETS}
-            selected={catalogSearch.facets}
+            facets={catalogSearch.facets}
+            selected={catalogSearch.selectedFacets}
             onChange={catalogSearch.setFacets}
+            isLoading={catalogSearch.isLoading}
+            error={catalogSearch.error instanceof Error ? catalogSearch.error.message : null}
           />
         </aside>
 
         <main className="min-w-0 flex-1">
           <CatalogResults
-            query={catalogSearch.query}
+            query={catalogSearch.debouncedQuery}
             data={catalogSearch.data}
             isLoading={catalogSearch.isLoading}
             isError={catalogSearch.isError}
@@ -103,5 +91,13 @@ export default function CatalogPage() {
         </main>
       </div>
     </SectionContainer>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div className="py-12" aria-busy="true" />}>
+      <CatalogPageContent />
+    </Suspense>
   );
 }
