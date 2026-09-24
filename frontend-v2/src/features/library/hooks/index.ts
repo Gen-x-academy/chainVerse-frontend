@@ -24,6 +24,7 @@ export {
   useLibraryCatalogSearch,
   catalogKeys,
 } from './useLibraryQuery';
+export { useCatalogFacets } from './useCatalogFacets';
 export {
   useConditionReport,
   useUpdateConditionReport,
