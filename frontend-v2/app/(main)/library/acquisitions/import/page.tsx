@@ -6,16 +6,14 @@ import { LibrarianPageShell } from '@/src/features/library/components/LibrarianP
 import { ISBNLookupFlow } from '@/src/features/library/components/ISBNLookupFlow';
 import { isbnService } from '@/src/features/library/services/isbn.service';
 import { useCreateBook } from '@/src/features/library/hooks/useBooks';
-import {
-  useLibrarianPermissions,
-  useCanPerformLibrarianAction,
-} from '@/src/features/library/hooks/useLibrarianPermissions';
+import { useLibrarianPermissions } from '@/src/features/library/hooks/useLibrarianPermissions';
+import { canPerformLibrarianAction } from '@/src/features/library/utils/librarian-permissions';
 import type { BookCreatePayload } from '@/src/features/library/types/book.types';
 
 export default function ISBNImportPage() {
   const router = useRouter();
-  const permissions = useLibrarianPermissions('admin');
-  const canImport = useCanPerformLibrarianAction(permissions, 'book.isbn-import');
+  const permissions = useLibrarianPermissions();
+  const canImport = canPerformLibrarianAction(permissions, 'book.isbn-import');
   const createBook = useCreateBook();
   const [lookupLoading, setLookupLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);

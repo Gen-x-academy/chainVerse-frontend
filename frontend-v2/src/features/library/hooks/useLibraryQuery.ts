@@ -62,23 +62,38 @@ export function useCursorPagination() {
   return { cursor, goNext, goPrev, reset, canGoBack: history.length > 0 };
 }
 
+const EMPTY_FACETS: Record<string, string[]> = {};
+
+function facetsEqual(a: Record<string, string[]>, b: Record<string, string[]>): boolean {
+  const aKeys = Object.keys(a);
+  if (aKeys.length !== Object.keys(b).length) return false;
+
+  return aKeys.every((key) => {
+    const aValues = a[key] ?? [];
+    const bValues = b[key] ?? [];
+    return aValues.length === bValues.length && aValues.every((value, i) => value === bValues[i]);
+  });
+}
+
 /**
  * Combines filter state with cursor pagination. Resets cursor when filters change
  * so stale pages never appear after a new search.
+ *
+ * `facets` is controlled by the caller (usually the URL-synced
+ * `useCatalogFacets` hook) so every catalog entry point shares one source of
+ * truth; `query` remains local to the hook.
  */
 export function useLibraryCatalogSearch(
   initialParams: Omit<CatalogSearchParams, 'cursor'> = {}
 ) {
   const [query, setQuery] = useState(initialParams.query ?? '');
-  const [facets, setFacets] = useState<Record<string, string[]>>(
-    initialParams.facets ?? {}
-  );
+  const facets = initialParams.facets ?? EMPTY_FACETS;
   const { cursor, goNext, goPrev, reset, canGoBack } = useCursorPagination();
   const prevFiltersRef = useRef({ query, facets });
 
   useEffect(() => {
     const prev = prevFiltersRef.current;
-    if (prev.query !== query || JSON.stringify(prev.facets) !== JSON.stringify(facets)) {
+    if (prev.query !== query || !facetsEqual(prev.facets, facets)) {
       reset();
       prevFiltersRef.current = { query, facets };
     }
@@ -98,7 +113,6 @@ export function useLibraryCatalogSearch(
     query,
     setQuery,
     facets,
-    setFacets,
     cursor,
     goNext: () => goNext(result.data?.nextCursor ?? null),
     goPrev,

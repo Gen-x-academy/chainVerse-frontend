@@ -106,3 +106,4 @@ export const scholarshipService = {
     }
   },
 };
+export { scholarshipFallbackRules, scholarshipService } from '../service';
