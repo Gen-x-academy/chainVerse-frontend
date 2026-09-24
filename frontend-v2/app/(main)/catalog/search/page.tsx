@@ -5,6 +5,10 @@ import { SectionContainer } from '@/src/shared/components/layout/SectionContaine
 import { SearchAutocomplete } from '@/src/features/library/components/SearchAutocomplete';
 import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
 import { CatalogResults } from '@/src/features/library/components/CatalogResults';
+import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
+
+function CatalogSearchContent() {
+  const catalogSearch = useCatalogFacets({ limit: 24 });
 import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
 
 function CatalogSearchContent() {
@@ -18,6 +22,11 @@ function CatalogSearchContent() {
           Find books, ebooks, audiobooks, and more across our entire collection.
         </p>
         <SearchAutocomplete
+          value={catalogSearch.query}
+          onChange={catalogSearch.setQuery}
+          onSubmit={catalogSearch.setQuery}
+          placeholder="Search by title, author, ISBN, or keyword..."
+          isLoading={catalogSearch.isFetching}
           value={search.query}
           onChange={search.setQuery}
           onSubmit={search.setQuery}
@@ -30,6 +39,11 @@ function CatalogSearchContent() {
       <div className="flex flex-col lg:flex-row gap-8 mt-8">
         <aside className="w-full lg:w-64 flex-shrink-0">
           <FacetedFilter
+            facets={catalogSearch.facets}
+            selected={catalogSearch.selectedFacets}
+            onChange={catalogSearch.setFacets}
+            isLoading={catalogSearch.isLoading}
+            error={catalogSearch.error instanceof Error ? catalogSearch.error.message : null}
             facets={search.facets}
             selected={search.selectedFacets}
             onChange={search.setFacets}
@@ -40,6 +54,17 @@ function CatalogSearchContent() {
 
         <main className="flex-1 min-w-0">
           <CatalogResults
+            query={catalogSearch.query}
+            data={catalogSearch.data}
+            isLoading={catalogSearch.isLoading}
+            isError={catalogSearch.isError}
+            error={catalogSearch.error}
+            isFetching={catalogSearch.isFetching}
+            isPlaceholderData={catalogSearch.isPlaceholderData}
+            canGoBack={catalogSearch.canGoBack}
+            canGoNext={catalogSearch.canGoNext}
+            onPrev={catalogSearch.goPrev}
+            onNext={catalogSearch.goNext}
             query={search.debouncedQuery}
             data={search.data}
             isLoading={search.isLoading}

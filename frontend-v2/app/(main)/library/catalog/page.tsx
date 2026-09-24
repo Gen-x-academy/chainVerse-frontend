@@ -7,11 +7,13 @@ import { SearchAutocomplete } from '@/src/features/library/components/SearchAuto
 import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
 import { CatalogResults } from '@/src/features/library/components/CatalogResults';
 import { ArchivedBooksPanel } from '@/src/features/library/components/ArchivedBooksPanel';
+import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
 import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
 
 type CatalogView = 'active' | 'archived';
 
 function ActiveCatalogPanel() {
+  const catalogSearch = useCatalogFacets({ limit: 24 });
   const catalogSearch = useCatalogSearch({ limit: 24 });
 
   return (
