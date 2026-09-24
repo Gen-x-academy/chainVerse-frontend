@@ -1,70 +1,18 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { SectionContainer } from '@/shared/components/layout/SectionContainer';
+import React, { Suspense } from 'react';
+import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
 import { SearchAutocomplete } from '@/src/features/library/components/SearchAutocomplete';
 import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
-import { SecureCoverImage } from '@/src/features/library/components/SecureCoverImage';
-import Link from 'next/link';
-import type { Facet } from '@/src/features/library/components/FacetedFilter';
+import { CatalogResults } from '@/src/features/library/components/CatalogResults';
+import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
 
-interface SearchResult {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl?: string;
-  year?: number;
-  format?: string;
-  snippet?: string;
-}
+function CatalogSearchContent() {
+  const catalogSearch = useCatalogFacets({ limit: 24 });
+import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
 
-const MOCK_SUGGESTIONS = [
-  'Introduction to Algorithms',
-  'Clean Code',
-  'The Pragmatic Programmer',
-  'Design Patterns',
-  'Refactoring',
-];
-
-const MOCK_FACETS: Facet[] = [
-  {
-    key: 'format',
-    label: 'Format',
-    options: [
-      { value: 'print', label: 'Print', count: 120 },
-      { value: 'ebook', label: 'E-book', count: 85 },
-      { value: 'audiobook', label: 'Audiobook', count: 42 },
-    ],
-  },
-  {
-    key: 'year',
-    label: 'Publication Year',
-    options: [
-      { value: '2024', label: '2024', count: 30 },
-      { value: '2023', label: '2023', count: 55 },
-      { value: '2022', label: '2022', count: 40 },
-      { value: 'older', label: 'Before 2022', count: 200 },
-    ],
-  },
-];
-
-export default function CatalogSearchPage() {
-  const [query, setQuery] = useState('');
-  const [selectedFacets, setSelectedFacets] = useState<Record<string, string[]>>({});
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-
-  const handleSearch = useCallback((q: string) => {
-    setQuery(q);
-    setIsSearching(true);
-    setHasSearched(true);
-    // Simulated search delay
-    setTimeout(() => {
-      setResults([]);
-      setIsSearching(false);
-    }, 500);
-  }, []);
+function CatalogSearchContent() {
+  const search = useCatalogSearch({ limit: 24 });
 
   return (
     <SectionContainer className="py-12">
@@ -74,70 +22,71 @@ export default function CatalogSearchPage() {
           Find books, ebooks, audiobooks, and more across our entire collection.
         </p>
         <SearchAutocomplete
-          value={query}
-          onChange={setQuery}
-          onSubmit={handleSearch}
-          suggestions={MOCK_SUGGESTIONS}
+          value={catalogSearch.query}
+          onChange={catalogSearch.setQuery}
+          onSubmit={catalogSearch.setQuery}
           placeholder="Search by title, author, ISBN, or keyword..."
-          isLoading={isSearching}
+          isLoading={catalogSearch.isFetching}
+          value={search.query}
+          onChange={search.setQuery}
+          onSubmit={search.setQuery}
+          suggestions={search.suggestions}
+          placeholder="Search by title, author, ISBN, or keyword..."
+          isLoading={search.isFetching}
         />
       </div>
 
-      {hasSearched && (
-        <div className="flex flex-col lg:flex-row gap-8 mt-8">
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <FacetedFilter
-              facets={MOCK_FACETS}
-              selected={selectedFacets}
-              onChange={setSelectedFacets}
-            />
-          </aside>
+      <div className="flex flex-col lg:flex-row gap-8 mt-8">
+        <aside className="w-full lg:w-64 flex-shrink-0">
+          <FacetedFilter
+            facets={catalogSearch.facets}
+            selected={catalogSearch.selectedFacets}
+            onChange={catalogSearch.setFacets}
+            isLoading={catalogSearch.isLoading}
+            error={catalogSearch.error instanceof Error ? catalogSearch.error.message : null}
+            facets={search.facets}
+            selected={search.selectedFacets}
+            onChange={search.setFacets}
+            isLoading={search.isLoading}
+            error={search.error instanceof Error ? search.error.message : null}
+          />
+        </aside>
 
-          <main className="flex-1">
-            {isSearching ? (
-              <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="animate-pulse flex gap-4 p-4 border rounded-lg">
-                    <div className="w-20 h-28 bg-gray-200 rounded" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-5 bg-gray-200 rounded w-2/3" />
-                      <div className="h-4 bg-gray-200 rounded w-1/3" />
-                      <div className="h-12 bg-gray-200 rounded w-full" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : results.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-gray-500 text-lg">
-                  {query ? `No results found for "${query}"` : 'Enter a search term to begin.'}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {results.map((result) => (
-                  <Link
-                    key={result.id}
-                    href={`/courses/${result.id}`}
-                    className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition group"
-                  >
-                    <SecureCoverImage src={result.coverUrl} alt={result.title} size="md" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition">
-                        {result.title}
-                      </h3>
-                      <p className="text-sm text-gray-500">{result.author}</p>
-                      {result.snippet && (
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{result.snippet}</p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </main>
-        </div>
-      )}
+        <main className="flex-1 min-w-0">
+          <CatalogResults
+            query={catalogSearch.query}
+            data={catalogSearch.data}
+            isLoading={catalogSearch.isLoading}
+            isError={catalogSearch.isError}
+            error={catalogSearch.error}
+            isFetching={catalogSearch.isFetching}
+            isPlaceholderData={catalogSearch.isPlaceholderData}
+            canGoBack={catalogSearch.canGoBack}
+            canGoNext={catalogSearch.canGoNext}
+            onPrev={catalogSearch.goPrev}
+            onNext={catalogSearch.goNext}
+            query={search.debouncedQuery}
+            data={search.data}
+            isLoading={search.isLoading}
+            isError={search.isError}
+            error={search.error}
+            isFetching={search.isFetching}
+            isPlaceholderData={search.isPlaceholderData}
+            canGoBack={search.canGoBack}
+            canGoNext={search.canGoNext}
+            onPrev={search.goPrev}
+            onNext={search.goNext}
+          />
+        </main>
+      </div>
     </SectionContainer>
+  );
+}
+
+export default function CatalogSearchPage() {
+  return (
+    <Suspense fallback={<div className="py-12" aria-busy="true" />}>
+      <CatalogSearchContent />
+    </Suspense>
   );
 }

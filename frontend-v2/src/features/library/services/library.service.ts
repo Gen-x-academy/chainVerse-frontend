@@ -1,11 +1,16 @@
 import { apiClient } from '@/src/lib/api-client';
 import type {
+  BorrowingPolicy,
   CatalogMatch,
+  CheckoutEligibility,
   CopyDetail,
   DonationIntakePayload,
   DonationIntakeRecord,
   LocationNode,
   LocationSelection,
+  PatronSummary,
+  PhysicalCheckoutPayload,
+  PhysicalCheckoutResult,
   ScanMode,
   StocktakeSession,
 } from '../types/library.types';
@@ -79,5 +84,37 @@ export const libraryService = {
     return apiClient.post<StocktakeSession>(`${BASE}/stocktake/sessions/${sessionId}/complete`, {
       discrepanciesReviewed,
     });
+  },
+
+  // ─── Physical circulation (issue #951) ──────────────────────────────────────
+
+  /** Staff patron search; normalises paginated or array responses. */
+  async searchPatrons(query: string) {
+    const params = new URLSearchParams();
+    if (query.trim()) params.set('search', query.trim());
+    const qs = params.toString();
+    const result = await apiClient.get<PatronSummary[] | { data: PatronSummary[] }>(
+      `${BASE}/patrons${qs ? `?${qs}` : ''}`,
+    );
+    return Array.isArray(result) ? result : result.data;
+  },
+
+  getPatronProfile(userId: string) {
+    return apiClient.get<PatronSummary>(`${BASE}/patrons/${encodeURIComponent(userId)}`);
+  },
+
+  getPatronPolicy(userId: string) {
+    return apiClient.get<BorrowingPolicy>(`${BASE}/patrons/${encodeURIComponent(userId)}/policy`);
+  },
+
+  getPatronEligibility(userId: string) {
+    return apiClient.get<CheckoutEligibility>(
+      `${BASE}/patrons/${encodeURIComponent(userId)}/checkout-eligibility`,
+    );
+  },
+
+  /** Atomic physical-copy checkout by barcode. */
+  checkoutPhysical(payload: PhysicalCheckoutPayload) {
+    return apiClient.post<PhysicalCheckoutResult>(`${BASE}/circulation/physical/checkout`, payload);
   },
 };
