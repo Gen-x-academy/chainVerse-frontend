@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { List, Plus, BookOpen, Trash2, GripVertical } from 'lucide-react';
+import Link from 'next/link';
 import { SecureCoverImage } from './SecureCoverImage';
+import { bookDetailRoute } from '../utils/libraryRoutes';
 
 interface ReadingListBook {
   id: string;
@@ -110,7 +112,12 @@ export function ReadingLists({
                           <GripVertical className="w-4 h-4 text-gray-300 cursor-grab" />
                           <SecureCoverImage src={book.coverUrl} alt={book.title} size="sm" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{book.title}</p>
+                            <Link
+                              href={bookDetailRoute(book.id)}
+                              className="text-sm font-medium text-gray-900 truncate hover:text-indigo-600 hover:underline"
+                            >
+                              {book.title}
+                            </Link>
                             {book.author && (
                               <p className="text-xs text-gray-500 truncate">{book.author}</p>
                             )}

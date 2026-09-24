@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { SecureCoverImage } from './SecureCoverImage';
 import { LibraryPagination } from './LibraryPagination';
 import { useLibraryCatalogSearch } from '../hooks/useLibraryQuery';
+import { authorRoute, bookDetailRoute } from '../utils/libraryRoutes';
 import type { CatalogItem, CatalogSearchResponse } from '../types/catalog.types';
 
 export interface CatalogResultsProps {
@@ -28,7 +29,7 @@ function CatalogResultCard({ item }: { item: CatalogItem }) {
   return (
     <article className="overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
       <Link
-        href={`/catalog/${item.id}`}
+        href={bookDetailRoute(item.id)}
         className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         aria-label={`View ${item.title}${item.authorName ? ` by ${item.authorName}` : ''}`}
       >
@@ -36,7 +37,7 @@ function CatalogResultCard({ item }: { item: CatalogItem }) {
       </Link>
       <div className="p-3">
         <Link
-          href={`/catalog/${item.id}`}
+          href={bookDetailRoute(item.id)}
           className="line-clamp-2 font-medium text-gray-900 hover:text-indigo-600"
         >
           {item.title}
@@ -44,7 +45,7 @@ function CatalogResultCard({ item }: { item: CatalogItem }) {
         {item.authorName && (
           <p className="mt-1 text-sm text-gray-500">
             {item.authorId ? (
-              <Link href={`/authors/${item.authorId}`} className="hover:text-indigo-600 hover:underline">
+              <Link href={authorRoute(item.authorId)} className="hover:text-indigo-600 hover:underline">
                 {item.authorName}
               </Link>
             ) : (

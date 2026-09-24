@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 import { SecureCoverImage } from './SecureCoverImage';
+import { bookDetailRoute } from '../utils/libraryRoutes';
 
 interface RecommendedBook {
   id: string;
@@ -53,7 +54,7 @@ export function PersonalizedRecommendations({ books, isLoading }: PersonalizedRe
         {books.map((book) => (
           <Link
             key={book.id}
-            href={`/courses/${book.id}`}
+            href={bookDetailRoute(book.id)}
             className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
           >
             <SecureCoverImage

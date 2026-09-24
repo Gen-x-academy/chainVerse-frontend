@@ -42,6 +42,8 @@ export interface MergeResult {
   canonicalRecordId: string;
   mergedRecordIds: string[];
   redirectUrl: string;
+}
+
 export interface CatalogItem {
   id: string;
   title: string;
