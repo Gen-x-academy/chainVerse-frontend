@@ -1,0 +1,8 @@
+[
+  { "name": "ApplicationCreated", "version": "1.0.0", "fields": [{ "name": "applicationId", "type": "string", "required": true }, { "name": "applicantId", "type": "string", "required": true }, { "name": "scholarshipId", "type": "string", "required": true }] },
+  { "name": "ApplicationUpdated", "version": "1.0.0", "fields": [{ "name": "applicationId", "type": "string", "required": true }, { "name": "version", "type": "number", "required": true }] },
+  { "name": "DecisionComputed", "version": "1.0.0", "fields": [{ "name": "applicationId", "type": "string", "required": true }, { "name": "passed", "type": "boolean", "required": true }, { "name": "decisionKey", "type": "string", "required": true }] },
+  { "name": "ConsentRecorded", "version": "1.0.0", "fields": [{ "name": "applicantId", "type": "string", "required": true }, { "name": "policyVersion", "type": "string", "required": true }, { "name": "grantedAt", "type": "string", "required": true }] },
+  { "name": "MilestoneFunded", "version": "1.0.0", "fields": [{ "name": "milestoneId", "type": "string", "required": true }, { "name": "programId", "type": "string", "required": true }, { "name": "payoutToken", "type": "string", "required": true }, { "name": "amount", "type": "string", "required": true }] },
+  { "name": "PaymentConfirmed", "version": "1.0.0", "fields": [{ "name": "paymentId", "type": "string", "required": true }, { "name": "milestoneId", "type": "string", "required": true }, { "name": "orderKey", "type": "string", "required": true }] }
+]

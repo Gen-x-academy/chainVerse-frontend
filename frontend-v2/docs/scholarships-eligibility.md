@@ -1,5 +1,10 @@
 # Scholarships eligibility rules
 
+## Overview
+Scholarship eligibility is configured as composable rule sets covering enrollment, course fit, academic score,
+geography, income band, role, age, and custom attestation. Evaluation is deterministic, evidence collection is
+minimized, and publication is blocked until a rule set validates cleanly.
+
 ## Ownership
 - Product owner: Student Access team
 - Engineering owner: Frontend platform and policy services
