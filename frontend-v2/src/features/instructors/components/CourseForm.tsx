@@ -117,8 +117,6 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <div>
           <label htmlFor="course-category" className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
           <select
-            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
-              errors.category ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
             id="course-category"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
               errors.category ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
@@ -136,8 +134,6 @@ export const CourseForm: React.FC<CourseFormProps> = ({
         <div>
           <label htmlFor="course-level" className="block text-sm font-semibold text-gray-700 mb-2">Level</label>
           <select
-            className={`w-full px-4 py-3 border rounded-lg focus-ring transition ${
-              errors.level ? 'border-red-300 focus-visible:ring-red-500' : 'border-gray-300'
             id="course-level"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
               errors.level ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-500'

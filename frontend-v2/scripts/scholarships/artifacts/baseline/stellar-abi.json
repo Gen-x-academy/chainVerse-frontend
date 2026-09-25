@@ -1,0 +1,8 @@
+[
+  { "name": "submit_application", "kind": "function", "inputs": [{ "name": "applicantId", "type": "string" }, { "name": "scholarshipId", "type": "string" }], "mutability": "writable" },
+  { "name": "evaluate_decision", "kind": "function", "inputs": [{ "name": "applicationId", "type": "string" }, { "name": "ruleSetHash", "type": "symbol" }], "mutability": "readable" },
+  { "name": "record_consent", "kind": "function", "inputs": [{ "name": "applicantId", "type": "string" }, { "name": "policyVersion", "type": "string" }], "mutability": "writable" },
+  { "name": "fund_milestone", "kind": "function", "inputs": [{ "name": "milestoneId", "type": "string" }, { "name": "programId", "type": "string" }, { "name": "amount", "type": "i128" }], "mutability": "writable" },
+  { "name": "ApplicationCreated", "kind": "event", "inputs": [{ "name": "applicationId", "type": "symbol" }] },
+  { "name": "MilestoneFunded", "kind": "event", "inputs": [{ "name": "milestoneId", "type": "symbol" }] }
+]

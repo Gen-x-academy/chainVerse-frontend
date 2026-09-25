@@ -1,0 +1,21 @@
+{
+  "api:POST /scholarships/eligibility-rules": ["EligibilityRuleBuilder"],
+  "api:POST /scholarships/eligibility/evaluate": ["EligibilityRuleBuilder"],
+  "api:POST /scholarships/eligibility-rules/validate": ["EligibilityRuleBuilder"],
+  "api:POST /scholarships/applications": ["ScholarshipsPage"],
+  "api:GET /scholarships/applications": ["ScholarshipsPage"],
+  "api:POST /scholarships/documents": ["SupportingDocuments"],
+  "api:GET /scholarships/consents": ["ApplicantConsent"],
+  "api:POST /scholarships/staging/seed-runs": ["StagingSeedFlow"],
+  "api:POST /scholarships/release/rollback/plan": ["LaunchReadinessChecklist"],
+  "api:POST /scholarships/release/review": ["LaunchReadinessChecklist"],
+  "events:ApplicationCreated": ["ScholarshipsPage", "operator dashboard"],
+  "events:DecisionComputed": ["EligibilityRuleBuilder", "decision analytics"],
+  "events:MilestoneFunded": ["program wallet monitor"],
+  "events:PaymentConfirmed": ["finance dashboard"],
+  "db:scholarship_rules.applicationId": ["ScholarshipsPage"],
+  "db:seed_run.revokedAt": ["StagingSeedFlow", "operator dashboard"],
+  "abi:function:submit_application(string,string)": ["ScholarshipsPage"],
+  "abi:function:create_seed_run(string,symbol)": ["StagingSeedFlow"],
+  "abi:event:SeedRunRevoked": ["StagingSeedFlow"]
+}
