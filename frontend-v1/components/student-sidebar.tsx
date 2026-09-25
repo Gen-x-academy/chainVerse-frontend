@@ -7,8 +7,9 @@ import {
   CreditCard,
   User,
   Settings,
-  Home,
   LogOut,
+  GraduationCap,
+  FileText,
 } from 'lucide-react';
 import {
   type RouteType,
@@ -31,6 +32,16 @@ const navigationItems: RouteType[] = [
     name: 'Certificates',
     icon: Award,
     route: '/students/dashboard/certificates',
+  },
+  {
+    name: 'Scholarships',
+    icon: GraduationCap,
+    route: '/students/dashboard/scholarships',
+  },
+  {
+    name: 'My Applications',
+    icon: FileText,
+    route: '/students/dashboard/scholarships/my-applications',
   },
   {
     name: 'Transactions',
