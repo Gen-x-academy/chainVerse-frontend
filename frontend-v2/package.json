@@ -9,6 +9,7 @@
     "lint": "eslint",
     "analyze": "ANALYZE=true next build",
     "test": "vitest run",
+    "test:security": "vitest run test/scholarships/security-abuse.test.ts src/features/scholarships/components/__tests__/ScholarshipPageShell.test.tsx src/features/scholarships/components/__tests__/SupportingDocuments.test.tsx",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:visual": "playwright test visual-regression",
