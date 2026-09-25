@@ -53,14 +53,14 @@ The synthetic deadline profile is tenant-scoped to `load-test-tenant-a`. It cont
 1,500 awards. The target burst is 500 requests/second around `2026-10-01T23:59:59Z`.
 These records are synthetic and must never be replaced with production exports.
 
-| Journey | Signals | Saturation expectation |
-| --- | --- | --- |
-| Search | latency, errors, queue age | bounded backpressure; no tenant leakage |
-| Submit | accepted, duplicate, deadline rejection | one result per idempotency key |
-| Upload | upload latency, scan queue age | private expiry; no duplicate document |
-| Review/decision | assignment latency, decision errors | explicit permission denial |
-| Notification | delivery lag, retries | deduplicated retries |
-| Award/payout | batch latency, settlement mismatch | no duplicate payment intent |
+| Journey         | Signals                                 | Saturation expectation                  |
+| --------------- | --------------------------------------- | --------------------------------------- |
+| Search          | latency, errors, queue age              | bounded backpressure; no tenant leakage |
+| Submit          | accepted, duplicate, deadline rejection | one result per idempotency key          |
+| Upload          | upload latency, scan queue age          | private expiry; no duplicate document   |
+| Review/decision | assignment latency, decision errors     | explicit permission denial              |
+| Notification    | delivery lag, retries                   | deduplicated retries                    |
+| Award/payout    | batch latency, settlement mismatch      | no duplicate payment intent             |
 
 The browser probe only exercises synthetic coordinator backpressure. Full runs belong in
 an isolated environment with API, queue, object storage, notification, and ledger test
@@ -79,10 +79,10 @@ are exceeded.
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Action |
-| --- | --- | --- |
-| New transition not accepted | Table entry not added | Update `*_TRANSITIONS` in `domain.ts` |
-| Integration test hits the network | `@/src/lib/api-client` not mocked | Confirm the `vi.mock` factory is present |
-| Test bleeds into another | Fixture shared across tests | Build fixtures per test with `createFixtureSet` |
-| Authorization test passes unexpectedly | `transport.setFailure(null)` not reset | Rely on `beforeEach`/`afterEach` `transport.reset()` |
-| Fraud test sees unexpected signals | Fixtures share identity/document hashes | Build a dedicated `ApplicantRecord[]` per test |
+| Symptom                                | Likely cause                            | Action                                               |
+| -------------------------------------- | --------------------------------------- | ---------------------------------------------------- |
+| New transition not accepted            | Table entry not added                   | Update `*_TRANSITIONS` in `domain.ts`                |
+| Integration test hits the network      | `@/src/lib/api-client` not mocked       | Confirm the `vi.mock` factory is present             |
+| Test bleeds into another               | Fixture shared across tests             | Build fixtures per test with `createFixtureSet`      |
+| Authorization test passes unexpectedly | `transport.setFailure(null)` not reset  | Rely on `beforeEach`/`afterEach` `transport.reset()` |
+| Fraud test sees unexpected signals     | Fixtures share identity/document hashes | Build a dedicated `ApplicantRecord[]` per test       |

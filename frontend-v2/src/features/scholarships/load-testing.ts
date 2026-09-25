@@ -1,13 +1,16 @@
-import type { ScholarshipApplication, ScholarshipApplicationStatus } from './types/scholarship.types';
+import type {
+  ScholarshipApplication,
+  ScholarshipApplicationStatus,
+} from "./types/scholarship.types";
 
 export const SCHOLARSHIP_BURST_ACTIONS = [
-  'search',
-  'submit',
-  'upload',
-  'review',
-  'notify',
-  'decision',
-  'payout',
+  "search",
+  "submit",
+  "upload",
+  "review",
+  "notify",
+  "decision",
+  "payout",
 ] as const;
 
 export type ScholarshipBurstAction = (typeof SCHOLARSHIP_BURST_ACTIONS)[number];
@@ -24,8 +27,8 @@ export interface ScholarshipLoadTarget {
 }
 
 export const DEFAULT_SCHOLARSHIP_LOAD_TARGET: ScholarshipLoadTarget = {
-  tenantId: 'load-test-tenant-a',
-  deadline: '2026-10-01T23:59:59.000Z',
+  tenantId: "load-test-tenant-a",
+  deadline: "2026-10-01T23:59:59.000Z",
   applicants: 10_000,
   applications: 12_000,
   documents: 24_000,
@@ -35,27 +38,27 @@ export const DEFAULT_SCHOLARSHIP_LOAD_TARGET: ScholarshipLoadTarget = {
 };
 
 export class ScholarshipBackpressureError extends Error {
-  readonly code = 'RESOURCE_SATURATED' as const;
+  readonly code = "RESOURCE_SATURATED" as const;
 
   constructor(readonly retryAfterMs: number) {
     super(`Scholarship service is at capacity. Retry after ${retryAfterMs}ms.`);
-    this.name = 'ScholarshipBackpressureError';
+    this.name = "ScholarshipBackpressureError";
   }
 }
 
 export class ScholarshipTenantBoundaryError extends Error {
-  readonly code = 'CROSS_TENANT_DENIED' as const;
+  readonly code = "CROSS_TENANT_DENIED" as const;
 
   constructor() {
-    super('The load-test operation belongs to a different tenant.');
-    this.name = 'ScholarshipTenantBoundaryError';
+    super("The load-test operation belongs to a different tenant.");
+    this.name = "ScholarshipTenantBoundaryError";
   }
 }
 
 export type BurstResult<T> =
-  | { status: 'accepted'; value: T }
-  | { status: 'duplicate'; value: T }
-  | { status: 'rejected'; error: ScholarshipBackpressureError };
+  | { status: "accepted"; value: T }
+  | { status: "duplicate"; value: T }
+  | { status: "rejected"; error: ScholarshipBackpressureError };
 
 /** Coordinates deadline bursts without crossing tenants or repeating keyed work. */
 export class ScholarshipBurstCoordinator {
@@ -72,22 +75,32 @@ export class ScholarshipBurstCoordinator {
     return this.inFlight;
   }
 
-  run<T>(tenantId: string, idempotencyKey: string, task: () => Promise<T>): Promise<BurstResult<T>> {
+  run<T>(
+    tenantId: string,
+    idempotencyKey: string,
+    task: () => Promise<T>,
+  ): Promise<BurstResult<T>> {
     if (tenantId !== this.tenantId) throw new ScholarshipTenantBoundaryError();
 
-    const existing = this.completed.get(idempotencyKey) as Promise<BurstResult<T>> | undefined;
-    if (existing) return existing.then((result) => ({ ...result, status: 'duplicate' as const }));
+    const existing = this.completed.get(idempotencyKey) as
+      | Promise<BurstResult<T>>
+      | undefined;
+    if (existing)
+      return existing.then((result) => ({
+        ...result,
+        status: "duplicate" as const,
+      }));
 
     if (this.inFlight >= this.maxInFlight) {
       return Promise.resolve({
-        status: 'rejected',
+        status: "rejected",
         error: new ScholarshipBackpressureError(this.retryAfterMs),
       });
     }
 
     this.inFlight += 1;
     const operation = task()
-      .then((value): BurstResult<T> => ({ status: 'accepted', value }))
+      .then((value): BurstResult<T> => ({ status: "accepted", value }))
       .finally(() => {
         this.inFlight -= 1;
       });
