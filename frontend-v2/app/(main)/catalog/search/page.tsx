@@ -1,5 +1,9 @@
 'use client';
 
+import { CatalogSearchPanel } from '@/src/features/library/components/CatalogSearchPanel';
+
+export default function CatalogSearchPage() {
+  return <CatalogSearchPanel />;
 import React, { Suspense } from 'react';
 import { SectionContainer } from '@/src/shared/components/layout/SectionContainer';
 import { SearchAutocomplete } from '@/src/features/library/components/SearchAutocomplete';

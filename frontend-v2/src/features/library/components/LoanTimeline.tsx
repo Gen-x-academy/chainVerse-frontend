@@ -10,6 +10,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import Link from 'next/link';
+import { bookDetailRoute } from '../utils/libraryRoutes';
 import type { LoanTimelineEvent, LoanEventType } from '../types/loan.types';
 
 export type { LoanTimelineEvent, LoanEventType };
@@ -134,7 +135,7 @@ export function LoanTimeline({
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900">
                   <Link
-                    href={`/catalog/${event.bookId}`}
+                    href={bookDetailRoute(event.bookId)}
                     className="hover:text-indigo-600 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     {event.bookTitle}
