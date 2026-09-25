@@ -1,25 +1,25 @@
 export type ScholarshipRole =
-  | 'student'
-  | 'sponsor'
-  | 'reviewer'
-  | 'finance'
-  | 'administrator';
+  | "student"
+  | "sponsor"
+  | "reviewer"
+  | "finance"
+  | "administrator";
 
 export type ScholarshipApplicationStatus =
-  | 'draft'
-  | 'submitted'
-  | 'under_review'
-  | 'shortlisted'
-  | 'approved'
-  | 'rejected'
-  | 'withdrawn';
+  | "draft"
+  | "submitted"
+  | "under_review"
+  | "shortlisted"
+  | "approved"
+  | "rejected"
+  | "withdrawn";
 
 export type ScholarshipRoundStatus =
-  | 'draft'
-  | 'open'
-  | 'review'
-  | 'closed'
-  | 'archived';
+  | "draft"
+  | "open"
+  | "review"
+  | "closed"
+  | "archived";
 
 export type AwardStatus =
   | 'pending'
@@ -28,8 +28,17 @@ export type AwardStatus =
   | 'disbursed'
   | 'cancelled'
   | 'expired';
+  | "pending"
+  | "accepted"
+  | "declined"
+  | "disbursed"
+  | "cancelled";
 
-export type DisbursementStatus = 'scheduled' | 'processing' | 'completed' | 'failed';
+export type DisbursementStatus =
+  | "scheduled"
+  | "processing"
+  | "completed"
+  | "failed";
 
 export interface ScholarshipProgram {
   id: string;
@@ -40,7 +49,7 @@ export interface ScholarshipProgram {
   remainingPoolCents: number;
   currency: string;
   owner: ScholarshipRole;
-  privacyClass: 'public' | 'restricted';
+  privacyClass: "public" | "restricted";
   createdAt: string;
 }
 
@@ -206,3 +215,8 @@ export interface TerminateAwardPayload {
   recoveryAmountCents?: number;
   clientToken: string;
 }
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  tenantId?: string;
+};

@@ -1,4 +1,4 @@
-import { ScholarshipApiError, scholarshipFetch } from './scholarship-api';
+import { ScholarshipApiError, scholarshipFetch } from "./scholarship-api";
 import type {
   AcceptAwardPayload,
   AwardAgreement,
@@ -16,17 +16,23 @@ import type {
   ScholarshipRound,
   TerminateAwardPayload,
 } from '../types/scholarship.types';
+} from "../types/scholarship.types";
 
-const BASE = '/scholarships';
+const BASE = "/scholarships";
 
 function buildParams(params?: ScholarshipApplicationListParams): string {
-  if (!params) return '';
+  if (!params) return "";
   const qs = new URLSearchParams();
-  if (params.roundId) qs.set('roundId', params.roundId);
-  if (params.status) qs.set('status', params.status);
-  if (params.studentId) qs.set('studentId', params.studentId);
+  if (params.roundId) qs.set("roundId", params.roundId);
+  if (params.status) qs.set("status", params.status);
+  if (params.studentId) qs.set("studentId", params.studentId);
+  if (params.query) qs.set("query", params.query);
+  if (params.page !== undefined) qs.set("page", String(params.page));
+  if (params.pageSize !== undefined)
+    qs.set("pageSize", String(params.pageSize));
+  if (params.tenantId) qs.set("tenantId", params.tenantId);
   const query = qs.toString();
-  return query ? `?${query}` : '';
+  return query ? `?${query}` : "";
 }
 
 export const scholarshipService = {
@@ -36,20 +42,26 @@ export const scholarshipService = {
   getRounds: (signal?: AbortSignal) =>
     scholarshipFetch<ScholarshipRound[]>(`${BASE}/rounds`, { signal }),
 
-  listApplications: (params?: ScholarshipApplicationListParams, signal?: AbortSignal) =>
+  listApplications: (
+    params?: ScholarshipApplicationListParams,
+    signal?: AbortSignal,
+  ) =>
     scholarshipFetch<ScholarshipApplication[]>(
       `${BASE}/applications${buildParams(params)}`,
-      { signal }
+      { signal },
     ),
 
   getApplication: (id: string, signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipApplication>(`${BASE}/applications/${encodeURIComponent(id)}`, {
-      signal,
-    }),
+    scholarshipFetch<ScholarshipApplication>(
+      `${BASE}/applications/${encodeURIComponent(id)}`,
+      {
+        signal,
+      },
+    ),
 
   createApplication: (payload: CreateScholarshipApplicationPayload) =>
     scholarshipFetch<ScholarshipApplication>(`${BASE}/applications`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(payload),
     }),
 
@@ -99,8 +111,10 @@ export const scholarshipService = {
     scholarshipFetch<AwardCancellation>(`${BASE}/awards/terminate`, {
       method: 'POST',
       body: JSON.stringify(payload),
+    scholarshipFetch<ScholarshipDisbursement[]>(`${BASE}/disbursements`, {
+      signal,
     }),
 };
 
 export { ScholarshipApiError };
-export { scholarshipFallbackRules, scholarshipService } from '../service';
+export { scholarshipFallbackRules, scholarshipService } from "../service";
