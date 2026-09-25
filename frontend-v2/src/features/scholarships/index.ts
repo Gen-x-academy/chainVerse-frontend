@@ -1,3 +1,5 @@
+export * from './audit';
+export * from './audit-export';
 export * from './analytics';
 export * from './components';
 export * from './compatibility';
@@ -9,6 +11,7 @@ export * from './fraud';
 export * from './identity';
 export * from './impact';
 export * from './pages';
+export * from './privacy';
 export * from './release';
 export * from './rules';
 export * from './seed';

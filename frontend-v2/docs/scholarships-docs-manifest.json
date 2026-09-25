@@ -48,6 +48,10 @@
       "severity": "required"
     },
     {
+      "id": "audit-privacy",
+      "path": "docs/scholarships-audit-privacy.md",
+      "audience": "operators",
+      "title": "Scholarships audit trail, data access, correction and erasure",
       "id": "testing",
       "path": "docs/scholarships-testing.md",
       "audience": "operators",
