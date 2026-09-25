@@ -13,3 +13,7 @@ export { ScholarshipIntegrationsPanel } from './ScholarshipIntegrationsPanel';
 export { ScholarshipOperationsPanel } from './ScholarshipOperationsPanel';
 export { ScholarshipAuditPrivacyPanel } from './ScholarshipAuditPrivacyPanel';
 export { ScholarshipAnalyticsPanel } from './ScholarshipAnalyticsPanel';
+export { ScoringRubricBuilder } from './ScoringRubricBuilder';
+export { ReviewDraftPanel } from './ReviewDraftPanel';
+export { ReviewSubmissionPanel } from './ReviewSubmissionPanel';
+export { InfoRequestPanel } from './InfoRequestPanel';

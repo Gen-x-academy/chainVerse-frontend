@@ -46,3 +46,7 @@ export * from './assignment';
 export * from './conflict';
 export * from './blind-review';
 export * from './webhooks';
+export * from './scoring-rubric';
+export * from './review-draft';
+export * from './review-submission';
+export * from './info-request';
