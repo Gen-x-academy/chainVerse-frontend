@@ -6,6 +6,7 @@ export * from './documentation';
 export * from './documents';
 export * from './idempotency';
 export * from './pages';
+export * from './rbac';
 export * from './release';
 export * from './rules';
 export * from './seed';

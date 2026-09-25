@@ -18,6 +18,7 @@ import {
   SCHOLARSHIP_WEBHOOK_EVENTS,
   type WebhookDelivery,
 } from '../webhooks';
+import { canPerform, describeDenial, scopeListQuery } from '../rbac';
 
 const deliverySamples: WebhookDelivery[] = [
   {
@@ -96,6 +97,23 @@ export function ScholarshipIntegrationsPanel() {
 
   const deliveries = useMemo(() => deliveryHistory(deliverySamples, 'sub-1'), []);
 
+  const access = useMemo(() => {
+    const reviewer = { userId: 'reviewer-1', role: 'reviewer' as const, tenantId: 'platform' };
+    const sponsor = { userId: 'sponsor-1', role: 'sponsor' as const, tenantId: 'sponsor-a' };
+    const sameTenant = canPerform(reviewer, { resource: 'review', tenantId: 'platform' }, 'create');
+    const crossTenant = canPerform(
+      sponsor,
+      { resource: 'application', tenantId: 'sponsor-b', ownerId: 'student-9' },
+      'read'
+    );
+
+    return {
+      sameTenant,
+      crossTenant,
+      scope: scopeListQuery(reviewer),
+    };
+  }, []);
+
   return (
     <section className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 text-slate-900">
       <header className="space-y-2">
@@ -136,6 +154,18 @@ export function ScholarshipIntegrationsPanel() {
           {contracts.breaking.requiresVersionBump ? 'requires version bump' : 'compatible'}
         </p>
         <p>{contracts.breaking.changes.length} breaking change(s) detected in the sample diff.</p>
+      </Panel>
+
+      <Panel
+        title="Role-based access &amp; tenant isolation"
+        description="Permissions are checked per resource and tenant on every mutation."
+      >
+        <p>Reviewer creating a review: {access.sameTenant.allowed ? 'allowed' : 'denied'}</p>
+        <p>Sponsor reading another tenant's application: {describeDenial(access.crossTenant)}</p>
+        <p className="font-mono text-xs text-slate-500">
+          list scope: tenantId={access.scope.tenantId}
+          {access.scope.ownerId ? ` ownerId=${access.scope.ownerId}` : ''}
+        </p>
       </Panel>
 
       <Panel
