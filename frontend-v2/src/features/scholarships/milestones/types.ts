@@ -79,3 +79,66 @@ export type RecordDecisionPayload = {
   reasonCode: VerifierDecisionReasonCode;
   reasonNote?: string;
 };
+
+// Issue #1115 — Milestone-based disbursement schedules
+export type MilestoneType =
+  | 'enrollment'
+  | 'attendance'
+  | 'coursework'
+  | 'completion'
+  | 'custom';
+
+export type ScheduleStatus =
+  | 'draft'
+  | 'active'
+  | 'amended'
+  | 'completed'
+  | 'cancelled';
+
+export type ScheduledMilestoneStatus = 'pending' | 'verified' | 'disbursed' | 'skipped';
+
+export interface ScheduledMilestone {
+  id: string;
+  scheduleId: string;
+  milestoneType: MilestoneType;
+  label: string;
+  /** 0–100; all milestones in a schedule must sum to exactly 100. */
+  percentageShare: number;
+  /** Derived: awardAmountCents × percentageShare / 100. */
+  amountCents: number;
+  /** ISO 8601; must be strictly ascending across the schedule. */
+  dueDate: string;
+  status: ScheduledMilestoneStatus;
+}
+
+export interface DisbursementSchedule {
+  id: string;
+  awardId: string;
+  status: ScheduleStatus;
+  milestones: ScheduledMilestone[];
+  activatedAt?: string;
+  /** Governed amendment — requires authority and documented reason. */
+  amendedAt?: string;
+  amendmentReason?: string;
+  createdAt: string;
+}
+
+export interface CreateScheduleMilestone {
+  milestoneType: MilestoneType;
+  label: string;
+  percentageShare: number;
+  dueDate: string;
+}
+
+export interface CreateSchedulePayload {
+  awardId: string;
+  milestones: CreateScheduleMilestone[];
+  clientToken: string;
+}
+
+export interface AmendSchedulePayload {
+  scheduleId: string;
+  amendmentReason: string;
+  milestones: CreateScheduleMilestone[];
+  authorityId: string;
+}

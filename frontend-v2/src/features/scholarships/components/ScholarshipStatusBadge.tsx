@@ -31,6 +31,7 @@ const STYLES: Record<BadgeStatus, string> = {
   declined: 'bg-red-50 text-red-700',
   disbursed: 'bg-emerald-50 text-emerald-700',
   cancelled: 'bg-gray-100 text-gray-600',
+  expired: 'bg-orange-50 text-orange-700',
   scheduled: 'bg-blue-50 text-blue-700',
   processing: 'bg-indigo-50 text-indigo-700',
   completed: 'bg-green-50 text-green-700',
