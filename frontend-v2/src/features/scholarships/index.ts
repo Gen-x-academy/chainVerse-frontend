@@ -46,3 +46,5 @@ export * from './assignment';
 export * from './conflict';
 export * from './blind-review';
 export * from './webhooks';
+export * from './load-testing';
+export * from './components/ScholarshipLoadTestPanel';

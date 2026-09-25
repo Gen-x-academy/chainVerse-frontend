@@ -45,19 +45,21 @@ export function useScholarshipApplications(
   });
 }
 
-export function useScholarshipAwards() {
+export function useScholarshipAwards(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: scholarshipKeys.awards(),
     queryFn: ({ signal }) => scholarshipService.getAwards(signal),
     staleTime: 30 * 1000,
+    enabled: options.enabled ?? true,
   });
 }
 
-export function useScholarshipDisbursements() {
+export function useScholarshipDisbursements(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: scholarshipKeys.disbursements(),
     queryFn: ({ signal }) => scholarshipService.getDisbursements(signal),
     staleTime: 30 * 1000,
+    enabled: options.enabled ?? true,
   });
 }
 

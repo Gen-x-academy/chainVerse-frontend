@@ -98,4 +98,8 @@ export type ScholarshipApplicationListParams = {
   roundId?: string;
   status?: ScholarshipApplicationStatus;
   studentId?: string;
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  tenantId?: string;
 };

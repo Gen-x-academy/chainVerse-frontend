@@ -46,6 +46,37 @@ sensitive evidence from leaking into logs, screenshots, or test snapshots.
 - **Typed errors**: assertions check specific error codes (`ILLEGAL_TRANSITION`, `AMOUNT_BELOW_MINIMUM`, `AMOUNT_ABOVE_MAXIMUM`, `MILESTONE_ORDER_VIOLATION`) instead of free-text messages.
 - **CI**: the suites run as part of `npm test` in the frontend CI workflow.
 
+## Deadline burst targets and dataset
+
+The synthetic deadline profile is tenant-scoped to `load-test-tenant-a`. It contains
+10,000 applicants, 12,000 applications, 24,000 private documents, 250 reviewers, and
+1,500 awards. The target burst is 500 requests/second around `2026-10-01T23:59:59Z`.
+These records are synthetic and must never be replaced with production exports.
+
+| Journey | Signals | Saturation expectation |
+| --- | --- | --- |
+| Search | latency, errors, queue age | bounded backpressure; no tenant leakage |
+| Submit | accepted, duplicate, deadline rejection | one result per idempotency key |
+| Upload | upload latency, scan queue age | private expiry; no duplicate document |
+| Review/decision | assignment latency, decision errors | explicit permission denial |
+| Notification | delivery lag, retries | deduplicated retries |
+| Award/payout | batch latency, settlement mismatch | no duplicate payment intent |
+
+The browser probe only exercises synthetic coordinator backpressure. Full runs belong in
+an isolated environment with API, queue, object storage, notification, and ledger test
+doubles. Capture p50/p95/p99 latency, accepted throughput, `429` rate, duplicate rate,
+and resource saturation for every journey.
+
+## Ownership, privacy, migration, and operations
+
+Platform/frontend owns the coordinator, typed client contracts, and accessibility states;
+API/finance owns enforcement, queues, award decisions, and payout settlement. Tenant ids
+are validated before work starts. Applicant essays and document contents are excluded from
+fixtures and telemetry; uploads use private encrypted sessions with access logs. This is
+additive and requires no data migration. The operational change is an administrator-only
+readiness probe and its metrics; stop a run when error budgets or queue/storage thresholds
+are exceeded.
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Action |

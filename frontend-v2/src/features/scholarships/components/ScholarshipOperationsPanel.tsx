@@ -5,6 +5,7 @@ import { DEFAULT_ADMIN_CONFIG, previewAdminConfigChange, redactAdminConfig, vali
 import { buildScholarshipEvent, dedupeScholarshipEvents } from '../events';
 import { mapLegacyAidRecord, runLegacyMigration, type LegacyFinancialAidRecord } from '../migration';
 import { reconcileAllSettlements, type LedgerTransaction, type SettlementIntent } from '../settlement';
+import { ScholarshipLoadTestPanel } from './ScholarshipLoadTestPanel';
 
 const sampleIntents: SettlementIntent[] = [
   {
@@ -150,6 +151,8 @@ export function ScholarshipOperationsPanel() {
           validated administration configuration in one operator surface.
         </p>
       </header>
+
+      <ScholarshipLoadTestPanel />
 
       <Section
         title="Domain events outbox"

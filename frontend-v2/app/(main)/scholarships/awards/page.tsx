@@ -20,8 +20,8 @@ export default function ScholarshipsAwardsPage() {
   const user = useAuthStore((state) => state.user);
   const allowed = canAccessScholarshipArea(user?.role, 'awards');
 
-  const awardsQuery = useScholarshipAwards();
-  const disbursementsQuery = useScholarshipDisbursements();
+  const awardsQuery = useScholarshipAwards({ enabled: allowed });
+  const disbursementsQuery = useScholarshipDisbursements({ enabled: allowed });
 
   return (
     <ScholarshipPageShell

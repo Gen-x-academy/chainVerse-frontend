@@ -17,6 +17,10 @@ function buildParams(params?: ScholarshipApplicationListParams): string {
   if (params.roundId) qs.set('roundId', params.roundId);
   if (params.status) qs.set('status', params.status);
   if (params.studentId) qs.set('studentId', params.studentId);
+  if (params.query) qs.set('query', params.query);
+  if (params.page !== undefined) qs.set('page', String(params.page));
+  if (params.pageSize !== undefined) qs.set('pageSize', String(params.pageSize));
+  if (params.tenantId) qs.set('tenantId', params.tenantId);
   const query = qs.toString();
   return query ? `?${query}` : '';
 }
