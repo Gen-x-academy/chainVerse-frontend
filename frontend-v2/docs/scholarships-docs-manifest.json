@@ -48,6 +48,15 @@
       "severity": "required"
     },
     {
+      "id": "analytics",
+      "path": "docs/scholarships-analytics.md",
+      "audience": "operators",
+      "title": "Scholarships funnel metrics, sponsor impact and service-level indicators",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
       "id": "compatibility-gate",
       "path": "docs/scholarships-compatibility-gate.md",
       "audience": "operators",
