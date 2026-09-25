@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { scholarshipService } from '../services/scholarship.service';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { scholarshipService } from "../services/scholarship.service";
 import type {
   CreateScholarshipApplicationPayload,
   ScholarshipApplicationListParams,
-} from '../types/scholarship.types';
+} from "../types/scholarship.types";
 
 export const scholarshipKeys = {
-  all: ['scholarships'] as const,
-  programs: () => [...scholarshipKeys.all, 'programs'] as const,
-  rounds: () => [...scholarshipKeys.all, 'rounds'] as const,
+  all: ["scholarships"] as const,
+  programs: () => [...scholarshipKeys.all, "programs"] as const,
+  rounds: () => [...scholarshipKeys.all, "rounds"] as const,
   applications: (params?: ScholarshipApplicationListParams) =>
-    [...scholarshipKeys.all, 'applications', params ?? {}] as const,
-  awards: () => [...scholarshipKeys.all, 'awards'] as const,
-  disbursements: () => [...scholarshipKeys.all, 'disbursements'] as const,
+    [...scholarshipKeys.all, "applications", params ?? {}] as const,
+  awards: () => [...scholarshipKeys.all, "awards"] as const,
+  disbursements: () => [...scholarshipKeys.all, "disbursements"] as const,
 };
 
 export function useScholarshipPrograms() {
@@ -35,29 +35,34 @@ export function useScholarshipRounds() {
 
 export function useScholarshipApplications(
   params?: ScholarshipApplicationListParams,
-  options: { enabled?: boolean } = {}
+  options: { enabled?: boolean } = {},
 ) {
   return useQuery({
     queryKey: scholarshipKeys.applications(params),
-    queryFn: ({ signal }) => scholarshipService.listApplications(params, signal),
+    queryFn: ({ signal }) =>
+      scholarshipService.listApplications(params, signal),
     staleTime: 30 * 1000,
     enabled: options.enabled ?? true,
   });
 }
 
-export function useScholarshipAwards() {
+export function useScholarshipAwards(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: scholarshipKeys.awards(),
     queryFn: ({ signal }) => scholarshipService.getAwards(signal),
     staleTime: 30 * 1000,
+    enabled: options.enabled ?? true,
   });
 }
 
-export function useScholarshipDisbursements() {
+export function useScholarshipDisbursements(
+  options: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: scholarshipKeys.disbursements(),
     queryFn: ({ signal }) => scholarshipService.getDisbursements(signal),
     staleTime: 30 * 1000,
+    enabled: options.enabled ?? true,
   });
 }
 

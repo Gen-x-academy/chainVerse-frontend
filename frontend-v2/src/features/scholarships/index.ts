@@ -47,6 +47,8 @@ export * from "./assignment";
 export * from "./conflict";
 export * from "./blind-review";
 export * from "./webhooks";
+export * from "./load-testing";
+export * from "./components/ScholarshipLoadTestPanel";
 export * from './types/scholarship.types';
 export * from './utils/scholarshipRoles';
 export * from './services/scholarship.service';
