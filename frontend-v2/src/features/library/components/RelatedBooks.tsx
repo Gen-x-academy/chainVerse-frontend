@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
+import { bookDetailRoute } from '../utils/libraryRoutes';
 
 interface RelatedBook {
   id: string;
@@ -28,7 +29,7 @@ export function RelatedBooks({ books, title = 'Related Books' }: RelatedBooksPro
         {books.map((book) => (
           <Link
             key={book.id}
-            href={`/courses/${book.id}`}
+            href={bookDetailRoute(book.id)}
             className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
           >
             {book.coverUrl ? (

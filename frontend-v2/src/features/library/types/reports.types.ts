@@ -97,18 +97,14 @@ export type UpdateRepairTicketPayload = Partial<RepairTicket>;
 
 export type LostItemStatus = 'found' | 'paid' | 'replaced' | 'waived' | 'disputed';
 
-export interface LostItemCase {
-  id: string;
-import type { ActivityLog } from '@/components/elibrary/ItemConditionReport';
-
-export type LostItemStatus = 'found' | 'paid' | 'replaced' | 'waived' | 'disputed';
-
 /**
  * Minimal lost-item summary returned by the reports API.
  * The full resolution UI (LostItemResolution component) extends this with
  * patron-consequence configuration supplied by the page.
  */
 export interface LostItemSummary {
+export interface LostItemCase {
+  id: string;
   itemId: string;
   itemTitle: string;
   replacementCost: number;
@@ -134,7 +130,4 @@ export interface PaginatedResponse<T> {
   total: number;
   nextCursor: string | null;
   prevCursor: string | null;
-  patronId?: string;
-  patronName?: string;
-  activityHistory: ActivityLog[];
 }

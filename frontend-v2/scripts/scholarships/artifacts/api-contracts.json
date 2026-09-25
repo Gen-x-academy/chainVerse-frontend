@@ -1,0 +1,17 @@
+[
+  { "route": "/scholarships/eligibility-rules", "method": "GET", "responseFields": ["id", "name", "description", "operator", "published", "lastUpdated", "rules"] },
+  { "route": "/scholarships/eligibility-rules", "method": "POST", "requestFields": ["id", "name", "description", "operator", "published", "lastUpdated", "rules"], "responseFields": ["id"] },
+  { "route": "/scholarships/eligibility-rules/validate", "method": "POST", "requestFields": ["id", "name", "rules"], "responseFields": ["valid", "errors"] },
+  { "route": "/scholarships/eligibility/evaluate", "method": "POST", "requestFields": ["ruleSet", "applicant"], "responseFields": ["passed", "matchedRules", "missingEvidence", "permissionRequired", "exclusionReasons", "decisionKey"] },
+  { "route": "/scholarships/applications", "method": "GET", "responseFields": ["id", "applicantId", "status", "version"] },
+  { "route": "/scholarships/applications", "method": "POST", "requestFields": ["applicantId", "scholarshipId", "evidencePermission"], "responseFields": ["id", "status"] },
+  { "route": "/scholarships/consents", "method": "GET", "responseFields": ["id", "applicantId", "policyVersion", "grantedAt"] },
+  { "route": "/scholarships/documents", "method": "POST", "requestFields": ["applicantId", "documentKind", "permissionGranted"], "responseFields": ["id", "status"] },
+  { "route": "/scholarships/staging/seed-runs", "method": "POST", "requestFields": ["seedKey", "environment", "scope"], "responseFields": ["runId", "seedKey", "environment", "scope", "programIds", "applicantIds", "reviewerIds", "walletIds", "milestoneIds", "paymentIds"] },
+  { "route": "/scholarships/staging/seed-runs/{runId}", "method": "GET", "responseFields": ["runId", "seedKey", "environment", "scope", "programs", "applicants", "reviewers", "wallets", "milestones", "payments", "syntheticIdentity"] },
+  { "route": "/scholarships/staging/seed-runs/{runId}/revoke", "method": "POST", "responseFields": ["runId", "seedKey", "environments", "createdIds", "revokedAt"] },
+  { "route": "/scholarships/release/readiness", "method": "GET", "responseFields": ["checks"] },
+  { "route": "/scholarships/release/readiness/sign-off", "method": "POST", "requestFields": ["checkId", "owner"], "responseFields": ["id", "status", "signedOffBy", "signedOffAt"] },
+  { "route": "/scholarships/release/rollback/plan", "method": "POST", "requestFields": ["featureFlagsToDisable", "applications", "funds"], "responseFields": ["planId", "featureFlagsToDisable", "retainedApplicationIds", "fundActions", "preservesActiveApplications", "preservesFunds"] },
+  { "route": "/scholarships/release/review", "method": "POST", "requestFields": ["scheduledFor", "reviewers", "criteria", "owner"], "responseFields": ["reviewId", "scheduledFor", "reviewers", "criteria", "owner", "status"] }
+]

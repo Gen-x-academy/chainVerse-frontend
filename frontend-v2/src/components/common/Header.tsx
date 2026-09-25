@@ -29,6 +29,7 @@ export const Header: React.FC = () => {
           { label: 'Dashboard', href: '/dashboard' },
           { label: 'Courses', href: '/courses' },
           { label: 'Wallet', href: '/wallet' },
+          { label: 'Scholarships', href: '/scholarships' },
         ]
     : [
         { label: 'Courses', href: '/courses' },

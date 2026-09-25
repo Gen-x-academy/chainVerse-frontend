@@ -7,11 +7,6 @@ import { FacetedFilter } from '@/src/features/library/components/FacetedFilter';
 import { CatalogResults } from '@/src/features/library/components/CatalogResults';
 import { AuthorCard } from '@/src/features/library/components/AuthorCard';
 import { useAuthorSearch } from '@/src/features/library/hooks/useAuthor';
-import { useCatalogFacets } from '@/src/features/library/hooks/useCatalogFacets';
-
-function CatalogPageContent() {
-  const catalogSearch = useCatalogFacets({ limit: 24 });
-  const { data: authorResults, isLoading: authorsLoading } = useAuthorSearch(catalogSearch.query);
 import { useCatalogSearch } from '@/src/features/library/hooks/useCatalogSearch';
 
 function CatalogPageContent() {

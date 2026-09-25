@@ -1,0 +1,85 @@
+{
+  "version": "1.0.0",
+  "feature": "scholarships",
+  "docs": [
+    {
+      "id": "eligibility",
+      "path": "docs/scholarships-eligibility.md",
+      "audience": "operators",
+      "title": "Scholarships eligibility rules",
+      "owner": "Student Access and policy services",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact"],
+      "severity": "required"
+    },
+    {
+      "id": "user-guide",
+      "path": "docs/scholarships-user-guide.md",
+      "audience": "users",
+      "title": "Scholarships user guide",
+      "owner": "Student Access team",
+      "sections": ["overview", "privacy", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "operator-guide",
+      "path": "docs/scholarships-operator-guide.md",
+      "audience": "operators",
+      "title": "Scholarships operator guide",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "release-readiness",
+      "path": "docs/scholarships-release-readiness.md",
+      "audience": "operators",
+      "title": "Scholarships release readiness and rollback",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "staging-seed",
+      "path": "docs/scholarships-staging-seed.md",
+      "audience": "operators",
+      "title": "Scholarships staging and testnet seed flow",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "integrations",
+      "path": "docs/scholarships-integrations.md",
+      "audience": "operators",
+      "title": "Scholarships contracts, idempotency and sponsor webhooks",
+      "id": "operations",
+      "path": "docs/scholarships-operations.md",
+      "audience": "operators",
+      "title": "Scholarships operations, migration and administration",
+      "id": "audit-privacy",
+      "path": "docs/scholarships-audit-privacy.md",
+      "audience": "operators",
+      "title": "Scholarships audit trail, data access, correction and erasure",
+      "id": "testing",
+      "path": "docs/scholarships-testing.md",
+      "audience": "operators",
+      "title": "Scholarships domain unit tests and integration tests",
+      "id": "analytics",
+      "path": "docs/scholarships-analytics.md",
+      "audience": "operators",
+      "title": "Scholarships funnel metrics, sponsor impact and service-level indicators",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "compatibility-gate",
+      "path": "docs/scholarships-compatibility-gate.md",
+      "audience": "operators",
+      "title": "Scholarships compatibility gate",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    }
+  ]
+}
