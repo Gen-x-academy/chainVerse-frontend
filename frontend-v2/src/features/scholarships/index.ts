@@ -30,4 +30,8 @@ export * from './services';
 export * from './settlement';
 export * from './sli';
 export * from './types';
+export * from './reviewer-pool';
+export * from './assignment';
+export * from './conflict';
+export * from './blind-review';
 export * from './webhooks';
