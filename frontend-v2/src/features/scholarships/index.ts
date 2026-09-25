@@ -4,6 +4,7 @@ export * from './consent';
 export * from './documentation';
 export * from './documents';
 export * from './domain';
+export * from './fraud';
 export * from './pages';
 export * from './release';
 export * from './rules';
