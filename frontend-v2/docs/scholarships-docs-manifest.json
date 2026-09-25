@@ -48,6 +48,15 @@
       "severity": "required"
     },
     {
+      "id": "audit-privacy",
+      "path": "docs/scholarships-audit-privacy.md",
+      "audience": "operators",
+      "title": "Scholarships audit trail, data access, correction and erasure",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
       "id": "compatibility-gate",
       "path": "docs/scholarships-compatibility-gate.md",
       "audience": "operators",
