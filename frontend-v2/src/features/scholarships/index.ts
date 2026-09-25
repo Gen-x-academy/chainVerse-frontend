@@ -4,6 +4,8 @@ export * from './compatibility';
 export * from './consent';
 export * from './documentation';
 export * from './documents';
+export * from './domain';
+export * from './fraud';
 export * from './identity';
 export * from './impact';
 export * from './pages';

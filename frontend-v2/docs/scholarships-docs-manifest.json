@@ -48,6 +48,10 @@
       "severity": "required"
     },
     {
+      "id": "testing",
+      "path": "docs/scholarships-testing.md",
+      "audience": "operators",
+      "title": "Scholarships domain unit tests and integration tests",
       "id": "analytics",
       "path": "docs/scholarships-analytics.md",
       "audience": "operators",
