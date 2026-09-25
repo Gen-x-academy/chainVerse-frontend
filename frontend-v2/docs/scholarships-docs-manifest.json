@@ -48,6 +48,15 @@
       "severity": "required"
     },
     {
+      "id": "operations",
+      "path": "docs/scholarships-operations.md",
+      "audience": "operators",
+      "title": "Scholarships operations, migration and administration",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
       "id": "compatibility-gate",
       "path": "docs/scholarships-compatibility-gate.md",
       "audience": "operators",
