@@ -48,6 +48,15 @@
       "severity": "required"
     },
     {
+      "id": "integrations",
+      "path": "docs/scholarships-integrations.md",
+      "audience": "operators",
+      "title": "Scholarships contracts, idempotency and sponsor webhooks",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
       "id": "compatibility-gate",
       "path": "docs/scholarships-compatibility-gate.md",
       "audience": "operators",
