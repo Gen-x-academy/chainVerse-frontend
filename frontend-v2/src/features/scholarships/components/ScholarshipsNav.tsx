@@ -9,6 +9,7 @@ export const SCHOLARSHIP_SECTIONS = [
   { href: '/scholarships/release', label: 'Launch readiness & rollback', description: 'Go-live checklist, sign-off, and rollback planning.' },
   { href: '/scholarships/compatibility', label: 'Compatibility gate', description: 'Contract, schema, and ABI change review.' },
   { href: '/scholarships/audit', label: 'Audit & privacy', description: 'Audit trail, data access, correction/erasure, and audit exports.' },
+  { href: '/scholarships/analytics', label: 'Analytics & SLIs', description: 'Funnel metrics, sponsor impact, and operational indicators.' },
 ] as const;
 
 export function ScholarshipsNav() {
