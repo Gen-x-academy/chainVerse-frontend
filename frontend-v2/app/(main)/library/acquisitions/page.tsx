@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { AcquisitionQueue } from '@/components/elibrary/AcquisitionQueue';
 import { DonationIntakeWorkflow } from '@/components/elibrary/DonationIntakeWorkflow';
 import { LibraryAdminLayout } from '@/components/elibrary/LibraryAdminLayout';
@@ -10,7 +11,11 @@ import { libraryService } from '@/src/features/library/services/library.service'
 import type { AcquisitionQueueItem } from '@/src/features/library/types/acquisitions.types';
 import type { CatalogMatch, DonationIntakePayload, LocationNode } from '@/src/features/library/types/library.types';
 
-/** Donation intake and the acquisition queue it creates records for. */
+/**
+ * Acquisitions hub: purchase intake and donation intake both feed the accession
+ * queue rendered below. Purchase and ISBN-import entry points live on their own
+ * routes and are linked here so neither workflow is dropped.
+ */
 export default function AcquisitionsPage() {
   const permissions = useLibrarianPermissions();
   const canViewDonorDetails = hasLibrarianPermission(permissions, 'acquisitions');
@@ -80,25 +85,51 @@ export default function AcquisitionsPage() {
   return (
     <LibraryAdminLayout requiredPermission="acquisitions" activeHref="/library/acquisitions">
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Donation intake</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Match donated books, record an acceptance decision, and create their acquisition record.</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Acquisitions</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Record purchases and donations, then accession new titles into the catalog.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/library/acquisitions/new"
+              className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              New purchase intake
+            </Link>
+            <Link
+              href="/library/acquisitions/import"
+              className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Import by ISBN
+            </Link>
+          </div>
         </div>
-        <DonationIntakeWorkflow
-          matches={matches}
-          matchesLoading={matchesLoading}
-          matchesError={matchesError}
-          locationNodes={locationNodes}
-          locationsLoading={locationsLoading}
-          locationsError={locationsError}
-          canViewDonorDetails={canViewDonorDetails}
-          onSearchMatches={searchMatches}
-          onSubmit={submitIntake}
-        />
+
+        <section aria-labelledby="donation-intake-heading" className="space-y-3">
+          <div>
+            <h2 id="donation-intake-heading" className="text-xl font-semibold text-gray-900">Donation intake</h2>
+            <p className="text-sm text-muted-foreground">Match donated books, record an acceptance decision, and create their acquisition record.</p>
+          </div>
+          <DonationIntakeWorkflow
+            matches={matches}
+            matchesLoading={matchesLoading}
+            matchesError={matchesError}
+            locationNodes={locationNodes}
+            locationsLoading={locationsLoading}
+            locationsError={locationsError}
+            canViewDonorDetails={canViewDonorDetails}
+            onSearchMatches={searchMatches}
+            onSubmit={submitIntake}
+          />
+        </section>
+
         <section aria-labelledby="acquisition-queue-heading" className="space-y-3">
           <div>
             <h2 id="acquisition-queue-heading" className="text-xl font-semibold text-gray-900">Acquisition queue</h2>
-            <p className="text-sm text-muted-foreground">Newly accepted donations appear here for accessioning.</p>
+            <p className="text-sm text-muted-foreground">Newly accepted purchases and donations appear here for accessioning.</p>
           </div>
           <AcquisitionQueue items={items} isLoading={queueLoading} error={queueError} />
         </section>

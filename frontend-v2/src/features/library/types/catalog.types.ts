@@ -44,6 +44,18 @@ export interface MergeResult {
   redirectUrl: string;
 }
 
+export interface CatalogFacetOption {
+  value: string;
+  label: string;
+  count: number;
+}
+
+export interface CatalogFacet {
+  key: string;
+  label: string;
+  options: CatalogFacetOption[];
+}
+
 export interface CatalogItem {
   id: string;
   title: string;
@@ -69,4 +81,6 @@ export interface CatalogSearchResponse {
   nextCursor: string | null;
   prevCursor: string | null;
   total: number;
+  /** Facet values and counts for the active query, sourced from the backend. */
+  facets?: CatalogFacet[];
 }

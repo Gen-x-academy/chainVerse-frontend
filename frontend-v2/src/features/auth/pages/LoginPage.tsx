@@ -119,8 +119,7 @@ export const LoginPage: React.FC = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
-        <Link href="/auth/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium focus-ring rounded">
-        <Link href="/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <Link href="/reset-password" className="text-blue-600 hover:text-blue-700 text-sm font-medium focus-ring rounded">
           Forgot password?
         </Link>
       </div>
@@ -144,8 +143,7 @@ export const LoginPage: React.FC = () => {
       {/* Sign Up Link */}
       <p className="text-center text-gray-600 text-sm">
         Don&apos;t have an account?{' '}
-        <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold focus-ring rounded">
-        <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+        <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold focus-ring rounded">
           Sign up
         </Link>
       </p>

@@ -53,3 +53,4 @@ export const scholarshipService = {
 };
 
 export { ScholarshipApiError };
+export { scholarshipFallbackRules, scholarshipService } from '../service';

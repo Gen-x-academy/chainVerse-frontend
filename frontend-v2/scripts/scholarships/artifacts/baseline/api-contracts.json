@@ -1,0 +1,10 @@
+[
+  { "route": "/scholarships/eligibility-rules", "method": "GET", "responseFields": ["id", "name", "description", "operator", "published", "lastUpdated", "rules"] },
+  { "route": "/scholarships/eligibility-rules", "method": "POST", "requestFields": ["id", "name", "description", "operator", "published", "lastUpdated", "rules"], "responseFields": ["id"] },
+  { "route": "/scholarships/eligibility-rules/validate", "method": "POST", "requestFields": ["id", "name", "rules"], "responseFields": ["valid", "errors"] },
+  { "route": "/scholarships/eligibility/evaluate", "method": "POST", "requestFields": ["ruleSet", "applicant"], "responseFields": ["passed", "matchedRules", "missingEvidence", "permissionRequired", "exclusionReasons", "decisionKey"] },
+  { "route": "/scholarships/applications", "method": "GET", "responseFields": ["id", "applicantId", "status", "version"] },
+  { "route": "/scholarships/applications", "method": "POST", "requestFields": ["applicantId", "scholarshipId", "evidencePermission"], "responseFields": ["id", "status"] },
+  { "route": "/scholarships/consents", "method": "GET", "responseFields": ["id", "applicantId", "policyVersion", "grantedAt"] },
+  { "route": "/scholarships/documents", "method": "POST", "requestFields": ["applicantId", "documentKind", "permissionGranted"], "responseFields": ["id", "status"] }
+]

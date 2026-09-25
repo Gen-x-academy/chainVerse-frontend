@@ -103,6 +103,8 @@ export type LostItemStatus = 'found' | 'paid' | 'replaced' | 'waived' | 'dispute
  * patron-consequence configuration supplied by the page.
  */
 export interface LostItemSummary {
+export interface LostItemCase {
+  id: string;
   itemId: string;
   itemTitle: string;
   replacementCost: number;
@@ -128,7 +130,4 @@ export interface PaginatedResponse<T> {
   total: number;
   nextCursor: string | null;
   prevCursor: string | null;
-  patronId?: string;
-  patronName?: string;
-  activityHistory: ActivityLog[];
 }
