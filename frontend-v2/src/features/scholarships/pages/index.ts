@@ -1,4 +1,5 @@
 export { ScholarshipsPage } from './ScholarshipsPage';
+export { IntegrationsPage } from './IntegrationsPage';
 export { OperationsPage } from './OperationsPage';
 export { AuditPage } from './AuditPage';
 export { AnalyticsPage } from './AnalyticsPage';

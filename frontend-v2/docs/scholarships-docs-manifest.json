@@ -48,6 +48,10 @@
       "severity": "required"
     },
     {
+      "id": "integrations",
+      "path": "docs/scholarships-integrations.md",
+      "audience": "operators",
+      "title": "Scholarships contracts, idempotency and sponsor webhooks",
       "id": "operations",
       "path": "docs/scholarships-operations.md",
       "audience": "operators",

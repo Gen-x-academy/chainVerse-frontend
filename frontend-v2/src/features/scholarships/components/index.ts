@@ -5,6 +5,7 @@ export { LaunchReadinessChecklist } from './LaunchReadinessChecklist';
 export { StagingSeedFlow } from './StagingSeedFlow';
 export { CompatibilityGate } from './CompatibilityGate';
 export { ScholarshipsNav } from './ScholarshipsNav';
+export { ScholarshipIntegrationsPanel } from './ScholarshipIntegrationsPanel';
 export { ScholarshipOperationsPanel } from './ScholarshipOperationsPanel';
 export { ScholarshipAuditPrivacyPanel } from './ScholarshipAuditPrivacyPanel';
 export { ScholarshipAnalyticsPanel } from './ScholarshipAnalyticsPanel';
