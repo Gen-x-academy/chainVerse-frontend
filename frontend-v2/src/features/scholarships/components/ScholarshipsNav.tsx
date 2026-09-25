@@ -8,6 +8,7 @@ export const SCHOLARSHIP_SECTIONS = [
   { href: '/scholarships/staging', label: 'Staging & testnet seed', description: 'Deterministic synthetic runs with rollback manifests.' },
   { href: '/scholarships/release', label: 'Launch readiness & rollback', description: 'Go-live checklist, sign-off, and rollback planning.' },
   { href: '/scholarships/compatibility', label: 'Compatibility gate', description: 'Contract, schema, and ABI change review.' },
+  { href: '/scholarships/operations', label: 'Operations & migration', description: 'Event outbox, settlement reconciliation, migration, and admin config.' },
   { href: '/scholarships/audit', label: 'Audit & privacy', description: 'Audit trail, data access, correction/erasure, and audit exports.' },
   { href: '/scholarships/analytics', label: 'Analytics & SLIs', description: 'Funnel metrics, sponsor impact, and operational indicators.' },
 ] as const;

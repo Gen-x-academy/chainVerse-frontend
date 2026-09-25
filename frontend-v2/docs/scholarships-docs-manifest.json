@@ -48,6 +48,10 @@
       "severity": "required"
     },
     {
+      "id": "operations",
+      "path": "docs/scholarships-operations.md",
+      "audience": "operators",
+      "title": "Scholarships operations, migration and administration",
       "id": "audit-privacy",
       "path": "docs/scholarships-audit-privacy.md",
       "audience": "operators",
