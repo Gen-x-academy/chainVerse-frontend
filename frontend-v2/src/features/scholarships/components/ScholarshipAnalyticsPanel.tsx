@@ -4,6 +4,7 @@ import { useMemo, type ReactNode } from 'react';
 import { computeFunnel, FUNNEL_DEFINITIONS_VERSION, type FunnelEvent } from '../analytics';
 import { buildSponsorImpactReport, canDrillIntoStudent, type SponsorImpactRow } from '../impact';
 import { evaluateAllSlis, SCHOLARSHIP_SLIS, type ObservabilitySample } from '../sli';
+import { evaluateVerification, type IdentityClaim } from '../identity';
 
 const funnelEvents: FunnelEvent[] = [
   { id: 'e1', stage: 'program_view', programId: 'program-1', occurredAt: '2026-09-20T10:00:00.000Z', actorKey: 'actor-1', dedupeKey: 'view-1' },
@@ -60,6 +61,31 @@ export function ScholarshipAnalyticsPanel() {
 
   const slis = useMemo(() => evaluateAllSlis(samples), []);
 
+  const verification = useMemo(() => {
+    const identity: IdentityClaim = {
+      id: 'claim-identity-1',
+      provider: 'government-id',
+      issuer: 'national-id-authority',
+      subjectId: 'student-1',
+      claimType: 'identity',
+      issuedAt: '2026-09-01T00:00:00.000Z',
+      expiresAt: '2027-09-01T00:00:00.000Z',
+      evidenceRef: 'evidence:identity:student-1',
+    };
+    const enrollment: IdentityClaim = {
+      id: 'claim-enrollment-1',
+      provider: 'institution-registry',
+      issuer: 'university-registrar',
+      subjectId: 'student-1',
+      claimType: 'enrollment',
+      issuedAt: '2026-09-01T00:00:00.000Z',
+      expiresAt: '2026-11-01T00:00:00.000Z',
+      evidenceRef: 'evidence:enrollment:student-1',
+    };
+
+    return evaluateVerification('student-1', [identity, enrollment]);
+  }, []);
+
   return (
     <section className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 text-slate-900">
       <header className="space-y-2">
@@ -109,6 +135,18 @@ export function ScholarshipAnalyticsPanel() {
           Sponsor drill-down allowed:{' '}
           {canDrillIntoStudent({ id: 'sponsor-1', role: 'sponsor' }, impactRows(1)[0]) ? 'yes' : 'no'}
         </p>
+      </Panel>
+
+      <Panel
+        title="Verified identity &amp; enrollment"
+        description="Claims are issuer-scoped and expiring; no raw provider secret is stored."
+      >
+        <p>
+          Verification status: {verification.status} ({verification.verifiedClaims.length} valid claim
+          {verification.verifiedClaims.length === 1 ? '' : 's'})
+        </p>
+        <p>Providers: {verification.providers.join(', ') || 'none'}</p>
+        <p>Fallback human review required: {verification.requiresFallbackReview ? 'yes' : 'no'}</p>
       </Panel>
 
       <Panel

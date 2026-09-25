@@ -4,6 +4,7 @@ export * from './compatibility';
 export * from './consent';
 export * from './documentation';
 export * from './documents';
+export * from './identity';
 export * from './impact';
 export * from './pages';
 export * from './release';
