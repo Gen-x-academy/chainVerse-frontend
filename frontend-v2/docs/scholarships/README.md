@@ -61,3 +61,30 @@ Routes under `/scholarships`:
   `src/features/scholarships/**/__tests__`.
 - Route smoke: visit `/scholarships/applications` as a student and expect the
   consistent access-denied state.
+
+## Modules
+
+Each module is self-contained: `types.ts` (types only), `service.ts` (pure
+domain functions plus a consolidated `apiClient` service), and `components/`.
+They import from their own sub-path, not from the `index.ts` barrel. All four are
+available to `administrator` and to the non-admin `finance` role.
+
+| Module | Issue | Route | Doc | What it guarantees |
+| --- | --- | --- | --- | --- |
+| `flags/` | #1166 | `/scholarships/flags` | [flags.md](./flags.md) | Deterministic cohort rollout per environment; **fails closed** when the flag service is unreachable |
+| `concurrency/` | #1152 | `/scholarships/concurrency` | [concurrency.md](./concurrency.md) | A write is applied **or** rejected whole — `ConcurrencyWriteResult` makes a partial mutation unrepresentable |
+| `retention/` | #1153 | `/scholarships/retention` | [retention.md](./retention.md) | `financial`/`audit` records are **never** deletable and an active legal hold always wins |
+| `abuse/` | #1150 | `/scholarships/abuse` | [abuse.md](./abuse.md) | Denials state explicit `Retry-After` guidance, a bypass needs a service authorization id, and a throttled request **never** truncates a saved draft |
+
+Shared cross-cutting behaviour:
+
+- **Money** stays in integer minor units with an explicit `currency`, formatted
+  with `Intl.NumberFormat` (see `concurrency`).
+- **Dates** are ISO 8601 strings; timestamps end in `At`.
+- **Loading, empty, error, success, and permission-denied** states are all
+  rendered in every panel, with `role="status"` / `role="alert"` / `role="note"`,
+  a real `<label>` per input, and `aria-describedby` linking every error to its
+  field.
+- **Pure domain logic only.** No `enum`, no `any`, no `axios`, no Redux, no i18n
+  library. Every function that needs a clock takes it as an argument, so window
+  rollovers and retention expiry are asserted exactly rather than slept through.
