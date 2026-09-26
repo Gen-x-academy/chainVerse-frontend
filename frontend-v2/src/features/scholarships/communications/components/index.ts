@@ -1,0 +1,1 @@
+export { ScholarshipCommunicationPreferences } from './ScholarshipCommunicationPreferences';
