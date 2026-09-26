@@ -61,3 +61,36 @@ Routes under `/scholarships`:
   `src/features/scholarships/**/__tests__`.
 - Route smoke: visit `/scholarships/applications` as a student and expect the
   consistent access-denied state.
+
+## Modules
+
+Finance-side modules added under `src/features/scholarships/`. Each owns one
+doc below, each is `finance`/`sponsor`/`administrator`-scoped, and each treats
+money as integer minor units with an explicit `currency` that is never mixed
+across lines. **History is never edited, only reversed** in all four.
+
+| Issue | Module | Route | Doc |
+| --- | --- | --- | --- |
+| [#1126](https://github.com/chainVerse/chainVerse-frontend/issues/1126) | `src/features/scholarships/treasury/` | `/scholarships/treasury` | [treasury.md](./treasury.md) |
+| [#1127](https://github.com/chainVerse/chainVerse-frontend/issues/1127) | `src/features/scholarships/funding/` | `/scholarships/funding` | [funding.md](./funding.md) |
+| [#1128](https://github.com/chainVerse/chainVerse-frontend/issues/1128) | `src/features/scholarships/fees/` | `/scholarships/fees` | [fees.md](./fees.md) |
+| [#1129](https://github.com/chainVerse/chainVerse-frontend/issues/1129) | `src/features/scholarships/refunds/` | `/scholarships/refunds` | [refunds.md](./refunds.md) |
+
+- **treasury (#1126)** — reconciles balances against the liability book into
+  immutable, repeatable `ReconciliationRun` snapshots, raises discrepancies and
+  alerts without ever editing a balance, and gates new awards on insolvency or
+  unacknowledged drift.
+- **funding (#1127)** — records sponsor deposits that bind both an asset and a
+  verified source account, deduplicates on `reference`/`clientToken` so money is
+  never credited twice, tracks round progress against target, and moves
+  allocations only through an authorized, audited reallocation request.
+- **fees (#1128)** — versions the platform and network fee schedule (one active
+  version at a time), quotes fees with integer basis-point arithmetic and a
+  documented rounding mode while holding `net + totalFee === gross`, and keeps
+  fee revenue in an account separate from scholarship disbursement.
+- **refunds (#1129)** — derives refund authority from the caller's role, blocks
+  settlement that would make the treasury insolvent, and returns settled
+  payments as linked reversals with the original ledger entry retained.
+
+Route guards use `ScholarshipPageShell`; the page-level `allowed` flag is a UX
+boundary only — the API enforces the same grants (ADR-001).
