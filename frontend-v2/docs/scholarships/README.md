@@ -61,3 +61,17 @@ Routes under `/scholarships`:
   `src/features/scholarships/**/__tests__`.
 - Route smoke: visit `/scholarships/applications` as a student and expect the
   consistent access-denied state.
+
+## Modules
+
+| Module | Route | Issue | Document |
+| --- | --- | --- | --- |
+| `templates/` — versioned communication templates | `/scholarships/templates` | closes #1142 | [templates.md](./templates.md) |
+| `accessibility/` — WCAG conformance audit by journey | `/scholarships/accessibility` | closes #1143 | [accessibility.md](./accessibility.md) |
+| `fairness/` — funnel rates, bias audit, proxy screening | `/scholarships/fairness` | closes #1144, closes #1145 | [fairness.md](./fairness.md) |
+
+Each module owns its own `types.ts` (no `enum`, no `any`), a `service.ts` of
+exported pure domain functions plus a consolidated `*Service` object on
+`apiClient`, one client component, and a thin default-export route. All three
+import directly from their own module path; `src/features/scholarships/index.ts`
+is not modified.
