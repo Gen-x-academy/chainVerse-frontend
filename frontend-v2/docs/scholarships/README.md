@@ -61,3 +61,16 @@ Routes under `/scholarships`:
   `src/features/scholarships/**/__tests__`.
 - Route smoke: visit `/scholarships/applications` as a student and expect the
   consistent access-denied state.
+
+## Modules
+
+| Module | Issue | Doc | Route | Purpose |
+| --- | --- | --- | --- | --- |
+| `public-pages` | [#1138](public-pages.md) | [public-pages.md](public-pages.md) | `/scholarships/public`, `/scholarships/public/[slug]` | Shareable, indexable program pages built from a strict publish-field whitelist |
+| `notification-events` | [#1139](notification-events.md) | [notification-events.md](notification-events.md) | `/scholarships/notifications/events` | Typed notification events with deterministic idempotency keys and per-event payload allowlists |
+| `communications` | [#1140](communications.md) | [communications.md](communications.md) | `/scholarships/communications/preferences` | Per-event, per-channel preferences where mandatory notices cannot be switched off |
+| `reminders` | [#1141](reminders.md) | [reminders.md](reminders.md) | `/scholarships/reminders` | Timezone-aware deadline and action reminders with quiet hours, dedupe, and auto-cancel |
+
+These four modules are self-contained: they declare their own types and import
+directly from their own module path. `src/features/scholarships/index.ts` and
+`src/features/scholarships/events.ts` are intentionally not modified.
