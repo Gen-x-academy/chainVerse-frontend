@@ -61,3 +61,15 @@ Routes under `/scholarships`:
   `src/features/scholarships/**/__tests__`.
 - Route smoke: visit `/scholarships/applications` as a student and expect the
   consistent access-denied state.
+## Modules
+
+| Module | Route | Issue | Access | Doc |
+| --- | --- | --- | --- | --- |
+| Recoveries and clawbacks | `/scholarships/recovery` | [#1130](https://github.com/Gen-x-academy/chainVerse-frontend/issues/1130) | finance, sponsor, administrator | [recovery.md](./recovery.md) |
+| Sponsor financial statements | `/scholarships/statements` | [#1131](https://github.com/Gen-x-academy/chainVerse-frontend/issues/1131) | sponsor, finance, administrator | [statements.md](./statements.md) |
+| Student scholarship dashboard | `/scholarships/dashboard/student` | [#1132](https://github.com/Gen-x-academy/chainVerse-frontend/issues/1132) | student | [student-dashboard.md](./student-dashboard.md) |
+| Sponsor program dashboard | `/scholarships/dashboard/sponsor` | [#1133](https://github.com/Gen-x-academy/chainVerse-frontend/issues/1133) | sponsor, finance, administrator | [sponsor-dashboard.md](./sponsor-dashboard.md) |
+
+Each module is self-contained under `src/features/scholarships/<module>/` and is
+imported directly from its own path; the module barrel
+`src/features/scholarships/index.ts` is deliberately not extended.
