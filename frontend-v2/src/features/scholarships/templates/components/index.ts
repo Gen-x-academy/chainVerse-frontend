@@ -1,0 +1,1 @@
+export { ScholarshipTemplateStudio } from './ScholarshipTemplateStudio';
