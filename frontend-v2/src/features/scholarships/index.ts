@@ -5,6 +5,7 @@ export * from './lib/receipt';
 export * from './pages/ScholarshipsPage';
 export * from './programs';
 export * from './services/scholarship.service';
+export * from './sponsors';
 export * from './store/scholarshipStore';
 export * from './types';
 export * from './withdrawal';

@@ -80,6 +80,42 @@
       "owner": "Platform engineering",
       "sections": ["overview", "ownership", "migration", "operational-impact", "troubleshooting"],
       "severity": "required"
+    },
+    {
+      "id": "sponsor-team",
+      "path": "docs/scholarships-sponsor-team.md",
+      "audience": "both",
+      "title": "Scholarships sponsor team membership and invitations",
+      "owner": "Platform engineering & Sponsor operations",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "application-validation",
+      "path": "docs/scholarships-application-validation.md",
+      "audience": "both",
+      "title": "Scholarships application answers validation and word limits",
+      "owner": "Student Access & Admissions Engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "configurable-forms",
+      "path": "docs/scholarships-configurable-forms.md",
+      "audience": "both",
+      "title": "Scholarships configurable application forms and immutability",
+      "owner": "Platform Engineering & Admissions Systems",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
+    },
+    {
+      "id": "sponsor-organizations",
+      "path": "docs/scholarships-sponsor-organizations.md",
+      "audience": "both",
+      "title": "Scholarships sponsor organizations and verified profiles",
+      "owner": "Platform Engineering & Sponsor Compliance",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
     }
   ]
 }

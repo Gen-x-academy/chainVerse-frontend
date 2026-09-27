@@ -12,6 +12,8 @@ export const SCHOLARSHIP_SECTIONS = [
   { href: '/scholarships/operations', label: 'Operations & migration', description: 'Event outbox, settlement reconciliation, migration, and admin config.' },
   { href: '/scholarships/audit', label: 'Audit & privacy', description: 'Audit trail, data access, correction/erasure, and audit exports.' },
   { href: '/scholarships/analytics', label: 'Analytics & SLIs', description: 'Funnel metrics, sponsor impact, and operational indicators.' },
+  { href: '/scholarships/sponsors/team', label: 'Sponsor team', description: 'Team membership, least-privilege roles, and invitations.' },
+  { href: '/scholarships/apply/questionnaire', label: 'Application validation', description: 'Answers validation, word limits, and normalization.' },
 ] as const;
 
 export function ScholarshipsNav() {
