@@ -15,7 +15,7 @@ import {
 import {
   mockFormSchemaDraft,
   mockPublishedFormSchema,
-} from '@/src/features/scholarships/applications/forms/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/configurable-forms';
 import type {
   ConfigurableFormSchema,
   FormSection,

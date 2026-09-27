@@ -1,9 +1,11 @@
 /**
- * Development and Testing Fixtures for Configurable Application Forms.
+ * TEST-ONLY FIXTURES — Configurable Application Forms.
+ *
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
-import type { ConfigurableFormSchema } from './types';
-import { computeSchemaHash } from './domain';
+import type { ConfigurableFormSchema } from '../../applications/forms/types';
+import { computeSchemaHash } from '../../applications/forms/domain';
 
 const baseSections = [
   {

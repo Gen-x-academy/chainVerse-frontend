@@ -19,7 +19,6 @@ import {
   type LedgerTransaction,
   type SettlementIntent,
 } from "../settlement";
-import { ScholarshipLoadTestPanel } from "./ScholarshipLoadTestPanel";
 
 const sampleIntents: SettlementIntent[] = [
   {
@@ -174,8 +173,6 @@ export function ScholarshipOperationsPanel() {
           operator surface.
         </p>
       </header>
-
-      <ScholarshipLoadTestPanel />
 
       <Section
         title="Domain events outbox"

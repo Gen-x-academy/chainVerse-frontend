@@ -1,11 +1,13 @@
 /**
- * Test and Development Fixtures for Application Answers and Form Schemas.
+ * TEST-ONLY FIXTURES — Application Answers and Form Schemas.
+ *
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
 import type {
   ApplicationAnswersMap,
   ApplicationFormSchema,
-} from './types';
+} from '../../applications/validation/types';
 
 export const mockApplicationFormSchema: ApplicationFormSchema = {
   id: 'schema-fellowship-2026',

@@ -13,7 +13,7 @@ import type {
   MilestoneState,
   PaymentState,
   ProgramState,
-} from '../domain';
+} from '../../domain';
 
 export type FixtureProgram = { id: string; title: string; state: ProgramState };
 export type FixtureApplication = {

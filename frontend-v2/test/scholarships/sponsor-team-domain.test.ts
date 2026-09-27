@@ -18,7 +18,7 @@ import {
   mockInvitations,
   mockSponsorOrg,
   mockTeamMembers,
-} from '@/src/features/scholarships/sponsors/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/sponsors';
 import type {
   SponsorInvitation,
   SponsorTeamMember,

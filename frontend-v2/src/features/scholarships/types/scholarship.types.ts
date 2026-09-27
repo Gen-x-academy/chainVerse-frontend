@@ -22,17 +22,12 @@ export type ScholarshipRoundStatus =
   | "archived";
 
 export type AwardStatus =
-  | 'pending'
-  | 'accepted'
-  | 'declined'
-  | 'disbursed'
-  | 'cancelled'
-  | 'expired';
   | "pending"
   | "accepted"
   | "declined"
   | "disbursed"
-  | "cancelled";
+  | "cancelled"
+  | "expired";
 
 export type DisbursementStatus =
   | "scheduled"
@@ -113,6 +108,10 @@ export type ScholarshipApplicationListParams = {
   roundId?: string;
   status?: ScholarshipApplicationStatus;
   studentId?: string;
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  tenantId?: string;
 };
 
 // Issue #1112 — Award records and acceptance deadlines
@@ -215,8 +214,3 @@ export interface TerminateAwardPayload {
   recoveryAmountCents?: number;
   clientToken: string;
 }
-  query?: string;
-  page?: number;
-  pageSize?: number;
-  tenantId?: string;
-};

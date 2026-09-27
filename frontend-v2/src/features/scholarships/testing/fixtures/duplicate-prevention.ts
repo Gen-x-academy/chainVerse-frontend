@@ -1,12 +1,14 @@
 /**
- * Reference fixtures for Duplicate Prevention and Application Merges.
+ * TEST-ONLY FIXTURES — Duplicate Prevention and Application Merges.
+ *
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
 import type {
   DuplicateCluster,
   ExistingApplicationSummary,
   ProgramUniquenessRule,
-} from './types';
+} from '../../duplicates/types';
 
 export const mockUniquenessRules: ProgramUniquenessRule[] = [
   {

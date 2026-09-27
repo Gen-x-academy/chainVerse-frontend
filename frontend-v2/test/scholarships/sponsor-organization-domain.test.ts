@@ -16,7 +16,7 @@ import {
   mockSponsorOrg,
   mockUnverifiedSponsorOrg,
   mockPendingSponsorOrg,
-} from '@/src/features/scholarships/sponsors/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/sponsors';
 import type {
   CreateSponsorOrgPayload,
   SponsorOrganization,

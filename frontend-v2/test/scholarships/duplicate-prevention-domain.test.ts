@@ -9,7 +9,7 @@ import {
 import {
   mockExistingApplications,
   mockUniquenessRules,
-} from '@/src/features/scholarships/duplicates/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/duplicate-prevention';
 import type {
   ExistingApplicationSummary,
   MergeApplicationsPayload,

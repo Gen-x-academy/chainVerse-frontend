@@ -5,6 +5,9 @@
  * - Published schemas are immutable.
  * - Conditional logic is strictly validated.
  * - Answers remain tied to the accepted form version.
+ *
+ * The API is the only source of form schemas (issue #1225); the local store
+ * starts empty so a production bundle never renders a bundled sample form.
  */
 
 import { apiClient } from '@/src/lib/api-client';
@@ -15,11 +18,6 @@ import {
   publishFormSchema,
   validateConditionalLogic,
 } from './domain';
-import {
-  mockFormSchemaDraft,
-  mockPublishedFormSchema,
-  mockPublishedFormSchemaV11,
-} from './fixtures';
 import type {
   ConfigurableFormSchema,
   CreateDraftSchemaPayload,
@@ -30,20 +28,12 @@ import type {
 
 const BASE_PATH = '/scholarships/applications/forms';
 
-// Runtime store for testing and local resilience
-let runtimeSchemas: ConfigurableFormSchema[] = [
-  mockFormSchemaDraft,
-  mockPublishedFormSchema,
-  mockPublishedFormSchemaV11,
-];
+// Runtime cache of schemas the API has returned during this session
+let runtimeSchemas: ConfigurableFormSchema[] = [];
 let runtimeBindings: FormVersionBinding[] = [];
 
 export function resetConfigurableFormService(): void {
-  runtimeSchemas = [
-    mockFormSchemaDraft,
-    mockPublishedFormSchema,
-    mockPublishedFormSchemaV11,
-  ];
+  runtimeSchemas = [];
   runtimeBindings = [];
 }
 

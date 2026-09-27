@@ -1,5 +1,7 @@
 /**
- * Test and Development Fixtures for Sponsor Team Membership and Invitations.
+ * TEST-ONLY FIXTURES — Sponsor Team Membership and Invitations.
+ *
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
 import type {
@@ -9,7 +11,7 @@ import type {
   SponsorTeamAuditEvent,
   SponsorTeamMember,
   SponsorVerificationAuditEvent,
-} from './types';
+} from '../../sponsors/types';
 
 export const mockSponsorOrg: SponsorOrganization = {
   id: 'sponsor-stellar-impact',

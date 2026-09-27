@@ -4,14 +4,14 @@
  * Ensures client and server validation rules strictly agree:
  * - Malformed content is rejected before receipt creation.
  * - Validation errors always carry safe, sanitized field paths.
+ *
+ * The questionnaire schema is owned by the API (issue #1225). The local cache
+ * starts empty so a production bundle never validates against a bundled
+ * sample questionnaire.
  */
 
 import { apiClient } from '@/src/lib/api-client';
 import { validateApplicationForm } from './domain';
-import {
-  mockApplicationFormSchema,
-  mockValidAnswers,
-} from './fixtures';
 import type {
   ApplicationAnswersMap,
   ApplicationFormSchema,
@@ -22,13 +22,24 @@ import type {
 
 const BASE_PATH = '/scholarships/applications/validation';
 
-// Runtime in-memory state for offline and testing resilience
-let runtimeSchema: ApplicationFormSchema = { ...mockApplicationFormSchema };
-let runtimeSubmittedAnswers: Record<string, ApplicationAnswersMap> = {};
+// Runtime cache of schemas the API has returned during this session
+let runtimeSchema: ApplicationFormSchema | null = null;
 
 export function resetApplicationValidationService(): void {
-  runtimeSchema = { ...mockApplicationFormSchema };
-  runtimeSubmittedAnswers = {};
+  runtimeSchema = null;
+}
+
+/** A questionnaire with no fields: it can only ever validate an empty map. */
+function EMPTY_FORM_SCHEMA(roundId: string): ApplicationFormSchema {
+  return {
+    id: `unavailable:${roundId}`,
+    roundId,
+    programId: '',
+    title: 'Questionnaire unavailable',
+    description: 'The questionnaire could not be loaded from the scholarship API.',
+    fields: [],
+    version: 'unavailable',
+  };
 }
 
 export const applicationValidationService = {
@@ -39,10 +50,15 @@ export const applicationValidationService = {
     try {
       const path = `${BASE_PATH}/schema?roundId=${encodeURIComponent(roundId)}`;
       const remote = await apiClient.get<ApplicationFormSchema>(path);
-      if (remote?.fields) return remote;
+      if (remote?.fields) {
+        runtimeSchema = remote;
+        return remote;
+      }
     } catch {
       // Resilient fallback
     }
+
+    if (!runtimeSchema) return EMPTY_FORM_SCHEMA(roundId);
 
     return {
       ...runtimeSchema,
@@ -92,24 +108,17 @@ export const applicationValidationService = {
 
     try {
       const path = `${BASE_PATH}/submit`;
-      const remote = await apiClient.post<SubmitAnswersResponse>(path, payload);
-      if (remote?.submissionId) return remote;
-    } catch {
-      // Resilient fallback for testing
+      return await apiClient.post<SubmitAnswersResponse>(path, payload);
+    } catch (error) {
+      // A submission is a durable, server-owned record. If the API did not
+      // acknowledge it we must not invent an application or submission id in
+      // the browser, so the caller sees a retryable failure instead of a
+      // receipt that was never persisted (issue #1223).
+      throw new Error(
+        error instanceof Error
+          ? `Application answers could not be submitted: ${error.message}`
+          : 'Application answers could not be submitted. Please retry.',
+      );
     }
-
-    const submissionId = `sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const applicationId = `app_${payload.roundId}_${payload.studentId}`;
-    const submittedAt = new Date().toISOString();
-
-    runtimeSubmittedAnswers[submissionId] = validation.normalizedAnswers;
-
-    return {
-      ok: true,
-      applicationId,
-      submissionId,
-      submittedAt,
-      validationResult: validation,
-    };
   },
 };

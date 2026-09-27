@@ -1,8 +1,10 @@
 /**
  * Typed API Integration for Sponsor Team Membership and Invitations.
  *
- * Interacts with the backend REST endpoints with in-memory resilient fallback
- * for offline and testing environments.
+ * Interacts with the backend REST endpoints, keeping an in-memory cache of
+ * records the API has already returned in this session. The cache starts empty
+ * so a production bundle never surfaces a synthetic sponsor organization or
+ * team member (issue #1225).
  */
 
 import { apiClient } from '@/src/lib/api-client';
@@ -27,16 +29,6 @@ import {
   addComplianceDocument,
   filterSponsorOrganizations,
 } from './domain';
-import {
-  mockAuditEvents,
-  mockInvitations,
-  mockPendingSponsorOrg,
-  mockPublicSponsorProfile,
-  mockSponsorOrg,
-  mockTeamMembers,
-  mockUnverifiedSponsorOrg,
-  mockVerificationAuditEvents,
-} from './fixtures';
 import type {
   AcceptInvitationPayload,
   ComplianceDocument,
@@ -63,23 +55,19 @@ import type {
 
 const BASE_PATH = '/scholarships/sponsors';
 
-// Runtime store for development and resilient testing isolation
-let runtimeMembers: SponsorTeamMember[] = [...mockTeamMembers];
-let runtimeInvitations: SponsorInvitation[] = [...mockInvitations];
-let runtimeAuditEvents: SponsorTeamAuditEvent[] = [...mockAuditEvents];
-let runtimeOrgs: SponsorOrganization[] = [
-  mockSponsorOrg,
-  mockUnverifiedSponsorOrg,
-  mockPendingSponsorOrg,
-];
-let runtimeVerAuditEvents: SponsorVerificationAuditEvent[] = [...mockVerificationAuditEvents];
+// Runtime cache of records the API has returned during this session
+let runtimeMembers: SponsorTeamMember[] = [];
+let runtimeInvitations: SponsorInvitation[] = [];
+let runtimeAuditEvents: SponsorTeamAuditEvent[] = [];
+let runtimeOrgs: SponsorOrganization[] = [];
+let runtimeVerAuditEvents: SponsorVerificationAuditEvent[] = [];
 
 export function resetRuntimeSponsorTeam(): void {
-  runtimeMembers = [...mockTeamMembers];
-  runtimeInvitations = [...mockInvitations];
-  runtimeAuditEvents = [...mockAuditEvents];
-  runtimeOrgs = [mockSponsorOrg, mockUnverifiedSponsorOrg, mockPendingSponsorOrg];
-  runtimeVerAuditEvents = [...mockVerificationAuditEvents];
+  runtimeMembers = [];
+  runtimeInvitations = [];
+  runtimeAuditEvents = [];
+  runtimeOrgs = [];
+  runtimeVerAuditEvents = [];
 }
 
 export const sponsorTeamService = {
@@ -181,7 +169,7 @@ export const sponsorTeamService = {
 
     const sponsor = {
       id: sponsorId,
-      name: mockSponsorOrg.name,
+      name: runtimeOrgs.find((org) => org.id === sponsorId)?.name ?? sponsorId,
     };
 
     const { invitation, auditEvent } = createSponsorInvitation(sponsor, inviter, payload);

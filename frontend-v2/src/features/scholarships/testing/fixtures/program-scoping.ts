@@ -1,7 +1,7 @@
 /**
- * Reference fixtures for Cohort and Academic-Term Scoping.
+ * TEST-ONLY FIXTURES — Cohort and Academic-Term Scoping.
  *
- * Provides realistic reference entities for testing, fallback data, and demonstrations.
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
 import type {
@@ -12,7 +12,7 @@ import type {
   AcademicTerm,
   ProgramScopeTarget,
   ScopingReferenceData,
-} from './types';
+} from '../../scoping/types';
 
 export const mockTerms: AcademicTerm[] = [
   {

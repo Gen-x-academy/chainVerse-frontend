@@ -13,8 +13,12 @@ import {
   X,
 } from 'lucide-react';
 import { computeUtcInstant, evaluateDeadlineChange } from '../domain';
-import { mockSubmittedApplications } from '../fixtures';
-import type { ApplicationWindow, UpdateWindowPayload } from '../types';
+import { programWindowService } from '../service';
+import type {
+  ApplicationWindow,
+  SubmittedApplicationRecord,
+  UpdateWindowPayload,
+} from '../types';
 
 interface DeadlineChangePreviewModalProps {
   isOpen: boolean;
@@ -22,6 +26,12 @@ interface DeadlineChangePreviewModalProps {
   window: ApplicationWindow;
   onConfirmUpdate: (payload: UpdateWindowPayload) => Promise<void>;
   isUpdating?: boolean;
+  /**
+   * Pre-loaded submission ledger. Grandfathering counts come from the API, so
+   * callers may pass an already-fetched ledger; when omitted the modal fetches
+   * it itself. It is never populated from bundled sample data (issue #1225).
+   */
+  submittedApplications?: SubmittedApplicationRecord[];
 }
 
 export function DeadlineChangePreviewModal({
@@ -30,11 +40,13 @@ export function DeadlineChangePreviewModal({
   window: appWindow,
   onConfirmUpdate,
   isUpdating = false,
+  submittedApplications,
 }: DeadlineChangePreviewModalProps) {
   const [newCloseDate, setNewCloseDate] = useState(appWindow.closeDate);
   const [newCloseTime, setNewCloseTime] = useState(appWindow.closeTime);
   const [changeReason, setChangeReason] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [ledger, setLedger] = useState<SubmittedApplicationRecord[]>(submittedApplications ?? []);
 
   useEffect(() => {
     setNewCloseDate(appWindow.closeDate);
@@ -42,6 +54,25 @@ export function DeadlineChangePreviewModal({
     setChangeReason('');
     setErrorMsg(null);
   }, [appWindow, isOpen]);
+
+  useEffect(() => {
+    if (submittedApplications) {
+      setLedger(submittedApplications);
+      return;
+    }
+    let cancelled = false;
+    void programWindowService
+      .getSubmittedApplicationsForWindow(appWindow.id)
+      .then((records) => {
+        if (!cancelled) setLedger(records);
+      })
+      .catch(() => {
+        if (!cancelled) setLedger([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [appWindow.id, submittedApplications]);
 
   // Compute proposed UTC boundary
   const proposedCloseUtc = React.useMemo(() => {
@@ -55,8 +86,8 @@ export function DeadlineChangePreviewModal({
   // Assess impact on submitted applications
   const assessment = React.useMemo(() => {
     if (!proposedCloseUtc) return null;
-    return evaluateDeadlineChange(appWindow, proposedCloseUtc, mockSubmittedApplications);
-  }, [appWindow, proposedCloseUtc]);
+    return evaluateDeadlineChange(appWindow, proposedCloseUtc, ledger);
+  }, [appWindow, proposedCloseUtc, ledger]);
 
   // Keyboard navigation: Escape key closes modal
   useEffect(() => {

@@ -15,7 +15,16 @@ export function ProgramAwardInventory({
   programName = 'ChainVerse Scholarship',
   canManage = true,
 }: ProgramAwardInventoryProps) {
-  const { inventory, loading, error, fetchInventory, updateInventory, submitDecision, lastDecision } = useAwardInventoryStore();
+  const {
+    inventory,
+    loading,
+    error,
+    fetchInventory,
+    updateInventory,
+    submitDecision,
+    pendingProposal,
+    lastDecision,
+  } = useAwardInventoryStore();
   const [requestedRecipients, setRequestedRecipients] = useState(3);
   const [requestedAmount, setRequestedAmount] = useState(4000);
   const [budgetDraft, setBudgetDraft] = useState({
@@ -208,10 +217,43 @@ export function ProgramAwardInventory({
               Evaluate award commitment
             </button>
 
+            {pendingProposal && !lastDecision && (
+              <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-600" role="note">
+                <p className="font-semibold uppercase tracking-wide text-slate-500">
+                  Local preview — not recorded
+                </p>
+                <p className="mt-2">
+                  {pendingProposal.status === 'approved'
+                    ? `This commitment would be within budget for ${pendingProposal.recipientsCount} recipient(s) at ${inventory.currency} ${pendingProposal.awardAmount.toLocaleString()} each.`
+                    : pendingProposal.reason}
+                </p>
+                <p className="mt-2 text-xs text-slate-500">
+                  The scholarship API assigns the decision id and commit time once it records the
+                  decision.
+                </p>
+              </div>
+            )}
+
             {lastDecision && (
               <div className={`rounded-lg border p-3 text-sm ${lastDecision.status === 'approved' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-red-200 bg-red-50 text-red-700'}`} role="status" aria-live="polite">
-                <p className="font-semibold uppercase tracking-wide">{lastDecision.status}</p>
+                <p className="font-semibold uppercase tracking-wide">
+                  {lastDecision.status} · recorded by the scholarship API
+                </p>
                 <p className="mt-2">{lastDecision.reason ?? `Approved for ${lastDecision.recipientsCount} recipient(s) at ${inventory.currency} ${lastDecision.awardAmount.toLocaleString()} each.`}</p>
+                <dl className="mt-2 space-y-1 text-xs">
+                  <div className="flex justify-between gap-4">
+                    <dt>Decision ID</dt>
+                    <dd className="font-mono break-all">{lastDecision.decisionId}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt>Committed at</dt>
+                    <dd>
+                      <time dateTime={lastDecision.committedAt}>
+                        {new Date(lastDecision.committedAt).toLocaleString()}
+                      </time>
+                    </dd>
+                  </div>
+                </dl>
               </div>
             )}
           </div>
