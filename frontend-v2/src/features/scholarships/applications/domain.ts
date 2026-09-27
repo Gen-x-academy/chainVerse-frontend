@@ -102,6 +102,12 @@ export function checkFormCompleteness(
     errors.push('Scholarship round must be selected.');
   }
 
+  if (draft.answersValidation && !draft.answersValidation.valid) {
+    for (const err of draft.answersValidation.errors) {
+      errors.push(`${err.fieldPath}: ${err.message}`);
+    }
+  }
+
   return {
     kind: 'form_completeness',
     passed: errors.length === 0,

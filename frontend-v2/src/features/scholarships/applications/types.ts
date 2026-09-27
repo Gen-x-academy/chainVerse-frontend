@@ -49,6 +49,8 @@ export interface ApplicationDraft {
   uploadedDocumentIds: string[];
   documents: SupportingDocument[];
   acceptedConsentKinds: ConsentKind[];
+  answers?: Record<string, unknown>;
+  answersValidation?: import('./validation/types').FormValidationResult;
   clientNonce: string;
   updatedAt: string;
 }

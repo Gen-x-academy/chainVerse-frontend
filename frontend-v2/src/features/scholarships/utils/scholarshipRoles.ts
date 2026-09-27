@@ -11,7 +11,8 @@ export type ScholarshipArea =
   | 'apply'
   | 'applications'
   | 'awards'
-  | 'manage';
+  | 'manage'
+  | 'sponsor-team';
 
 const AREA_ACCESS: Record<ScholarshipArea, readonly ScholarshipRole[]> = {
   hub: ['student', 'sponsor', 'reviewer', 'finance', 'administrator'],
@@ -19,6 +20,7 @@ const AREA_ACCESS: Record<ScholarshipArea, readonly ScholarshipRole[]> = {
   applications: ['reviewer', 'finance', 'administrator'],
   awards: ['sponsor', 'finance', 'administrator'],
   manage: ['administrator'],
+  'sponsor-team': ['sponsor', 'administrator'],
 };
 
 export const SCHOLARSHIP_ROLES: readonly ScholarshipRole[] = [
