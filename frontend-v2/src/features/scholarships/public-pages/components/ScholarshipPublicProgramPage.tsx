@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useState } from 'react';
 import { formatAwardAmount, publicProgramService } from '../service';
-import type { PublicPageRevision, PublicProgramPage } from '../types';
+import type { PublicPageRevision, PublicProgramPage, PublicProgramSummary } from '../types';
 
 export type PublicProgramLoadState = 'loading' | 'ready' | 'error';
 
@@ -17,6 +17,20 @@ export type ScholarshipPublicProgramPageProps = {
   state?: PublicProgramLoadState;
   errorMessage?: string;
   canManage?: boolean;
+  /**
+   * Publicly listed programs for the browse/filter UI (#1136). Omitted means no
+   * catalog is rendered, so a single-program page is unaffected.
+   */
+  catalog?: PublicProgramSummary[];
+  /** Server-ranked matches for the signed-in student (#1137). */
+  matches?: ScholarshipMatch[];
+  /** Program IDs the student dismissed; they are filtered out of matches. */
+  dismissedProgramIds?: string[];
+  /** Current catalog filter state, when the host keeps it in the URL. */
+  filters?: CatalogFilters;
+  catalogPage?: number;
+  onFiltersChange?: (filters: CatalogFilters) => void;
+  onDismissMatch?: (programId: string) => void;
 };
 
 const PANEL =
@@ -30,6 +44,13 @@ export function ScholarshipPublicProgramPage({
   state: stateProp,
   errorMessage,
   canManage = false,
+  catalog = [],
+  matches = [],
+  dismissedProgramIds = [],
+  filters = {},
+  catalogPage = 1,
+  onFiltersChange,
+  onDismissMatch,
 }: ScholarshipPublicProgramPageProps) {
   const headingId = useId();
   const linkInputId = `${headingId}-canonical`;
@@ -79,6 +100,17 @@ export function ScholarshipPublicProgramPage({
       setCopyState('failed');
     }
   }, [page]);
+
+  // Catalog state is derived on every render so the list, the counts and the
+  // page number can never disagree with each other.
+  const filteredCatalog = filterCatalog(catalog, filters);
+  const catalogPageState = catalogCounts(catalog, filters);
+  const pagedCatalog = paginateCatalog(filteredCatalog, catalogPage, 6);
+
+  // Matches are ranked and sanitized before they reach the DOM; a match whose
+  // reasons referenced a protected trait is dropped entirely.
+  const rankedMatches = rankMatches(matches, dismissedProgramIds);
+  const coldStartMatches = rankedMatches.filter((match) => match.coldStart);
 
   if (state === 'loading') {
     return (
@@ -307,8 +339,351 @@ export function ScholarshipPublicProgramPage({
           </ol>
         )}
       </section>
+
+      {rankedMatches.length > 0 && (
+        <section className="mt-6" aria-labelledby={`${headingId}-matches`} data-testid="public-page-matches">
+          <h2 id={`${headingId}-matches`} className="text-lg font-semibold text-slate-900">
+            Recommended for you
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Ranked from your verified eligibility and the interests you stated. Sponsors never see these
+            signals.
+          </p>
+          {coldStartMatches.length > 0 && (
+            <p
+              className="mt-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"
+              role="note"
+              data-testid="public-page-matches-cold-start"
+            >
+              You have no verified eligibility on file yet, so these suggestions use your stated interests
+              only and may be less precise.
+            </p>
+          )}
+          <ul className="mt-3 space-y-3">
+            {rankedMatches.map((match) => (
+              <li key={match.programId} className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900">{match.slug}</p>
+                    <p className="mt-1 text-xs text-slate-600">
+                      Match {Math.round(match.score * 100)}%
+                      {match.coldStart ? ' · based on stated interests only' : ''}
+                    </p>
+                  </div>
+                  {onDismissMatch && (
+                    <button
+                      type="button"
+                      onClick={() => onDismissMatch(match.programId)}
+                      className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700"
+                    >
+                      Not interested
+                    </button>
+                  )}
+                </div>
+                {/* Recommendations always explain themselves. */}
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {match.reasons.map((reason) => (
+                    <li
+                      key={reason.code}
+                      className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800"
+                    >
+                      {reason.label}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {catalog.length > 0 && (
+        <section className="mt-6" aria-labelledby={`${headingId}-catalog`} data-testid="public-page-catalog">
+          <h2 id={`${headingId}-catalog`} className="text-lg font-semibold text-slate-900">
+            Browse open programs
+          </h2>
+
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <label className="flex flex-col gap-1 text-xs font-semibold text-slate-600">
+              Search
+              <input
+                type="search"
+                value={filters.search ?? ''}
+                onChange={(event) =>
+                  onFiltersChange?.({ ...filters, search: event.target.value })
+                }
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-slate-600">
+              Minimum award
+              <input
+                type="number"
+                min={0}
+                value={filters.awardMin ?? ''}
+                onChange={(event) => {
+                  const raw = Number(event.target.value);
+                  onFiltersChange?.({
+                    ...filters,
+                    ...(Number.isFinite(raw) && raw > 0 ? { awardMin: raw } : { awardMin: undefined }),
+                  });
+                }}
+                className="w-28 rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-slate-600">
+              Open on
+              <input
+                type="date"
+                value={filters.openOn ?? ''}
+                onChange={(event) =>
+                  onFiltersChange?.({ ...filters, openOn: event.target.value || undefined })
+                }
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900"
+              />
+            </label>
+          </div>
+
+          {/* Counts always describe the current query, not the whole catalog. */}
+          <p className="mt-3 text-sm text-slate-600" role="status" aria-live="polite">
+            Showing {catalogPageState.matching} of {catalogPageState.total} listed program(s)
+            {catalogPageState.excludedPrivate > 0
+              ? ` · ${catalogPageState.excludedPrivate} not publicly listed and hidden`
+              : ''}
+          </p>
+
+          {catalogPageState.matching === 0 ? (
+            <p className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
+              No programs match these filters. Next step: widen the search or clear the minimum award.
+            </p>
+          ) : (
+            <ul className="mt-3 space-y-2">
+              {pagedCatalog.items.map((program) => (
+                <li key={program.slug} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="font-semibold text-slate-900">{program.title}</p>
+                  <p className="mt-1 text-sm text-slate-600">{program.summary}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {formatAwardAmount(program)} · closes {program.applicationDeadline || 'not published'}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {catalogPageState.matching > 0 && (
+            <p className="mt-3 text-xs text-slate-600">
+              Page {pagedCatalog.page} of {pagedCatalog.pageCount}
+            </p>
+          )}
+        </section>
+      )}
     </article>
   );
 }
 
 export default ScholarshipPublicProgramPage;
+
+// ---------------------------------------------------------------------------
+// Catalog search and filters (#1136)
+// ---------------------------------------------------------------------------
+
+export type CatalogFilters = {
+  search?: string;
+  /** Minimum award in the program's own currency units. */
+  awardMin?: number;
+  /** ISO date; only programs still open on this date are returned. */
+  openOn?: string;
+  fundingType?: 'award' | 'bursary' | 'sponsorship';
+};
+
+/** Only fully public programs belong in a public catalog. */
+export function isPubliclyListed(program: PublicProgramSummary): boolean {
+  return program.visibility === 'public';
+}
+
+function matchesSearch(program: PublicProgramSummary, term: string): boolean {
+  const needle = term.trim().toLowerCase();
+  if (!needle) return true;
+  return (
+    program.title.toLowerCase().includes(needle) ||
+    program.summary.toLowerCase().includes(needle)
+  );
+}
+
+/**
+ * Apply catalog filters. Every predicate is conjunctive, so the result always
+ * matches the query exactly rather than being a best-effort ordering.
+ */
+export function filterCatalog(
+  programs: PublicProgramSummary[],
+  filters: CatalogFilters
+): PublicProgramSummary[] {
+  return programs.filter((program) => {
+    if (!isPubliclyListed(program)) return false;
+    if (filters.search && !matchesSearch(program, filters.search)) return false;
+    if (filters.fundingType && !program.summary.toLowerCase().includes(filters.fundingType)) {
+      return false;
+    }
+    if (typeof filters.awardMin === 'number') {
+      if (program.awardAmountCents < filters.awardMin * 100) return false;
+    }
+    if (filters.openOn) {
+      const deadline = Date.parse(program.applicationDeadline);
+      const on = Date.parse(filters.openOn);
+      if (Number.isNaN(deadline) || Number.isNaN(on) || deadline < on) return false;
+    }
+    return true;
+  });
+}
+
+/** Counts per filter value, computed against the same filtered set. */
+export function catalogCounts(
+  programs: PublicProgramSummary[],
+  filters: CatalogFilters
+): { total: number; matching: number; excludedPrivate: number } {
+  const matching = filterCatalog(programs, filters).length;
+  return {
+    total: programs.length,
+    matching,
+    excludedPrivate: programs.filter((program) => !isPubliclyListed(program)).length,
+  };
+}
+
+/** Filters are URL-backed so a filtered view can be shared as a link. */
+export function parseFiltersFromSearch(search: string): CatalogFilters {
+  const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+  const awardMin = Number(params.get('awardMin'));
+  return {
+    ...(params.get('search') ? { search: params.get('search') as string } : {}),
+    ...(params.get('fundingType')
+      ? { fundingType: params.get('fundingType') as CatalogFilters['fundingType'] }
+      : {}),
+    ...(params.get('openOn') ? { openOn: params.get('openOn') as string } : {}),
+    ...(Number.isFinite(awardMin) && awardMin > 0 ? { awardMin } : {}),
+  };
+}
+
+export function filtersToSearch(filters: CatalogFilters): string {
+  const params = new URLSearchParams();
+  if (filters.search?.trim()) params.set('search', filters.search.trim());
+  if (filters.fundingType) params.set('fundingType', filters.fundingType);
+  if (filters.openOn) params.set('openOn', filters.openOn);
+  if (typeof filters.awardMin === 'number' && filters.awardMin > 0) {
+    params.set('awardMin', String(filters.awardMin));
+  }
+  const serialised = params.toString();
+  return serialised ? `?${serialised}` : '';
+}
+
+export type CatalogPage<T> = {
+  items: T[];
+  page: number;
+  pageCount: number;
+  total: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
+/**
+ * Clamp pagination to the available range so an out-of-range or stale page
+ * number resolves to a valid page instead of an empty view.
+ */
+export function paginateCatalog<T>(items: T[], page: number, pageSize: number): CatalogPage<T> {
+  const size = Math.max(1, pageSize);
+  const pageCount = Math.max(1, Math.ceil(items.length / size));
+  const current = Math.min(Math.max(1, Math.floor(page) || 1), pageCount);
+  const start = (current - 1) * size;
+
+  return {
+    items: items.slice(start, start + size),
+    page: current,
+    pageCount,
+    total: items.length,
+    hasPrevious: current > 1,
+    hasNext: current < pageCount,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Personalized matching (#1137)
+// ---------------------------------------------------------------------------
+
+/**
+ * Attributes that must never influence ranking.
+ *
+ * Matching is driven only by verified eligibility and stated interests. A
+ * protected trait may only be used where there is a documented legal basis,
+ * which is a server policy decision — the browser has no way to justify one, so
+ * it refuses them outright rather than silently ranking on them.
+ */
+export const PROTECTED_TRAIT_KEYS = [
+  'age',
+  'dateofbirth',
+  'dob',
+  'sex',
+  'gender',
+  'race',
+  'ethnicity',
+  'religion',
+  'disability',
+  'nationality',
+  'maritalstatus',
+  'pregnancy',
+  'sexualorientation',
+] as const;
+
+export type MatchReasonCode =
+  | 'VERIFIED_ELIGIBILITY'
+  | 'STATED_INTEREST'
+  | 'AWARD_SIZE'
+  | 'DEADLINE_SOON'
+  | 'SIMILAR_PROGRAM';
+
+export type MatchReason = {
+  code: MatchReasonCode;
+  label: string;
+};
+
+export type ScholarshipMatch = {
+  programId: string;
+  slug: string;
+  /** Server-computed 0–1 score. The browser never derives this. */
+  score: number;
+  reasons: MatchReason[];
+  /**
+   * True when the student has no verified eligibility on file and the ranking
+   * fell back to stated interests alone.
+   */
+  coldStart: boolean;
+};
+
+export function isProtectedTrait(key: string): boolean {
+  const normalised = key.toLowerCase().replace(/[\s_-]/g, '');
+  return (PROTECTED_TRAIT_KEYS as readonly string[]).some((trait) => normalised.includes(trait));
+}
+
+/**
+ * Drop any reason that would disclose a protected trait, and refuse to rank a
+ * program whose score was derived from one.
+ */
+export function sanitizeMatch(match: ScholarshipMatch): ScholarshipMatch | null {
+  const reasons = match.reasons.filter((reason) => !isProtectedTrait(reason.label));
+  if (reasons.length !== match.reasons.length) {
+    return null;
+  }
+  if (reasons.length === 0) return null;
+  return { ...match, reasons };
+}
+
+/** Highest score first; ties broken by programId so ordering is stable. */
+export function rankMatches(
+  matches: ScholarshipMatch[],
+  dismissed: string[] = []
+): ScholarshipMatch[] {
+  const dismissedSet = new Set(dismissed);
+  return matches
+    .map(sanitizeMatch)
+    .filter((match): match is ScholarshipMatch => match !== null)
+    .filter((match) => !dismissedSet.has(match.programId))
+    .sort((a, b) => (b.score - a.score) || a.programId.localeCompare(b.programId));
+}
