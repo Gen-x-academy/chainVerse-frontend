@@ -1,0 +1,1 @@
+export { ScholarshipNotificationEventLog } from './ScholarshipNotificationEventLog';

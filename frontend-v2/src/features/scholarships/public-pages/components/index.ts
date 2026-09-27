@@ -1,0 +1,1 @@
+export { ScholarshipPublicProgramPage } from './ScholarshipPublicProgramPage';
