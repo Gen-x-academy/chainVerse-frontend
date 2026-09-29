@@ -14,7 +14,7 @@ import {
   mockUnverifiedSponsorOrg,
   mockPendingSponsorOrg,
   mockPublicSponsorProfile,
-} from '@/src/features/scholarships/sponsors/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/sponsors';
 
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = new QueryClient({

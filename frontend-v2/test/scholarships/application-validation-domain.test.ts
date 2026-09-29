@@ -12,7 +12,7 @@ import {
   mockApplicationFormSchema,
   mockMalformedAnswers,
   mockValidAnswers,
-} from '@/src/features/scholarships/applications/validation/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/application-validation';
 import { applicationValidationService } from '@/src/features/scholarships/applications/validation/service';
 import type { ApplicationFieldSchema } from '@/src/features/scholarships/applications/validation/types';
 

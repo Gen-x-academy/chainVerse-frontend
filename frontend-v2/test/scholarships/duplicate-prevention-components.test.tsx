@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApplicationMergeConsole } from '@/src/features/scholarships/duplicates/components/ApplicationMergeConsole';
 import { applicationDuplicateService } from '@/src/features/scholarships/duplicates/service';
-import { mockDuplicateClusters } from '@/src/features/scholarships/duplicates/fixtures';
+import { mockDuplicateClusters } from '@/src/features/scholarships/testing/fixtures/duplicate-prevention';
 
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = new QueryClient({

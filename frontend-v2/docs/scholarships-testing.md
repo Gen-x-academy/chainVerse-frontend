@@ -46,6 +46,36 @@ sensitive evidence from leaking into logs, screenshots, or test snapshots.
 - **Typed errors**: assertions check specific error codes (`ILLEGAL_TRANSITION`, `AMOUNT_BELOW_MINIMUM`, `AMOUNT_ABOVE_MAXIMUM`, `MILESTONE_ORDER_VIOLATION`) instead of free-text messages.
 - **CI**: the suites run as part of `npm test` in the frontend CI workflow.
 
+## Test-only fixtures
+
+Deterministic fixtures live in a single test-only directory,
+`src/features/scholarships/testing/fixtures/` (`issue #1225`). They used to be
+siblings of the production services that consumed them — `duplicates/fixtures.ts`,
+`scoping/fixtures.ts`, `windows/fixtures.ts`, `sponsors/fixtures.ts`,
+`applications/forms/fixtures.ts` and `applications/validation/fixtures.ts` — which
+meant the default export of every production module was a fabricated dataset and
+the production barrels re-exported it.
+
+Rules now enforced in CI:
+
+- Fixtures may only be imported from `test/`, `e2e/` or `__tests__/`. The
+  production sub-barrels no longer re-export them, so
+  `export * from '../fixtures'` fails to resolve.
+- `src/features/scholarships/testing/fixtures/index.ts` is a test-only barrel for
+  convenience; it is deliberately *not* re-exported from
+  `src/features/scholarships/index.ts`.
+- `npm run check:production-imports` fails the build if anything under `app/` or
+  `src/` (outside `__tests__`) imports `scripts/load-tests/` or
+  `src/features/scholarships/testing/`.
+
+Every production service now starts empty and reads from the API: uniqueness rules
+come from `loadUniquenessRules()`, deadline previews from
+`${BASE_PATH}/{id}/submissions`, program scopes and sponsor organizations from
+their own endpoints, form schemas from the round configuration, and the
+application form schema from `EMPTY_FORM_SCHEMA(roundId)` until the round is
+loaded. The deadline-burst generator also moved out of the application — see
+[scholarships-load-testing.md](./scholarships-load-testing.md).
+
 ## Deadline burst targets and dataset
 
 The synthetic deadline profile is tenant-scoped to `load-test-tenant-a`. It contains
@@ -62,10 +92,12 @@ These records are synthetic and must never be replaced with production exports.
 | Notification    | delivery lag, retries                   | deduplicated retries                    |
 | Award/payout    | batch latency, settlement mismatch      | no duplicate payment intent             |
 
-The browser probe only exercises synthetic coordinator backpressure. Full runs belong in
-an isolated environment with API, queue, object storage, notification, and ledger test
-doubles. Capture p50/p95/p99 latency, accepted throughput, `429` rate, duplicate rate,
-and resource saturation for every journey.
+The in-process coordinator only exercises synthetic backpressure. Full runs belong
+in an isolated environment with API, queue, object storage, notification, and
+ledger test doubles, driven by the operator CLI documented in
+[scholarships-load-testing.md](./scholarships-load-testing.md) — the generator is no
+longer shipped to the browser. Capture p50/p95/p99 latency, accepted throughput,
+`429` rate, duplicate rate, and resource saturation for every journey.
 
 ## Ownership, privacy, migration, and operations
 

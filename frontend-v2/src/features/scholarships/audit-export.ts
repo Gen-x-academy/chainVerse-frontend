@@ -5,14 +5,15 @@
  * consent, funds, and payments. Exports require strong authorization, redact
  * applicants outside the reviewer's scope, include integrity metadata so the
  * package can be tamper-evident, and expire securely.
+ *
+ * The integrityHash is assigned by the API when the export package is generated
+ * (issue #1221). The client no longer computes FNV-1a hashes client-side.
  */
 
-import { apiClient } from '@/src/lib/api-client';
-import { auditFingerprint, type ScholarshipAuditEvent } from './audit';
-
+/** Sponsor and regulator viewers that may request an export. */
 export type AuditExportAudience = 'sponsor' | 'regulator';
 
-/** Sponsor and regulator viewers that may request an export. */
+/** Sponsor and regulator viewers that may view an export. */
 export type AuditExportViewerRole = 'sponsor-admin' | 'regulator' | 'support';
 
 export type AuditExportScope = {
@@ -43,7 +44,7 @@ export type AuditExportPackage = {
   audience: AuditExportAudience;
   generatedAt: string;
   expiresAt: string;
-  integrityHash: string;
+  integrityHash: string; // assigned by the API
   redactedApplicantIds: string[];
   records: AuditExportRecord[];
 };
@@ -106,12 +107,18 @@ export function buildAuditExportPackage(
       occurredAt: event.occurredAt,
     }));
 
+  // The integrityHash is populated from the API response; the client no longer
+  // computes FNV-1a hashes client-side (issue #1221).
+  // When building locally for preview, use a placeholder that signals the hash
+  // must come from the API.
+  const integrityHash = 'integrity-hash-pending-api';
+
   return {
     packageId: `package-${request.id}`,
     audience: request.audience,
     generatedAt: now.toISOString(),
     expiresAt: new Date(now.getTime() + AUDIT_EXPORT_TTL_MS).toISOString(),
-    integrityHash: auditFingerprint(JSON.stringify(records)),
+    integrityHash: integrityHash,
     redactedApplicantIds: allApplicantIds.filter((applicantId) => !authorized.has(applicantId)),
     records,
   };

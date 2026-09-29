@@ -9,7 +9,7 @@ import {
   isValidTimeZone,
   validateApplicationWindow,
 } from '@/src/features/scholarships/windows/domain';
-import { mockSubmittedApplications } from '@/src/features/scholarships/windows/fixtures';
+import { mockSubmittedApplications } from '@/src/features/scholarships/testing/fixtures/deadline-windows';
 import type {
   ApplicationWindow,
   CreateWindowPayload,

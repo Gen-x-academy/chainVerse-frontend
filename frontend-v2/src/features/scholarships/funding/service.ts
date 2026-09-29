@@ -8,7 +8,6 @@
  */
 
 import { apiClient } from '@/src/lib/api-client';
-import { auditFingerprint } from '../audit';
 import {
   EXPECTED_SOURCE_ACCOUNT_ID,
   KNOWN_ASSET_CODES,
@@ -32,8 +31,7 @@ function error(field: string, code: DepositValidation['errors'][number]['code'],
 }
 
 /**
- * Finds an already-recorded deposit with the same `reference` or the same
- * `clientToken`. Either match means the money has already been presented.
+ * Finds an already-recorded deposit with the same `reference` or the same `clientToken`. Either match means the money has already been presented.
  */
 export function detectDuplicate(deposits: Deposit[], incoming: DepositDraft): Deposit | null {
   const match = deposits.find(
@@ -42,6 +40,15 @@ export function detectDuplicate(deposits: Deposit[], incoming: DepositDraft): De
       (incoming.clientToken.length > 0 && deposit.clientToken === incoming.clientToken)
   );
   return match ?? null;
+}
+
+/**
+ * Returns a provisional deposit identifier that does not use a client-side
+ * FNV-1a hash (issue #1221). The scholarship API assigns the authoritative
+ * deposit ID on persistence; this is only a local draft marker.
+ */
+export function provisionalDepositId(reference: string): string {
+  return `dep-provisional-${reference}`;
 }
 
 /**
@@ -119,6 +126,10 @@ export function validateDeposit(
  * Records a deposit in `recorded` state. Never credits: crediting is a separate
  * authorized step. Throws when validation fails so a duplicate can never be
  * written.
+ *
+ * The deposit `id` in the returned object is a provisional marker
+ * (`dep-provisional-...*`). The scholarship API assigns the definitive ID on
+ * persistence (issue #1221).
  */
 export function recordDeposit(
   draft: DepositDraft,
@@ -139,7 +150,7 @@ export function recordDeposit(
   };
 
   return {
-    id: `dep-${auditFingerprint(`${draft.reference}|${draft.clientToken}|${recordedAt}`)}`,
+    id: provisionalDepositId(draft.reference),
     sponsorId: draft.sponsorId,
     allocation: draft.allocation,
     programId: draft.allocation === 'specific-program' ? draft.programId : undefined,
@@ -178,6 +189,7 @@ export function authorizeReallocation(
   return { ...request, status: 'authorized', authorizedBy: authorizer, authorizedAt };
 }
 
+/** Rejects a reallocation request. */
 export function rejectReallocation(
   request: ReallocationRequest,
   authorizer: string,
@@ -192,6 +204,7 @@ export function rejectReallocation(
   return { ...request, status: 'rejected', authorizedBy: authorizer, authorizedAt };
 }
 
+/** Applies an authorized reallocation to a deposit. */
 export function applyReallocation(
   request: ReallocationRequest,
   deposit: Deposit,
@@ -216,6 +229,7 @@ export function applyReallocation(
   };
 }
 
+/** Returns the remaining cents in a funding round. */
 export function roundProgress(round: FundingRound): RoundProgress {
   const remainingCents = Math.max(0, round.targetCents - round.committedCents);
   const percent = round.targetCents <= 0 ? 100 : Math.min(100, Math.round((round.committedCents / round.targetCents) * 100));

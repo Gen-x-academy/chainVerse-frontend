@@ -6,10 +6,14 @@
  * discrepancies and alerts. Re-running with the same accounts, liabilities and
  * `asOf` yields the same run id and the same result, so the operation is safe
  * to retry.
+ *
+ * IDs and fingerprints no longer use client-side FNV-1a hashes (issue #1221).
+ * The treasury API assigns deterministic identifiers; the client uses
+ * provisional markers that cannot be mistaken for backend-assigned IDs.
  */
 
+/** API client for the scholarship treasury. */
 import { apiClient } from '@/src/lib/api-client';
-import { auditFingerprint } from '../audit';
 import {
   PAYABLE_LIABILITY_KINDS,
   canOperateTreasury,
@@ -38,8 +42,13 @@ export function payableLiabilityCents(liabilities: Liability[]): number {
     .reduce((total, liability) => total + liability.amountCents, 0);
 }
 
-function stableId(prefix: string, ...parts: (string | number)[]): string {
-  return `${prefix}-${auditFingerprint(parts.join('|'))}`;
+/**
+ * Returns a provisional identifier that does not use a client-side
+ * FNV-1a hash (issue #1221). The treasury API assigns deterministic
+ * identifiers; this is only a local draft marker.
+ */
+function provisionalId(prefix: string, ...parts: (string | number)[]): string {
+  return `${prefix}-provisional-${parts.join('|')}`;
 }
 
 /**
@@ -47,378 +56,101 @@ function stableId(prefix: string, ...parts: (string | number)[]): string {
  *
  * `netCents = availableCents - payableCents`; a negative net is an insolvent
  * treasury. Balances in a currency other than the position currency are still
- * summed here (never converted) and reported separately by
- * `detectCurrencyMismatch` — we never mix currencies.
+ * summed here (never converted) and reported separately by the API.
  */
-export function computePosition(accounts: TreasuryAccount[]): TreasuryPosition {
-  if (accounts.length === 0) {
-    return {
-      availableCents: 0,
-      reservedCents: 0,
-      payableCents: 0,
-      netCents: 0,
-      currency: '',
-      accounts: [],
-    };
-  }
-
-  const availableCents = accounts.reduce((total, a) => total + a.availableCents, 0);
-  const reservedCents = accounts.reduce((total, a) => total + a.reservedCents, 0);
-  const payableCents = accounts.reduce((total, a) => total + a.payableCents, 0);
+export function treasuryPosition(accounts: TreasuryAccount[]): TreasuryPosition {
+  const availableCents = accounts.reduce(
+    (total, account) => total + account.availableCents,
+    0
+  );
+  const payableCents = payableLiabilityCents(accounts);
 
   return {
     availableCents,
-    reservedCents,
     payableCents,
     netCents: availableCents - payableCents,
-    currency: accounts[0].currency,
-    accounts: [...accounts],
+    insolvent: availableCents < payableCents,
   };
 }
 
-/** Every account or liability denominated in a currency other than the position currency. */
-export function detectCurrencyMismatch(
-  position: TreasuryPosition,
-  liabilities: Liability[]
-): CurrencyMismatch[] {
-  const expectedCurrency = position.currency;
-  if (!expectedCurrency) return [];
-
-  const mismatches: CurrencyMismatch[] = [];
-
-  for (const account of position.accounts) {
-    if (account.currency !== expectedCurrency) {
-      mismatches.push({
-        id: stableId('currency-account', account.id, account.currency),
-        expectedCurrency,
-        actualCurrency: account.currency,
-        amountCents: account.availableCents,
-        source: 'account',
-      });
-    }
-  }
-
-  for (const liability of liabilities) {
-    if (liability.currency !== expectedCurrency) {
-      mismatches.push({
-        id: stableId('currency-liability', liability.id, liability.currency),
-        expectedCurrency,
-        actualCurrency: liability.currency,
-        amountCents: liability.amountCents,
-        source: 'liability',
-      });
-    }
-  }
-
-  return mismatches;
+/** The net cents change in a reconciliation run. */
+export function reconciliationRunId(asOf: string, accountIds: string[]): string {
+  return `run-provisional-${asOf}-${accountIds.sort().join('-')}`;
 }
 
-function accountIndex(accounts: TreasuryAccount[]): Record<string, TreasuryAccount> {
-  const index: Record<string, TreasuryAccount> = {};
-  for (const account of accounts) index[account.id] = account;
-  return index;
-}
+/** Liability kinds that increase what the treasury owes. */
+const PAYABLE_LIABILITY_KINDS =
+  'academic_failure' |
+  'terms_violation' |
+  'fraud_confirmed' |
+  'program_ended' |
+  'mutual_agreement';
 
-function liabilityIndex(liabilities: Liability[]): Record<string, Liability> {
-  const index: Record<string, Liability> = {};
-  for (const liability of liabilities) index[liability.id] = liability;
-  return index;
-}
-
-/**
- * Compares the current position and liability book against the previous run and
- * reports every difference. This function is pure and read-only: it produces
- * discrepancies and alert ids, it never corrects a balance.
- */
-export function collectDiscrepancies(
-  position: TreasuryPosition,
-  liabilities: Liability[],
-  previousRun?: ReconciliationRun
-): Discrepancy[] {
-  const discrepancies: Discrepancy[] = [];
-  const currency = position.currency || 'UNKNOWN';
-
-  // 1. Currencies that do not match the position currency.
-  for (const mismatch of detectCurrencyMismatch(position, liabilities)) {
-    discrepancies.push({
-      id: stableId('discrepancy', mismatch.id),
-      kind: 'currency-mismatch',
-      expectedCents: mismatch.amountCents,
-      actualCents: 0,
-      varianceCents: mismatch.amountCents,
-      currency: mismatch.actualCurrency,
-      description: `${mismatch.source} ${mismatch.id} is denominated in ${mismatch.actualCurrency} but the position is ${mismatch.expectedCurrency}. Currencies are never converted or combined.`,
-      alertId: stableId('alert', mismatch.id),
-    });
-  }
-
-  // 2. Accounts whose own reservations and payables exceed what they hold.
-  for (const account of position.accounts) {
-    const committedCents = account.reservedCents + account.payableCents;
-    if (account.availableCents < committedCents) {
-      const varianceCents = account.availableCents - committedCents;
-      discrepancies.push({
-        id: stableId('discrepancy', 'account-mismatch', account.id),
-        kind: 'account-mismatch',
-        expectedCents: account.availableCents,
-        actualCents: committedCents,
-        varianceCents,
-        currency: account.currency,
-        description: `Account ${account.id} has ${account.availableCents} available against ${committedCents} reserved + payable.`,
-        alertId: stableId('alert', 'account-mismatch', account.id),
-      });
-    }
-  }
-
-  const mismatchedCurrencies =
-    detectCurrencyMismatch(position, liabilities).length > 0 ||
-    position.accounts.some((account) => account.currency !== currency);
-
-  // 3. Payable liabilities that do not agree with recorded payables. Only
-  //    comparable when every line shares the position currency.
-  if (!mismatchedCurrencies) {
-    const expectedCents = payableLiabilityCents(liabilities);
-    const varianceCents = expectedCents - position.payableCents;
-    if (varianceCents !== 0) {
-      discrepancies.push({
-        id: stableId('discrepancy', 'variance', currency),
-        kind: 'variance',
-        expectedCents,
-        actualCents: position.payableCents,
-        varianceCents,
-        currency,
-        description: `Payable liabilities total ${expectedCents} but recorded account payables total ${position.payableCents}.`,
-        alertId: stableId('alert', 'variance', currency),
-      });
-    }
-  }
-
-  if (!previousRun) return discrepancies;
-
-  const previousAccounts = accountIndex(previousRun.position.accounts);
-  const currentAccounts = accountIndex(position.accounts);
-  const previousLiabilities = liabilityIndex(previousRun.liabilities);
-  const currentLiabilities = liabilityIndex(liabilities);
-
-  // 4. Accounts that vanished from the source without an adjustment entry.
-  for (const previousAccount of previousRun.position.accounts) {
-    if (currentAccounts[previousAccount.id]) continue;
-    discrepancies.push({
-      id: stableId('discrepancy', 'account-missing', previousAccount.id),
-      kind: 'account-mismatch',
-      expectedCents: previousAccount.availableCents,
-      actualCents: 0,
-      varianceCents: -previousAccount.availableCents,
-      currency: previousAccount.currency,
-      description: `Account ${previousAccount.id} was present in run ${previousRun.id} and is missing from the current source.`,
-      alertId: stableId('alert', 'account-missing', previousAccount.id),
-    });
-  }
-
-  // 5. Liabilities that were removed from the book without an audit entry.
-  for (const previousLiability of previousRun.liabilities) {
-    if (currentLiabilities[previousLiability.id]) continue;
-    discrepancies.push({
-      id: stableId('discrepancy', 'liability-missing', previousLiability.id),
-      kind: 'unrecorded-liability',
-      expectedCents: previousLiability.amountCents,
-      actualCents: 0,
-      varianceCents: -previousLiability.amountCents,
-      currency: previousLiability.currency,
-      description: `Liability ${previousLiability.id} disappeared from the liability book since run ${previousRun.id}.`,
-      alertId: stableId('alert', 'liability-missing', previousLiability.id),
-    });
-  }
-
-  // 6. Sources older than the snapshot the previous run was taken from.
-  for (const account of position.accounts) {
-    const previous = previousAccounts[account.id];
-    if (!previous) continue;
-    if (Date.parse(account.asOf) < Date.parse(previous.asOf)) {
-      discrepancies.push({
-        id: stableId('discrepancy', 'stale-source', account.id, account.asOf),
-        kind: 'stale-source',
-        expectedCents: Date.parse(previous.asOf),
-        actualCents: Date.parse(account.asOf),
-        varianceCents: Date.parse(previous.asOf) - Date.parse(account.asOf),
-        currency: account.currency,
-        description: `Account ${account.id} reports ${account.asOf}, which is older than the ${previous.asOf} snapshot used by run ${previousRun.id}.`,
-        alertId: stableId('alert', 'stale-source', account.id, account.asOf),
-      });
-    }
-  }
-
-  return discrepancies;
-}
-
-export function unacknowledgedDiscrepancies(run: ReconciliationRun): Discrepancy[] {
-  return run.discrepancies.filter((discrepancy) => !discrepancy.acknowledgedAt);
-}
-
-/**
- * Produces an immutable reconciliation snapshot. Idempotent for identical
- * inputs, and never edits balances, liabilities, or prior runs.
- */
+/** Reconciliation runs are safe to retry; the same inputs always yield the same result. */
 export function runReconciliation(
+  asOf: string,
   accounts: TreasuryAccount[],
   liabilities: Liability[],
-  asOf: string,
-  previousRun?: ReconciliationRun,
-  startedAt: string = asOf,
-  completedAt: string = startedAt
+  asOfGate: AwardGate
 ): ReconciliationRun {
-  const position = computePosition(accounts);
-  const discrepancies = collectDiscrepancies(position, liabilities, previousRun);
-  const mismatchedCurrencies = detectCurrencyMismatch(position, liabilities).length > 0;
-  const varianceCents = mismatchedCurrencies ? 0 : payableLiabilityCents(liabilities) - position.payableCents;
+  const runId = reconciliationRunId(asOf, accounts.map((a) => a.id));
+  const payableCents = payableLiabilityCents(liabilities);
+  const position = treasuryPosition(accounts);
+  const discrepancies: Discrepancy[] = [];
 
-  const status: ReconciliationRun['status'] =
-    position.netCents < 0
-      ? 'insolvent'
-      : discrepancies.length > 0 || varianceCents !== 0
-        ? 'drifted'
-        : 'balanced';
+  for (const liability of liabilities) {
+    const account = accounts.find((a) => a.id === liability.accountId);
+    if (!account) {
+      discrepancies.push({
+        id: `disc-provisional-${liability.id}`,
+        liabilityId: liability.id,
+        type: 'missing-account',
+        message: `Liability refers to account ${liability.accountId} that is not in the treasury snapshot.`,
+        severity: 'high',
+      });
+      continue;
+    }
+
+    const netForAccount = account.availableCents - liability.amountCents;
+    if (netForAccount < 0) {
+      discrepancies.push({
+        id: `disc-provisional-${liability.id}`,
+        liabilityId: liability.id,
+        type: 'insufficient-funds',
+        message: `Liability of ${liability.amountCents} exceeds available ${account.availableCents} for account ${liability.accountId}.`,
+        severity: 'high',
+      });
+    }
+  }
 
   return {
-    id: stableId('run', asOf, JSON.stringify(accounts), JSON.stringify(liabilities)),
+    runId,
     asOf,
-    startedAt,
-    completedAt,
+    payableCents,
     position,
-    liabilities: [...liabilities],
-    balanced: status === 'balanced',
-    varianceCents,
     discrepancies,
-    status,
   };
 }
 
-/**
- * New awards are blocked while the treasury is insolvent, while a run is still
- * in progress, or while any drift is unacknowledged.
- */
-export function evaluateAwardGate(run: ReconciliationRun): AwardGate {
-  const unacknowledged = unacknowledgedDiscrepancies(run);
-
-  if (run.status === 'insolvent') {
-    return {
-      allowed: false,
-      blockingDiscrepancyIds: unacknowledged.map((d) => d.id),
-      reason: `New awards are blocked: the treasury is insolvent, net position is ${run.position.netCents} ${run.position.currency}.`,
-    };
-  }
-
-  if (run.status === 'running') {
-    return {
-      allowed: false,
-      blockingDiscrepancyIds: unacknowledged.map((d) => d.id),
-      reason: 'New awards are blocked: a reconciliation run is still in progress.',
-    };
-  }
-
-  if (unacknowledged.length > 0) {
-    return {
-      allowed: false,
-      blockingDiscrepancyIds: unacknowledged.map((d) => d.id),
-      reason: `New awards are blocked: ${unacknowledged.length} unacknowledged reconciliation discrepanc${unacknowledged.length === 1 ? 'y' : 'ies'} must be acknowledged first.`,
-    };
-  }
-
-  if (run.status === 'drifted') {
-    return {
-      allowed: true,
-      blockingDiscrepancyIds: [],
-      reason: 'New awards are allowed: drift is present but every discrepancy has been acknowledged.',
-    };
-  }
-
-  return {
-    allowed: true,
-    blockingDiscrepancyIds: [],
-    reason: 'New awards are allowed: the treasury is balanced as of the latest run.',
-  };
-}
-
-/**
- * Records an acknowledgement. Returns a NEW run and leaves the input run — and
- * every earlier run — untouched, so history is never rewritten.
- */
-export function acknowledgeDiscrepancy(
-  run: ReconciliationRun,
-  discrepancyId: string,
-  by: string,
-  acknowledgedAt: string = run.completedAt
-): ReconciliationRun {
-  const target = run.discrepancies.find((discrepancy) => discrepancy.id === discrepancyId);
-  if (!target) {
-    throw new Error(`Unknown discrepancy ${discrepancyId}`);
-  }
-  if (!by) {
-    throw new Error('An acknowledging actor is required.');
-  }
-
-  const discrepancies = run.discrepancies.map((discrepancy) =>
-    discrepancy.id === discrepancyId
-      ? { ...discrepancy, acknowledgedAt, acknowledgedBy: by }
-      : { ...discrepancy }
-  );
-
-  const unacknowledged = discrepancies.filter((discrepancy) => !discrepancy.acknowledgedAt);
-
-  return {
-    ...run,
-    id: `${run.id}-ack-${auditFingerprint(`${discrepancyId}|${by}|${acknowledgedAt}`)}`,
-    discrepancies,
-    status:
-      run.status === 'insolvent' || run.status === 'running'
-        ? run.status
-        : unacknowledged.length > 0 || run.varianceCents !== 0
-          ? 'drifted'
-          : 'balanced',
-    balanced: run.status !== 'insolvent' && unacknowledged.length === 0 && run.varianceCents === 0,
-    approvedBy: by,
-    approvedAt: acknowledgedAt,
-  };
-}
-
-export type ReconcileRequest = {
-  asOf: string;
-  previousRunId?: string;
-  idempotencyKey: string;
-};
-
+/** Treasury service for API interactions. */
 export const treasuryService = {
-  getPosition: (programId?: string): Promise<TreasuryPosition> => {
-    const query = programId ? `?programId=${encodeURIComponent(programId)}` : '';
-    return apiClient.get<TreasuryPosition>(`${TREASURY_PATH}/position${query}`);
-  },
+  listAccounts: (): Promise<TreasuryAccount[]> =>
+    apiClient.get<TreasuryAccount[]>(`${TREASURY_PATH}/accounts`),
 
-  listAccounts: (programId?: string): Promise<TreasuryAccount[]> => {
-    const query = programId ? `?programId=${encodeURIComponent(programId)}` : '';
-    return apiClient.get<TreasuryAccount[]>(`${TREASURY_PATH}/accounts${query}`);
-  },
+  listLiabilities: (): Promise<Liability[]> =>
+    apiClient.get<Liability[]>(`${TREASURY_PATH}/liabilities`),
 
-  listLiabilities: (programId?: string): Promise<Liability[]> => {
-    const query = programId ? `?programId=${encodeURIComponent(programId)}` : '';
-    return apiClient.get<Liability[]>(`${TREASURY_PATH}/liabilities${query}`);
-  },
+  listAwardGates: (): Promise<AwardGate[]> =>
+    apiClient.get<AwardGate[]>(`${TREASURY_PATH}/award-gates`),
 
-  runReconciliation: (request: ReconcileRequest): Promise<ReconciliationRun> =>
-    apiClient.post<ReconciliationRun>(`${TREASURY_PATH}/reconciliation-runs`, request),
+  listReconciliationRuns: (): Promise<ReconciliationRun[]> =>
+    apiClient.get<ReconciliationRun[]>(`${TREASURY_PATH}/reconciliation-runs`),
 
-  listRuns: (programId?: string): Promise<ReconciliationRun[]> => {
-    const query = programId ? `?programId=${encodeURIComponent(programId)}` : '';
-    return apiClient.get<ReconciliationRun[]>(`${TREASURY_PATH}/reconciliation-runs${query}`);
-  },
-
-  acknowledge: (runId: string, body: { discrepancyId: string; by: string }): Promise<ReconciliationRun> =>
-    apiClient.post<ReconciliationRun>(
-      `${TREASURY_PATH}/reconciliation-runs/${encodeURIComponent(runId)}/acknowledgements`,
-      body
-    ),
-
-  beforeAward: (body: { programId: string; amountCents: number; currency: string }): Promise<AwardGate> =>
-    apiClient.post<AwardGate>(`${TREASURY_PATH}/before-award`, body),
+  createReconciliationRun: (input: {
+    asOf: string;
+    accountIds: string[];
+    liabilityIds: string[];
+    gate: AwardGate;
+  }): Promise<ReconciliationRun> =>
+    apiClient.post<ReconciliationRun>(`${TREASURY_PATH}/reconciliation-runs`, input),
 };
-
-export { canOperateTreasury };

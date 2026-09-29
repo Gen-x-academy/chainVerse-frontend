@@ -7,7 +7,7 @@ import { applicationValidationService } from '@/src/features/scholarships/applic
 import {
   mockApplicationFormSchema,
   mockValidAnswers,
-} from '@/src/features/scholarships/applications/validation/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/application-validation';
 import { useApplicationValidationStore } from '@/src/features/scholarships/applications/validation/store';
 
 function renderWithClient(ui: React.ReactElement) {

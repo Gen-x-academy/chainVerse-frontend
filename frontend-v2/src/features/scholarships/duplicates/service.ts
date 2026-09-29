@@ -1,5 +1,10 @@
 /**
  * Typed API Service for Duplicate Application Prevention & Administrative Merges.
+ *
+ * The API is the only source of applicant records (issue #1225). When the
+ * backend is unavailable the local stores stay empty rather than falling back
+ * to synthetic applicants, so a production bundle can never present fixture
+ * data as a real duplicate cluster.
  */
 
 import { apiClient } from '@/src/lib/api-client';
@@ -8,35 +13,60 @@ import {
   executeApplicationMerge,
   reconcileDraftsSafely,
 } from './domain';
-import {
-  mockDuplicateClusters,
-  mockExistingApplications,
-  mockUniquenessRules,
-} from './fixtures';
 import type {
   ApplicationMergeAuditRecord,
   DraftReconciliationStrategy,
   DuplicateCluster,
   ExistingApplicationSummary,
   MergeApplicationsPayload,
+  ProgramUniquenessRule,
   ReconciledDraftResult,
   UniquenessCheckResult,
 } from './types';
 import type { SupportingDocument } from '../documents';
 
-let runtimeApplications = [...mockExistingApplications];
-let runtimeClusters = [...mockDuplicateClusters];
+/**
+ * Most restrictive default used when no rule has been published for a program.
+ * This is policy rather than data, so it is safe to ship: it can only ever
+ * block an application, never grant one or expose an applicant.
+ */
+const DEFAULT_UNIQUENESS_RULE: ProgramUniquenessRule = {
+  programId: '*',
+  scope: 'one_per_program_lifetime',
+  maxApplicationsPerApplicant: 1,
+  allowDraftResumption: true,
+  lockTimeoutSeconds: 60,
+};
+
+let runtimeApplications: ExistingApplicationSummary[] = [];
+let runtimeClusters: DuplicateCluster[] = [];
+let runtimeRules: ProgramUniquenessRule[] = [];
 let runtimeMergeAudits: ApplicationMergeAuditRecord[] = [];
 
 export function resetDuplicateStores(): void {
-  runtimeApplications = [...mockExistingApplications];
-  runtimeClusters = [...mockDuplicateClusters];
+  runtimeApplications = [];
+  runtimeClusters = [];
+  runtimeRules = [];
   runtimeMergeAudits = [];
 }
 
 const BASE_PATH = '/scholarships/duplicates';
 
 export const applicationDuplicateService = {
+  /**
+   * Caches the uniqueness rules published by the API. Only the API may define
+   * them; the client never invents a per-program rule.
+   */
+  async loadUniquenessRules(): Promise<ProgramUniquenessRule[]> {
+    try {
+      const remote = await apiClient.get<ProgramUniquenessRule[]>(`${BASE_PATH}/rules`);
+      if (Array.isArray(remote)) runtimeRules = remote;
+    } catch {
+      // Keep whatever is already cached.
+    }
+    return runtimeRules;
+  },
+
   /**
    * Evaluates uniqueness before starting or submitting an application.
    */
@@ -45,9 +75,6 @@ export const applicationDuplicateService = {
     programId: string,
     roundId: string
   ): Promise<UniquenessCheckResult> {
-    const rule =
-      mockUniquenessRules.find((r) => r.programId === programId) ?? mockUniquenessRules[0];
-
     try {
       const remote = await apiClient.post<UniquenessCheckResult>(`${BASE_PATH}/check-uniqueness`, {
         studentId,
@@ -58,6 +85,12 @@ export const applicationDuplicateService = {
     } catch {
       // Local evaluation fallback
     }
+
+    if (runtimeRules.length === 0) await this.loadUniquenessRules();
+
+    const rule =
+      runtimeRules.find((candidate) => candidate.programId === programId) ??
+      DEFAULT_UNIQUENESS_RULE;
 
     return evaluateApplicantUniqueness(studentId, programId, roundId, runtimeApplications, rule);
   },

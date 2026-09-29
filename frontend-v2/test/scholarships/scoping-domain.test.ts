@@ -7,7 +7,7 @@ import {
   filterAndQueryScopes,
   validateProgramScope,
 } from '@/src/features/scholarships/scoping/domain';
-import { mockProgramScopes } from '@/src/features/scholarships/scoping/fixtures';
+import { mockProgramScopes } from '@/src/features/scholarships/testing/fixtures/program-scoping';
 import type { ProgramScopeTarget } from '@/src/features/scholarships/scoping/types';
 
 describe('Program Scoping Domain Logic & Validation', () => {

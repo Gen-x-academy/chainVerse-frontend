@@ -13,6 +13,18 @@
 
 import { apiClient } from '@/src/lib/api-client';
 import { evaluateSubmissionTiming, validateApplicationWindow } from './domain';
+ * The API is the only source of window and submission records (issue #1225).
+ * Local stores start empty so a production bundle never renders synthetic
+ * application windows or synthetic applicant submissions.
+ */
+
+import { apiClient } from '@/src/lib/api-client';
+import {
+  buildApplicationWindow,
+  evaluateDeadlineChange,
+  evaluateSubmissionTiming,
+  validateApplicationWindow,
+} from './domain';
 import type {
   ApplicationWindow,
   CreateWindowPayload,
@@ -41,6 +53,14 @@ export class WindowConflictError extends Error {
     );
     this.name = 'WindowConflictError';
   }
+let runtimeWindows: ApplicationWindow[] = [];
+let runtimeAudits: DeadlineChangeAuditRecord[] = [];
+let runtimeSubmissions: SubmittedApplicationRecord[] = [];
+
+export function resetWindowStores(): void {
+  runtimeWindows = [];
+  runtimeAudits = [];
+  runtimeSubmissions = [];
 }
 
 /**
@@ -107,6 +127,25 @@ export const programWindowService = {
       { signal }
     );
     return Array.isArray(remote) ? remote : [];
+    try {
+      const remote = await apiClient.get<ApplicationWindow[]>(BASE_PATH, { signal });
+      if (Array.isArray(remote)) return remote;
+    } catch {
+      // Fallback
+    }
+
+    return runtimeWindows.filter((win) => {
+      if (query?.programId && win.programId !== query.programId) return false;
+      if (query?.roundId && win.roundId !== query.roundId) return false;
+      if (query?.search && query.search.trim()) {
+        const term = query.search.toLowerCase().trim();
+        const matchesName = win.name.toLowerCase().includes(term);
+        const matchesDesc = (win.description ?? '').toLowerCase().includes(term);
+        const matchesProg = (win.programName ?? '').toLowerCase().includes(term);
+        if (!matchesName && !matchesDesc && !matchesProg) return false;
+      }
+      return true;
+    });
   },
 
   /**
@@ -148,6 +187,56 @@ export const programWindowService = {
     updates: UpdateWindowPayload,
     options: { expectedVersion?: number; changeReason?: string } = {}
   ): Promise<ApplicationWindow> {
+    const existingIndex = runtimeWindows.findIndex((w) => w.id === id);
+    if (existingIndex === -1) {
+      throw new Error(`Window "${id}" not found.`);
+    }
+
+    const current = runtimeWindows[existingIndex];
+    const mergedPayload: CreateWindowPayload = {
+      programId: updates.programId ?? current.programId,
+      programName: updates.programName ?? current.programName,
+      roundId: updates.roundId ?? current.roundId,
+      name: updates.name ?? current.name,
+      description: updates.description ?? current.description,
+      openDate: updates.openDate ?? current.openDate,
+      openTime: updates.openTime ?? current.openTime,
+      closeDate: updates.closeDate ?? current.closeDate,
+      closeTime: updates.closeTime ?? current.closeTime,
+      timeZone: updates.timeZone ?? current.timeZone,
+      gracePeriodMinutes: updates.gracePeriodMinutes ?? current.gracePeriodMinutes,
+      lateSubmissionPolicy: updates.lateSubmissionPolicy ?? current.lateSubmissionPolicy,
+      latePenaltyPercent: updates.latePenaltyPercent ?? current.latePenaltyPercent,
+      lateCutoffDate: updates.lateCutoffDate,
+      lateCutoffTime: updates.lateCutoffTime,
+    };
+
+    const updatedWindow = buildApplicationWindow(
+      mergedPayload,
+      id,
+      current.version + 1
+    );
+
+    // Record audit entry for deadline modification
+    const assessment = evaluateDeadlineChange(
+      current,
+      updatedWindow.closeInstantUtc,
+      await this.getSubmittedApplicationsForWindow(id)
+    );
+
+    const auditRecord: DeadlineChangeAuditRecord = {
+      id: `audit-${Date.now()}`,
+      windowId: id,
+      programId: updatedWindow.programId,
+      changedBy: 'administrator',
+      changedAtUtc: new Date().toISOString(),
+      previousCloseUtc: current.closeInstantUtc,
+      newCloseUtc: updatedWindow.closeInstantUtc,
+      reason: updates.changeReason ?? 'Administrative schedule revision',
+      grandfatheredApplicationCount: assessment.affectedApplicationsCount,
+    };
+    runtimeAudits.unshift(auditRecord);
+
     try {
       return await apiClient.put<ApplicationWindow>(`${BASE_PATH}/${encodeURIComponent(id)}`, {
         window: updates,
@@ -176,6 +265,12 @@ export const programWindowService = {
     return apiClient.post<DeadlineChangePreview>(
       `${BASE_PATH}/${encodeURIComponent(windowId)}/deadline-change-preview`,
       { proposedCloseUtc }
+  ): Promise<DeadlineChangeAssessment> {
+    const window = await this.getWindow(windowId);
+    return evaluateDeadlineChange(
+      window,
+      proposedCloseUtc,
+      await this.getSubmittedApplicationsForWindow(windowId)
     );
   },
 
@@ -192,6 +287,28 @@ export const programWindowService = {
   ): Promise<TimingEvaluationResult> {
     const window = await this.getWindow(windowId);
     return evaluateSubmissionTiming(submissionInstant, window, waiverToken);
+  },
+
+  /**
+   * Retrieves submitted applications under this program window.
+   *
+   * Grandfathering assessments depend on the real submission ledger, so this
+   * reads from the API and only falls back to records already observed in this
+   * session — never to bundled sample data (issue #1225).
+   */
+  async getSubmittedApplicationsForWindow(windowId: string): Promise<SubmittedApplicationRecord[]> {
+    try {
+      const remote = await apiClient.get<SubmittedApplicationRecord[]>(
+        `${BASE_PATH}/${encodeURIComponent(windowId)}/submissions`
+      );
+      if (Array.isArray(remote)) {
+        runtimeSubmissions = remote;
+        return remote;
+      }
+    } catch {
+      // Fall back to the records already observed in this session.
+    }
+    return runtimeSubmissions;
   },
 
   /**
