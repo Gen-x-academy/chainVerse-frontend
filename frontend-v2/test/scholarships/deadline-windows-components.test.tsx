@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProgramDeadlineManager } from '@/src/features/scholarships/windows/components/ProgramDeadlineManager';
 import { programWindowService } from '@/src/features/scholarships/windows/service';
-import { mockApplicationWindows } from '@/src/features/scholarships/windows/fixtures';
+import { mockApplicationWindows } from '@/src/features/scholarships/testing/fixtures/deadline-windows';
 
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = new QueryClient({

@@ -1,12 +1,14 @@
 /**
- * Reference fixtures for Application Opening and Deadline Windows.
+ * TEST-ONLY FIXTURES — Application Opening and Deadline Windows.
+ *
+ * @see ../../../../../docs/scholarships-testing.md (see "Test-only fixtures")
  */
 
-import { buildApplicationWindow } from './domain';
+import { buildApplicationWindow } from '../../windows/domain';
 import type {
   ApplicationWindow,
   SubmittedApplicationRecord,
-} from './types';
+} from '../../windows/types';
 
 export const mockApplicationWindows: ApplicationWindow[] = [
   buildApplicationWindow(

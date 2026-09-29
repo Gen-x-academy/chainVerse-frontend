@@ -5,7 +5,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProgramScopeManager } from '@/src/features/scholarships/scoping/components/ProgramScopeManager';
 import { programScopingService } from '@/src/features/scholarships/scoping/service';
-import { mockProgramScopes, mockScopingReferenceData } from '@/src/features/scholarships/scoping/fixtures';
+import { mockProgramScopes, mockScopingReferenceData } from '@/src/features/scholarships/testing/fixtures/program-scoping';
 
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = new QueryClient({

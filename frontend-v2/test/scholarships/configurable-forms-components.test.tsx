@@ -11,7 +11,7 @@ import {
   mockDraftFormSchema,
   mockPublishedFormSchema,
   mockPublishedFormSchemaV11,
-} from '@/src/features/scholarships/applications/forms/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/configurable-forms';
 import type { FormVersionBinding } from '@/src/features/scholarships/applications/forms/types';
 
 function renderWithClient(ui: React.ReactElement) {

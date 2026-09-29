@@ -18,6 +18,10 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
+      - name: Enforce scholarship import boundaries
+        # Test-only fixtures and operator load-testing tooling must stay out of
+        # the shipped route graph (issues #1224, #1225).
+        run: npm run check:production-imports
       - run: npm run build
       - run: npm test
       - name: Run scholarship security abuse suite

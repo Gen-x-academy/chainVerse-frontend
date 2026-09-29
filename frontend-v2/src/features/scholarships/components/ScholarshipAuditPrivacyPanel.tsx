@@ -142,7 +142,12 @@ export function ScholarshipAuditPrivacyPanel() {
           {isAuditExportAuthorized(auditExport.request.audience, 'regulator') ? 'yes' : 'no'}
         </p>
         <p>Redacted applicant ids: {auditExport.pkg.redactedApplicantIds.join(', ') || 'none'}</p>
-        <p>Integrity hash: {auditExport.pkg.integrityHash}</p>
+        <p>
+          Integrity hash:{' '}
+          {auditExport.pkg.integrityHash === 'integrity-hash-pending-api'
+            ? '(pending API assignment)'
+            : auditExport.pkg.integrityHash}
+        </p>
         <p>Expired: {isAuditExportExpired(auditExport.pkg) ? 'yes' : 'no'}</p>
       </Panel>
     </section>

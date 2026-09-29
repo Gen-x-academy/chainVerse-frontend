@@ -1,5 +1,9 @@
 /**
  * Typed API Service for Application Opening and Deadline Windows.
+ *
+ * The API is the only source of window and submission records (issue #1225).
+ * Local stores start empty so a production bundle never renders synthetic
+ * application windows or synthetic applicant submissions.
  */
 
 import { apiClient } from '@/src/lib/api-client';
@@ -9,7 +13,6 @@ import {
   evaluateSubmissionTiming,
   validateApplicationWindow,
 } from './domain';
-import { mockApplicationWindows, mockSubmittedApplications } from './fixtures';
 import type {
   ApplicationWindow,
   CreateWindowPayload,
@@ -21,12 +24,14 @@ import type {
   WindowQueryParams,
 } from './types';
 
-let runtimeWindows: ApplicationWindow[] = [...mockApplicationWindows];
+let runtimeWindows: ApplicationWindow[] = [];
 let runtimeAudits: DeadlineChangeAuditRecord[] = [];
+let runtimeSubmissions: SubmittedApplicationRecord[] = [];
 
 export function resetWindowStores(): void {
-  runtimeWindows = [...mockApplicationWindows];
+  runtimeWindows = [];
   runtimeAudits = [];
+  runtimeSubmissions = [];
 }
 
 const BASE_PATH = '/scholarships/windows';
@@ -40,7 +45,7 @@ export const programWindowService = {
     signal?: AbortSignal
   ): Promise<ApplicationWindow[]> {
     try {
-      const remote = await apiClient.get<ApplicationWindow[]>(BASE_PATH);
+      const remote = await apiClient.get<ApplicationWindow[]>(BASE_PATH, { signal });
       if (Array.isArray(remote)) return remote;
     } catch {
       // Fallback
@@ -140,7 +145,7 @@ export const programWindowService = {
     const assessment = evaluateDeadlineChange(
       current,
       updatedWindow.closeInstantUtc,
-      mockSubmittedApplications
+      await this.getSubmittedApplicationsForWindow(id)
     );
 
     const auditRecord: DeadlineChangeAuditRecord = {
@@ -181,7 +186,11 @@ export const programWindowService = {
     proposedCloseUtc: string
   ): Promise<DeadlineChangeAssessment> {
     const window = await this.getWindow(windowId);
-    return evaluateDeadlineChange(window, proposedCloseUtc, mockSubmittedApplications);
+    return evaluateDeadlineChange(
+      window,
+      proposedCloseUtc,
+      await this.getSubmittedApplicationsForWindow(windowId)
+    );
   },
 
   /**
@@ -198,9 +207,24 @@ export const programWindowService = {
 
   /**
    * Retrieves submitted applications under this program window.
+   *
+   * Grandfathering assessments depend on the real submission ledger, so this
+   * reads from the API and only falls back to records already observed in this
+   * session — never to bundled sample data (issue #1225).
    */
   async getSubmittedApplicationsForWindow(windowId: string): Promise<SubmittedApplicationRecord[]> {
-    return mockSubmittedApplications;
+    try {
+      const remote = await apiClient.get<SubmittedApplicationRecord[]>(
+        `${BASE_PATH}/${encodeURIComponent(windowId)}/submissions`
+      );
+      if (Array.isArray(remote)) {
+        runtimeSubmissions = remote;
+        return remote;
+      }
+    } catch {
+      // Fall back to the records already observed in this session.
+    }
+    return runtimeSubmissions;
   },
 
   /**

@@ -1,6 +1,11 @@
 'use client';
 
 import { useAuthStore } from '@/src/store/authStore';
+import { StagingSeedFlow } from '../components/StagingSeedFlow';
+import { ScholarshipsNav } from '../components/ScholarshipsNav';
+import { ScholarshipPageShell } from '../components/ScholarshipPageShell';
+import { getStagingToolingAvailability } from '../utils/stagingEnvironment';
+import { canAccessScholarshipArea } from '../utils/scholarshipRoles';
 import { getStagingToolingAvailability } from '../utils/stagingEnvironment';
 import { ScholarshipsNav } from '../components/ScholarshipsNav';
 import { ScholarshipPageShell } from '../components/ScholarshipPageShell';
@@ -11,6 +16,7 @@ const NAV_ITEMS = [
 ];
 
 /**
+ * Synthetic seed runs are load-equivalent, so the page is gated twice (#1224):
  * Synthetic seed runs are load-equivalent, so the page is gated twice (#1220):
  * an explicit build-time opt-in and a non-production API origin. See
  * `docs/scholarships-load-testing.md`.

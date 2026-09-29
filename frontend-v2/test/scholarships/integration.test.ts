@@ -13,7 +13,7 @@ import {
   createFixtureSet,
   createInMemoryStore,
   type FixtureProgram,
-} from '@/src/features/scholarships/testing/fixtures';
+} from '@/src/features/scholarships/testing/fixtures/scholarship-set';
 
 /**
  * A disposable in-memory transport stands in for the network so the tests never

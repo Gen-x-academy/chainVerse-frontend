@@ -1,7 +1,10 @@
 /**
  * Typed API Service for Program Cohort and Academic-Term Scoping.
  *
- * Integrates with the platform API while supporting resilient fallbacks and isolation.
+ * Integrates with the platform API while supporting resilient fallbacks and
+ * isolation. Reference entities (cohorts, terms, institutions, regions) come
+ * from the API only: the local store starts empty so a production bundle can
+ * never render synthetic institutions or programs (issue #1225).
  */
 
 import { apiClient } from '@/src/lib/api-client';
@@ -11,7 +14,6 @@ import {
   filterAndQueryScopes,
   validateProgramScope,
 } from './domain';
-import { mockProgramScopes, mockScopingReferenceData } from './fixtures';
 import type {
   CreateProgramScopePayload,
   ProgramScopeTarget,
@@ -25,11 +27,16 @@ import type {
 
 const BASE_PATH = '/scholarships/scopes';
 
-// In-memory runtime state for development and testing resilience
-let runtimeScopes: ProgramScopeTarget[] = [...mockProgramScopes];
+// In-memory runtime state for records already returned by the API in this session
+let runtimeScopes: ProgramScopeTarget[] = [];
+
+/** A fresh, empty reference set — never a shared mutable singleton. */
+function EMPTY_REFERENCE_DATA(): ScopingReferenceData {
+  return { cohorts: [], terms: [], courses: [], institutions: [], regions: [] };
+}
 
 export function resetRuntimeScopes(): void {
-  runtimeScopes = [...mockProgramScopes];
+  runtimeScopes = [];
 }
 
 export const programScopingService = {
@@ -170,15 +177,19 @@ export const programScopingService = {
 
   /**
    * Retrieves reference data (cohorts, terms, courses, institutions, regions).
+   *
+   * Reference data is owned by the API. When it is unreachable we return empty
+   * collections rather than bundled sample institutions, so operators never see
+   * a synthetic institution in a production environment (issue #1225).
    */
   async getReferenceData(signal?: AbortSignal): Promise<ScopingReferenceData> {
     try {
-      const remote = await apiClient.get<ScopingReferenceData>(`${BASE_PATH}/reference`);
+      const remote = await apiClient.get<ScopingReferenceData>(`${BASE_PATH}/reference`, { signal });
       if (remote && remote.cohorts) return remote;
     } catch {
-      // Fallback to static reference data
+      // Fall through to the empty reference set below.
     }
-    return mockScopingReferenceData;
+    return EMPTY_REFERENCE_DATA();
   },
 
   /**
