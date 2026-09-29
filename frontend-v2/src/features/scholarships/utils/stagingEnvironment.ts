@@ -1,5 +1,6 @@
 /**
  * Non-production gating for scholarships test tooling (issue #1224).
+ * Non-production gating for scholarships test tooling (issue #1220).
  *
  * The synthetic seed flow under `/scholarships/staging` generates load-equivalent
  * records. It used to be reachable by anyone who could load the page, and the
@@ -43,6 +44,12 @@ export function isNonProductionHostname(hostname: string | undefined | null): bo
   const host = hostname.trim().toLowerCase().replace(/^\[|\]$/g, "");
   if (host === "localhost" || host === "::1" || host === "0.0.0.0") return true;
   return NON_PRODUCTION_HOSTNAME.test(host);
+/** True when the hostname is local, staging, or testnet. Empty host is unknown. */
+function isNonProductionHostname(hostname: string): boolean {
+  if (!hostname) return false;
+  const host = hostname.trim().toLowerCase().replace(/^\[|\]$/g, "");
+  if (host === "localhost" || host === "::1" || host === "0.0.0.0") return true;
+  return /(^|\.)(staging|stage|preprod|pre-prod|test|testing|testnet|local|dev|sandbox)(\.|$)/.test(host);
 }
 
 /**
@@ -52,6 +59,7 @@ export function isNonProductionHostname(hostname: string | undefined | null): bo
 export function readApiHostname(
   baseUrl: string | undefined | null,
 ): string | undefined {
+function readApiHostname(baseUrl: string | undefined | null): string | undefined {
   if (!baseUrl) return undefined;
   try {
     return new URL(baseUrl).hostname;
@@ -73,6 +81,7 @@ export function resolveStagingToolingAvailability(env: {
   flag?: string;
   apiBaseUrl?: string;
 }): StagingToolingAvailability {
+}): { available: boolean; reason: string } {
   if (!isTruthyFlag(env.flag)) {
     return {
       available: false,
@@ -93,8 +102,14 @@ export function resolveStagingToolingAvailability(env: {
 
 /** Browser-bound convenience wrapper over {@link resolveStagingToolingAvailability}. */
 export function getStagingToolingAvailability(): StagingToolingAvailability {
+export function getStagingToolingAvailability(): { available: boolean; reason: string } {
   return resolveStagingToolingAvailability({
     flag: process.env.NEXT_PUBLIC_SCHOLARSHIPS_STAGING,
     apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
   });
+}
+
+/** True only for the documented opt-in values. */
+function isTruthyFlag(value: string | undefined | null): boolean {
+  return typeof value === "string" && TRUTHY.has(value.trim().toLowerCase());
 }
