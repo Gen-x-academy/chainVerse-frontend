@@ -1,6 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaymentExecutionPanel } from '../components/PaymentExecutionPanel';
 import type { PaymentBatchResult } from '../types';
 
@@ -28,18 +29,34 @@ const mockResult: PaymentBatchResult = {
   completedAt: '2026-09-25T12:00:10.000Z',
 };
 
+/**
+ * Issue #1227: batch execution is a TanStack mutation, so the panel needs a
+ * QueryClientProvider. A fresh client per test keeps cache state from leaking
+ * between cases.
+ */
+function renderPanel(props: React.ComponentProps<typeof PaymentExecutionPanel> = {}) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <PaymentExecutionPanel {...props} />
+    </QueryClientProvider>,
+  );
+}
+
 describe('PaymentExecutionPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders the execute button', () => {
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     expect(screen.getByRole('button', { name: /execute payment batch/i })).toBeInTheDocument();
   });
 
   it('renders dry run option', () => {
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     expect(screen.getByLabelText(/dry run/i)).toBeInTheDocument();
   });
 
@@ -49,7 +66,7 @@ describe('PaymentExecutionPanel', () => {
     );
     const user = userEvent.setup();
 
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     fireEvent.click(screen.getByRole('button', { name: /execute payment batch/i }));
 
     expect(await screen.findByRole('button', { name: /executing batch/i })).toBeInTheDocument();
@@ -59,7 +76,7 @@ describe('PaymentExecutionPanel', () => {
     vi.mocked(scheduledPaymentService.executeBatch).mockResolvedValue(mockResult);
     const onComplete = vi.fn();
 
-    render(<PaymentExecutionPanel onBatchComplete={onComplete} />);
+    renderPanel({ onBatchComplete: onComplete });
     await userEvent.click(screen.getByRole('button', { name: /execute payment batch/i }));
 
     await waitFor(() => {
@@ -74,7 +91,7 @@ describe('PaymentExecutionPanel', () => {
       new Error('Batch execution failed.')
     );
 
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     await userEvent.click(screen.getByRole('button', { name: /execute payment batch/i }));
 
     await waitFor(() => {
@@ -83,7 +100,7 @@ describe('PaymentExecutionPanel', () => {
   });
 
   it('shows simulate label when dry run is checked', async () => {
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     await userEvent.click(screen.getByLabelText(/dry run/i));
 
     expect(screen.getByRole('button', { name: /simulate batch/i })).toBeInTheDocument();
@@ -92,7 +109,7 @@ describe('PaymentExecutionPanel', () => {
   it('resets state after clicking run another batch', async () => {
     vi.mocked(scheduledPaymentService.executeBatch).mockResolvedValue(mockResult);
 
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     await userEvent.click(screen.getByRole('button', { name: /execute payment batch/i }));
 
     await waitFor(() =>
@@ -105,7 +122,7 @@ describe('PaymentExecutionPanel', () => {
   });
 
   it('disables button when batch size is less than 1', async () => {
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     const sizeInput = screen.getByLabelText(/batch size/i);
     await userEvent.clear(sizeInput);
     await userEvent.type(sizeInput, '0');
@@ -118,7 +135,7 @@ describe('PaymentExecutionPanel', () => {
       () => new Promise(() => {})
     );
 
-    render(<PaymentExecutionPanel />);
+    renderPanel();
     fireEvent.click(screen.getByRole('button', { name: /execute payment batch/i }));
 
     await waitFor(() => {

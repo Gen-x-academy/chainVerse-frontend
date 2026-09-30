@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useId, useRef, useState } from 'react';
-import { milestoneEvidenceService } from '../service';
+import { useSubmitMilestoneEvidence } from '../hooks';
 import type { EvidenceType, MilestoneEvidence, SubmitEvidencePayload } from '../types';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -22,19 +22,30 @@ export function SubmitEvidenceForm({ milestoneId, awardId, recipientId, onSucces
   const [evidenceType, setEvidenceType] = useState<EvidenceType>('document');
   const [content, setContent] = useState('');
   const [encryptOffChain, setEncryptOffChain] = useState(false);
-  const [status, setStatus] = useState<SubmitStatus>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [lastEvidence, setLastEvidence] = useState<MilestoneEvidence | null>(null);
-  const [isDuplicate, setIsDuplicate] = useState(false);
+  // Issue #1227: submission is a TanStack mutation, so the evidence list the
+  // verifier is looking at refreshes without a reload. It previously called the
+  // service directly and tracked the result in local state, leaving every other
+  // mounted view showing the pre-submission version.
+  const submitEvidence = useSubmitMilestoneEvidence();
+  const lastEvidence: MilestoneEvidence | null = submitEvidence.data?.evidence ?? null;
+  const isDuplicate = submitEvidence.data ? !submitEvidence.data.isNew : false;
+  const status: SubmitStatus = submitEvidence.isPending
+    ? 'loading'
+    : submitEvidence.isError
+    ? 'error'
+    : submitEvidence.isSuccess
+    ? 'success'
+    : 'idle';
+  const errorMessage =
+    submitEvidence.error instanceof Error
+      ? submitEvidence.error.message
+      : 'Submission failed. Please try again.';
   const submissionKeyRef = useRef<string>(generateSubmissionKey());
   const statusRegionId = `${formId}-status`;
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!content.trim()) return;
-
-    setStatus('loading');
-    setErrorMessage('');
 
     const payload: SubmitEvidencePayload = {
       milestoneId,
@@ -45,27 +56,21 @@ export function SubmitEvidenceForm({ milestoneId, awardId, recipientId, onSucces
       submissionKey: submissionKeyRef.current,
     };
 
-    try {
-      const result = await milestoneEvidenceService.submit(payload);
-      setLastEvidence(result.evidence);
-      setIsDuplicate(!result.isNew);
-      setStatus('success');
-      if (!result.isNew) {
-        submissionKeyRef.current = generateSubmissionKey();
-      }
-      onSuccess?.(result.evidence, result.isNew);
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Submission failed. Please try again.');
-      setStatus('error');
-    }
+    submitEvidence.mutate(payload, {
+      onSuccess: (result) => {
+        // A duplicate submission reuses its submission key, so re-arm it before
+        // the next attempt or the server would treat the retry as the same one.
+        if (!result.isNew) {
+          submissionKeyRef.current = generateSubmissionKey();
+        }
+        onSuccess?.(result.evidence, result.isNew);
+      },
+    });
   };
 
   const handleReset = () => {
     setContent('');
-    setStatus('idle');
-    setErrorMessage('');
-    setLastEvidence(null);
-    setIsDuplicate(false);
+    submitEvidence.reset();
     submissionKeyRef.current = generateSubmissionKey();
   };
 

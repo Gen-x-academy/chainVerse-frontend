@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { clearUserScopedCache } from '@/src/lib/clear-user-query-cache';
+import { queryClient } from '@/src/lib/query-client';
 
 interface AuthUser {
   id?: string;
@@ -8,6 +10,12 @@ interface AuthUser {
   lastName?: string;
   role?: 'admin' | 'instructor' | 'student';
   avatarUrl?: string;
+  /**
+   * Owning tenant. Scholarship query keys are scoped by tenant as well as user
+   * (issue #1227), so a user who is a member of more than one tenant must not
+   * reuse another tenant's cached applications or awards.
+   */
+  tenantId?: string;
 }
 
 interface AuthState {
@@ -42,7 +50,7 @@ function getStoredUser(): AuthUser | null {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       isAuthenticated: false,
       user: null,
       token: null,
@@ -50,6 +58,12 @@ export const useAuthStore = create<AuthState>()(
       login: (user, token) => {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         localStorage.setItem(ACCESS_TOKEN_KEY, token);
+        // Identity switch: purge before publishing the new identity so no
+        // subscriber can read a key that still belongs to the previous user.
+        // A first sign-in has nothing cached, so skip the teardown there.
+        if (get().isAuthenticated || get().user) {
+          void clearUserScopedCache(queryClient);
+        }
         set({ isAuthenticated: true, user, token });
       },
       logout: () => {
@@ -63,11 +77,16 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           walletPublicKey: null,
         });
+        // Issue #1227: drop identity-scoped query data so the next session
+        // cannot render the previous user's scholarship records. Sign-out
+        // stays synchronous; teardown runs in the background.
+        void clearUserScopedCache(queryClient);
       },
       clearAuth: () => {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         set({ isAuthenticated: false, user: null, token: null });
+        void clearUserScopedCache(queryClient);
       },
       setWalletPublicKey: (key) => set({ walletPublicKey: key }),
     }),

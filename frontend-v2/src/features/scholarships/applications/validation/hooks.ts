@@ -2,22 +2,16 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { applicationValidationService } from './service';
-import type {
-  ApplicationAnswersMap,
+import type {  ApplicationAnswersMap,
   SubmitAnswersPayload,
 } from './types';
+import { useScholarshipKeys } from '../../lib/useScholarshipKeys';
 
-export const applicationValidationQueryKeys = {
-  all: ['scholarship-application-validation'] as const,
-  schema: (roundId: string) =>
-    [...applicationValidationQueryKeys.all, 'schema', roundId] as const,
-  validationCheck: (roundId: string, answersHash: string) =>
-    [...applicationValidationQueryKeys.all, 'check', roundId, answersHash] as const,
-};
 
 export function useApplicationFormSchema(roundId: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: applicationValidationQueryKeys.schema(roundId),
+    queryKey: keys.validation.at('schema', roundId),
     queryFn: ({ signal }) => applicationValidationService.getFormSchema(roundId, signal),
     enabled: Boolean(roundId),
     staleTime: 5 * 60 * 1000,
@@ -25,6 +19,7 @@ export function useApplicationFormSchema(roundId: string) {
 }
 
 export function useValidateApplicationAnswers(roundId: string) {
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: (answers: ApplicationAnswersMap) =>
       applicationValidationService.validateAnswers(roundId, answers),
@@ -32,13 +27,14 @@ export function useValidateApplicationAnswers(roundId: string) {
 }
 
 export function useSubmitApplicationAnswers() {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: SubmitAnswersPayload) =>
       applicationValidationService.submitAnswers(payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: applicationValidationQueryKeys.schema(variables.roundId),
+        queryKey: keys.validation.at('schema', variables.roundId),
       });
     },
   });

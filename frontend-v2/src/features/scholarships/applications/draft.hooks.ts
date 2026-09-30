@@ -24,16 +24,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { applicationDraftService, makeDefaultApplicantProfile } from './draft.service';
 import { useDraftStore } from './draft.store';
 import type { ApplicationDraftRecord } from './draft.types';
+import { useScholarshipKeys } from '../lib/useScholarshipKeys';
 
 // ── Query keys ────────────────────────────────────────────────────────────
 
-export const draftKeys = {
-  all: ['application-drafts'] as const,
-  list: (studentId: string) =>
-    [...draftKeys.all, 'list', studentId] as const,
-  detail: (draftId: string) =>
-    [...draftKeys.all, 'detail', draftId] as const,
-};
 
 // ── Hooks ─────────────────────────────────────────────────────────────────
 
@@ -47,8 +41,9 @@ export const draftKeys = {
  * - `data`      — success state with draft list
  */
 export function useStudentDrafts(studentId: string, options?: { enabled?: boolean }) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: draftKeys.list(studentId),
+    queryKey: keys.drafts.list({ studentId }),
     queryFn: () =>
       applicationDraftService.listForStudent(studentId, { status: 'draft' }),
     enabled: Boolean(studentId) && (options?.enabled ?? true),
@@ -62,10 +57,11 @@ export function useStudentDrafts(studentId: string, options?: { enabled?: boolea
  * Automatically calls `draftStore.loadDraft` when data arrives.
  */
 export function useLoadDraft(draftId: string | null, options?: { enabled?: boolean }) {
+  const keys = useScholarshipKeys();
   const loadDraft = useDraftStore((s) => s.loadDraft);
 
   const query = useQuery({
-    queryKey: draftKeys.detail(draftId ?? ''),
+    queryKey: keys.drafts.detail(draftId ?? ''),
     queryFn: () => applicationDraftService.load(draftId!),
     enabled: Boolean(draftId) && (options?.enabled ?? true),
     staleTime: 60 * 1000,
@@ -88,6 +84,7 @@ export function useLoadDraft(draftId: string | null, options?: { enabled?: boole
  * - Invalidates the student's draft list.
  */
 export function useCreateDraft(studentId: string) {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   const setDraft = useDraftStore((s) => s.setDraft);
 
@@ -104,7 +101,7 @@ export function useCreateDraft(studentId: string) {
       }),
     onSuccess: (draft) => {
       setDraft(draft);
-      queryClient.invalidateQueries({ queryKey: draftKeys.list(studentId) });
+      queryClient.invalidateQueries({ queryKey: keys.drafts.list({ studentId }) });
     },
   });
 }
@@ -122,6 +119,7 @@ export function useCreateDraft(studentId: string) {
  *   Defaults to 2000 ms.
  */
 export function useAutosaveDraft(debounceMs = 2000) {
+  const keys = useScholarshipKeys();
   const draft = useDraftStore((s) => s.draft);
   const autosaveStatus = useDraftStore((s) => s.autosave.status);
   const saveDraft = useDraftStore((s) => s.saveDraft);
@@ -158,6 +156,7 @@ export function useAutosaveDraft(debounceMs = 2000) {
  * Invalidates the student's draft list on success.
  */
 export function useAbandonDraft(studentId: string) {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   const { draft, abandonDraft } = useDraftStore((s) => ({
     draft: s.draft,
@@ -170,7 +169,7 @@ export function useAbandonDraft(studentId: string) {
       await abandonDraft();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: draftKeys.list(studentId) });
+      queryClient.invalidateQueries({ queryKey: keys.drafts.list({ studentId }) });
     },
   });
 }
