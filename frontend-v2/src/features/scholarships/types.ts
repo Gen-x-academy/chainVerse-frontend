@@ -30,6 +30,8 @@ export type ScholarshipSubmissionResponse = {
   ok: true;
   application: ScholarshipApplicationRecord;
   receipt: ScholarshipSubmissionReceipt;
+};
+
 export type GeographicRegion = 'africa' | 'asia' | 'europe' | 'north-america' | 'south-america' | 'oceania';
 export type EnrollmentStatus = 'prospective' | 'current' | 'alumni';
 export type IncomeBand = 'low' | 'middle' | 'upper';

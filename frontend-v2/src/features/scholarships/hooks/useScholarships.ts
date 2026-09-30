@@ -3,8 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { scholarshipService } from '../services/scholarship.service';
 import { disbursementScheduleService } from '../milestones/service';
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { scholarshipService } from "../services/scholarship.service";
 import type {
   AcceptAwardPayload,
   CancelAwardPayload,
@@ -15,7 +13,6 @@ import type {
   TerminateAwardPayload,
 } from '../types/scholarship.types';
 import type { AmendSchedulePayload, CreateSchedulePayload } from '../milestones/types';
-} from "../types/scholarship.types";
 
 export const scholarshipKeys = {
   all: ["scholarships"] as const,
@@ -28,9 +25,6 @@ export const scholarshipKeys = {
   agreement: (awardId: string) => [...scholarshipKeys.all, 'agreement', awardId] as const,
   disbursements: () => [...scholarshipKeys.all, 'disbursements'] as const,
   schedule: (awardId: string) => [...scholarshipKeys.all, 'schedule', awardId] as const,
-    [...scholarshipKeys.all, "applications", params ?? {}] as const,
-  awards: () => [...scholarshipKeys.all, "awards"] as const,
-  disbursements: () => [...scholarshipKeys.all, "disbursements"] as const,
 };
 
 export function useScholarshipPrograms() {

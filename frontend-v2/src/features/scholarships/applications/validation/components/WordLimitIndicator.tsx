@@ -65,7 +65,7 @@ export function WordLimitIndicator({
           <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium ${badgeColor}`}>
             {isOverMax && <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />}
             {!isOverMax && !isBelowMin && currentWords > 0 && (
-              <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-600" aria-hidden="true" />}
+              <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-600" aria-hidden="true" />)}
             {isBelowMin && <Clock className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />}
             <span>
               {currentWords}
