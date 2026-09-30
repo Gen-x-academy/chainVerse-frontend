@@ -10,6 +10,13 @@ export * from './store/scholarshipStore';
 export * from './types';
 export * from './withdrawal';
 export * from './types/scholarship.types';
+// `types/index.ts` re-exports `../types`, which from inside `types/` resolves
+// back to `types/index.ts` itself. TS therefore reaches the declarations below
+// through two star-exports and reports TS2308 for each colliding name. An
+// explicit re-export takes precedence over star exports, so name the two that
+// collide. Nothing imports them from this barrel; they are re-exported from
+// their own modules.
+export type { ScholarshipProgram, ScholarshipRole } from './types/scholarship.types';
 export * from './utils/scholarshipRoles';
 export * from './hooks/useScholarships';
 export * from './components/ScholarshipPageShell';
