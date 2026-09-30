@@ -1,5 +1,5 @@
 import { generateSubmissionReceipt, sanitizeApplicationForReceipt } from '../lib/receipt';
-import { ScholarshipApiError, scholarshipFetch } from './scholarship-api';
+import { ScholarshipApiError, authFetch } from './scholarship-api';
 import type {
   ScholarshipApplicationInput,
   ScholarshipApplicationRecord,
@@ -25,6 +25,7 @@ import type {
 
 const BASE = '/scholarships';
 const APPLICATIONS_PATH = `${BASE}/applications`;
+
 
 function buildParams(params?: ScholarshipApplicationListParams): string {
   if (!params) return "";
@@ -68,23 +69,13 @@ async function submitApplication(
   const receipt = await generateSubmissionReceipt(application);
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-    if (!baseUrl) {
-      throw new Error('NEXT_PUBLIC_API_BASE_URL is not configured');
-    }
-
-    const response = await fetch(`${baseUrl}${APPLICATIONS_PATH}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...application, receipt }),
-    });
-
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(text || `Request failed with status ${response.status}`);
-    }
-
-    const payload = (await response.json()) as Partial<ScholarshipSubmissionResponse>;
+    // Routed through the same authenticated helper as every other write. The
+    // bare `fetch` used here previously sent no Authorization header, so a
+    // submission could not be attributed to the signed-in applicant.
+    const payload = await authFetch<Partial<ScholarshipSubmissionResponse>>(
+      APPLICATIONS_PATH,
+      { method: 'POST', body: { ...application, receipt } },
+    );
     return {
       ok: true,
       application: payload.application ?? application,
@@ -103,78 +94,78 @@ export const scholarshipService = {
   submitApplication,
 
   getPrograms: (signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipProgram[]>(`${BASE}/programs`, { signal }),
+    authFetch<ScholarshipProgram[]>(`${BASE}/programs`, { signal }),
 
   getRounds: (signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipRound[]>(`${BASE}/rounds`, { signal }),
+    authFetch<ScholarshipRound[]>(`${BASE}/rounds`, { signal }),
 
   listApplications: (
     params?: ScholarshipApplicationListParams,
     signal?: AbortSignal,
   ) =>
-    scholarshipFetch<ScholarshipApplication[]>(
+    authFetch<ScholarshipApplication[]>(
       `${APPLICATIONS_PATH}${buildParams(params)}`,
       { signal },
     ),
 
   getApplication: (id: string, signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipApplication>(
+    authFetch<ScholarshipApplication>(
       `${APPLICATIONS_PATH}/${encodeURIComponent(id)}`,
       { signal },
     ),
 
   createApplication: (payload: CreateScholarshipApplicationPayload) =>
-    scholarshipFetch<ScholarshipApplication>(APPLICATIONS_PATH, {
+    authFetch<ScholarshipApplication>(APPLICATIONS_PATH, {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 
   getAwards: (signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipAward[]>(`${BASE}/awards`, { signal }),
+    authFetch<ScholarshipAward[]>(`${BASE}/awards`, { signal }),
 
   getDisbursements: (signal?: AbortSignal) =>
-    scholarshipFetch<ScholarshipDisbursement[]>(`${BASE}/disbursements`, { signal }),
+    authFetch<ScholarshipDisbursement[]>(`${BASE}/disbursements`, { signal }),
 
   // Issue #1112 — Award records and acceptance deadlines
   createAward: (payload: CreateAwardPayload) =>
-    scholarshipFetch<AwardRecord>(`${BASE}/awards`, {
+    authFetch<AwardRecord>(`${BASE}/awards`, {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 
   getAward: (id: string, signal?: AbortSignal) =>
-    scholarshipFetch<AwardRecord>(`${BASE}/awards/${encodeURIComponent(id)}`, { signal }),
+    authFetch<AwardRecord>(`${BASE}/awards/${encodeURIComponent(id)}`, { signal }),
 
   // Issue #1113 — Signed award agreement acceptance
   getAgreement: (awardId: string, signal?: AbortSignal) =>
-    scholarshipFetch<AwardAgreement>(
+    authFetch<AwardAgreement>(
       `${BASE}/awards/${encodeURIComponent(awardId)}/agreement`,
       { signal }
     ),
 
   acceptAward: (payload: AcceptAwardPayload) =>
-    scholarshipFetch<AwardAgreement>(`${BASE}/awards/accept`, {
+    authFetch<AwardAgreement>(`${BASE}/awards/accept`, {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 
   declineAward: (payload: DeclineAwardPayload) =>
-    scholarshipFetch<ScholarshipAward>(`${BASE}/awards/decline`, {
+    authFetch<ScholarshipAward>(`${BASE}/awards/decline`, {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 
   // Issue #1114 — Award cancellation and termination
   cancelAward: (payload: CancelAwardPayload) =>
-    scholarshipFetch<AwardCancellation>(`${BASE}/awards/cancel`, {
+    authFetch<AwardCancellation>(`${BASE}/awards/cancel`, {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 
   terminateAward: (payload: TerminateAwardPayload) =>
-    scholarshipFetch<AwardCancellation>(`${BASE}/awards/terminate`, {
+    authFetch<AwardCancellation>(`${BASE}/awards/terminate`, {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     }),
 };
 

@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { scholarshipKeys } from '../hooks/useScholarships';
+import { useScholarshipKeys } from '../lib/useScholarshipKeys';
+import { applyScholarshipInvalidation } from '../lib/invalidation';
 import { validateAtomicSubmission } from './domain';
 import { atomicApplicationService } from './service';
 import type {
@@ -14,13 +15,6 @@ import type {
 import type { ConsentKind } from '../consent';
 import type { SupportingDocument } from '../documents';
 import type { EligibilityApplicant } from '../types';
-
-export const atomicApplicationKeys = {
-  all: ['atomic-applications'] as const,
-  receipt: (id: string) => [...atomicApplicationKeys.all, 'receipt', id] as const,
-  draft: (roundId: string, studentId: string) =>
-    [...atomicApplicationKeys.all, 'draft', roundId, studentId] as const,
-};
 
 function generateClientNonce(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -120,6 +114,7 @@ export function useApplicationDraft(
  */
 export function useSubmitApplicationAtomically() {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   const [submissionResult, setSubmissionResult] = useState<AtomicSubmissionResult | null>(null);
 
   const mutation = useMutation({
@@ -133,8 +128,8 @@ export function useSubmitApplicationAtomically() {
     onSuccess: (result) => {
       setSubmissionResult(result);
       if (result.ok) {
-        queryClient.invalidateQueries({ queryKey: scholarshipKeys.applications() });
-        queryClient.invalidateQueries({ queryKey: atomicApplicationKeys.all });
+        void applyScholarshipInvalidation(queryClient, keys, 'application.create');
+        queryClient.invalidateQueries({ queryKey: keys.submissions.all });
       }
     },
     onError: (err) => {
@@ -174,8 +169,9 @@ export function useSubmitApplicationAtomically() {
  * Hook to retrieve a submission receipt.
  */
 export function useSubmissionReceipt(receiptId?: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: atomicApplicationKeys.receipt(receiptId ?? ''),
+    queryKey: keys.submissions.at('receipt', receiptId ?? ''),
     queryFn: () => atomicApplicationService.getReceipt(receiptId ?? ''),
     enabled: Boolean(receiptId),
     staleTime: Infinity, // Receipts are immutable

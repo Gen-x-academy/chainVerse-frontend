@@ -116,6 +116,15 @@
       "owner": "Platform Engineering & Sponsor Compliance",
       "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
       "severity": "required"
+    },
+    {
+      "id": "query-keys",
+      "path": "docs/scholarships-query-keys.md",
+      "audience": "operators",
+      "title": "Scholarships query keys and cache invalidation",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
     }
   ]
 }
