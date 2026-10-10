@@ -29,11 +29,15 @@ export type ScholarshipRequestInit = Omit<RequestInit, 'body'> & { body?: unknow
  */
 export class ScholarshipApiError extends Error {
   readonly status: number;
+  readonly requestId?: string;
+  readonly code?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, requestId?: string, code?: string) {
     super(message);
     this.name = 'ScholarshipApiError';
     this.status = status;
+    this.requestId = requestId;
+    this.code = code;
   }
 }
 
@@ -125,9 +129,32 @@ export async function scholarshipFetch<T>(
 
     if (!response.ok) {
       const message = await response.text().catch(() => '');
+      const reqId =
+        response.headers.get('x-request-id') ||
+        response.headers.get('request-id') ||
+        undefined;
+      let parsedCode: string | undefined;
+      let parsedReqId: string | undefined = reqId;
+
+      if (message && (message.startsWith('{') || message.startsWith('['))) {
+        try {
+          const parsed = JSON.parse(message);
+          if (parsed && typeof parsed === 'object') {
+            parsedCode = parsed.code || parsed.errorCode || parsed.error;
+            if (!parsedReqId) {
+              parsedReqId = parsed.requestId || parsed.request_id || parsed.traceId;
+            }
+          }
+        } catch {
+          // ignore invalid json
+        }
+      }
+
       throw new ScholarshipApiError(
         message || `Request failed with status ${response.status}`,
         response.status,
+        parsedReqId,
+        parsedCode,
       );
     }
 
