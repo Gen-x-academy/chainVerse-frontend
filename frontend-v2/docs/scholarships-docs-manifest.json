@@ -125,6 +125,15 @@
       "owner": "Platform engineering",
       "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
       "severity": "required"
+    },
+    {
+      "id": "error-adapter",
+      "path": "docs/scholarships-error-adapter.md",
+      "audience": "operators",
+      "title": "Scholarships typed error adapter and code normalization",
+      "owner": "Platform engineering",
+      "sections": ["overview", "ownership", "privacy", "migration", "operational-impact", "troubleshooting"],
+      "severity": "required"
     }
   ]
 }
