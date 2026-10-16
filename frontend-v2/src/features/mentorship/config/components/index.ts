@@ -1,0 +1,1 @@
+export { MentorshipCapabilityConfigPanel } from './MentorshipCapabilityConfigPanel';

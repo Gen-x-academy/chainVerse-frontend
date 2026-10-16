@@ -2,6 +2,7 @@ export * from './budget';
 export * from './components/ScholarshipApplicationForm';
 export * from './components/ScholarshipReceipt';
 export * from './lib/receipt';
+export * from './lib/error-adapter';
 export * from './pages/ScholarshipsPage';
 export * from './programs';
 export * from './services/scholarship.service';
