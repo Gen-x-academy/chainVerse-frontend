@@ -5,9 +5,63 @@
  * Token retrieval is handled by the caller (e.g. `apiClient` auth layer)
  * via the `token` parameter of `scholarshipFetch`. This separation ensures
  * the scholarship service is agnostic to how the token is obtained.
+ *
+ * Issue #1227: `authFetch` is the wrapper the feature actually uses. It reads
+ * the token from the auth store and forwards it, because every call site was
+ * previously passing no token at all and shipping unauthenticated requests.
  */
 
+import { useAuthStore } from '@/src/store/authStore';
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+
+/**
+ * `RequestInit['body']` is typed as `BodyInit`, which excludes a plain object,
+ * but `scholarshipFetch` serialises the body itself. Widening it here keeps
+ * call sites free of casts and stops a pre-stringified payload from being
+ * double-encoded.
+ */
+export type ScholarshipRequestInit = Omit<RequestInit, 'body'> & { body?: unknown };
+
+/**
+ * A non-2xx scholarship response. Carries the status so callers can branch on
+ * 401/403/409 without re-parsing the message.
+ */
+export class ScholarshipApiError extends Error {
+  readonly status: number;
+  readonly requestId?: string;
+  readonly code?: string;
+
+  constructor(message: string, status: number, requestId?: string, code?: string) {
+    super(message);
+    this.name = 'ScholarshipApiError';
+    this.status = status;
+    this.requestId = requestId;
+    this.code = code;
+  }
+}
+
+/**
+ * Authenticated scholarship request.
+ *
+ * The token is read at call time, never captured at module load: the auth store
+ * is persisted, so during module evaluation it has not rehydrated yet and would
+ * hand back `null`.
+ *
+ * Pass `init.body` as a plain object. `scholarshipFetch` serialises it, so
+ * pre-stringifying here would double-encode the payload and the server would
+ * receive a JSON string instead of an object.
+ */
+export function authFetch<T>(
+  path: string,
+  init: ScholarshipRequestInit = {},
+): Promise<T> {
+  return scholarshipFetch<T>(
+    path,
+    init as RequestInit,
+    useAuthStore.getState().token ?? undefined,
+  );
+}
 
 /** Fetch helper with abort + auth for scholarship endpoints (issue #1079). */
 export async function scholarshipFetch<T>(
@@ -75,7 +129,33 @@ export async function scholarshipFetch<T>(
 
     if (!response.ok) {
       const message = await response.text().catch(() => '');
-      throw new Error(message || `Request failed with status ${response.status}`);
+      const reqId =
+        response.headers.get('x-request-id') ||
+        response.headers.get('request-id') ||
+        undefined;
+      let parsedCode: string | undefined;
+      let parsedReqId: string | undefined = reqId;
+
+      if (message && (message.startsWith('{') || message.startsWith('['))) {
+        try {
+          const parsed = JSON.parse(message);
+          if (parsed && typeof parsed === 'object') {
+            parsedCode = parsed.code || parsed.errorCode || parsed.error;
+            if (!parsedReqId) {
+              parsedReqId = parsed.requestId || parsed.request_id || parsed.traceId;
+            }
+          }
+        } catch {
+          // ignore invalid json
+        }
+      }
+
+      throw new ScholarshipApiError(
+        message || `Request failed with status ${response.status}`,
+        response.status,
+        parsedReqId,
+        parsedCode,
+      );
     }
 
     return response.json() as Promise<T>;

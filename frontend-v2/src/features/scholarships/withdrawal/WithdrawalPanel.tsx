@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRequestWithdrawal } from './hooks';
 import { useScholarshipWithdrawalStore } from './store';
 import { getWithdrawalPolicyImpact } from './service';
 
@@ -15,17 +16,27 @@ export function WithdrawalPanel({
   programId = 'chainverse-scholarship',
   canWithdraw = true,
 }: WithdrawalPanelProps) {
-  const { requestWithdrawal, withdrawal, loading, error } = useScholarshipWithdrawalStore();
+  // Issue #1227: the request is a TanStack mutation, so the application and
+  // award views refresh from the invalidation matrix without a reload.
+  const requestWithdrawal = useRequestWithdrawal();
+  const withdrawal = requestWithdrawal.data;
+  const loading = requestWithdrawal.isPending;
+  const error = requestWithdrawal.error instanceof Error ? requestWithdrawal.error.message : null;
   const [selectedReason, setSelectedReason] = useState<'personal' | 'academic' | 'financial' | 'schedule' | 'other'>('personal');
   const [detail, setDetail] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const setStoredWithdrawal = useScholarshipWithdrawalStore((state) => state.setWithdrawal);
+
+  useEffect(() => {
+    setStoredWithdrawal(requestWithdrawal.data ?? null);
+  }, [requestWithdrawal.data, setStoredWithdrawal]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!canWithdraw) return;
 
-    await requestWithdrawal({
+    requestWithdrawal.mutate({
       applicationId,
       programId,
       reasonCategory: selectedReason,

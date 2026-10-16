@@ -1,43 +1,25 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { scholarshipWithdrawalService } from './service';
-import type { WithdrawalRecord, WithdrawalRequest, WithdrawalState } from './types';
+import type { WithdrawalRecord } from './types';
 
-type WithdrawalStore = WithdrawalState & {
-  requestWithdrawal: (request: WithdrawalRequest) => Promise<WithdrawalRecord | null>;
+type WithdrawalStore = {
+  /** The most recently acknowledged withdrawal, for the confirmation view. */
+  withdrawal: WithdrawalRecord | null;
+  setWithdrawal: (record: WithdrawalRecord | null) => void;
   reset: () => void;
 };
 
-export const useScholarshipWithdrawalStore = create<WithdrawalStore>()(
-  persist(
-    (set) => ({
-      withdrawal: null,
-      loading: false,
-      error: null,
-      history: [],
-      requestWithdrawal: async (request) => {
-        set({ loading: true, error: null });
-
-        try {
-          const record = await scholarshipWithdrawalService.submitWithdrawal(request);
-          set({
-            withdrawal: record,
-            loading: false,
-            error: null,
-            history: [record, ...((typeof window !== 'undefined' && localStorage.getItem('scholarship-withdrawal-history')) ? JSON.parse(localStorage.getItem('scholarship-withdrawal-history') ?? '[]') : [])],
-          });
-          return record;
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Unable to submit withdrawal request.';
-          set({ loading: false, error: message });
-          return null;
-        }
-      },
-      reset: () => set({ withdrawal: null, loading: false, error: null, history: [] }),
-    }),
-    {
-      name: 'chainverse-withdrawal-store',
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-);
+/**
+ * @deprecated Use `useRequestWithdrawal` from `./hooks` (#1227).
+ *
+ * This store used to own the request itself and persisted both the record and a
+ * hand-rolled `scholarship-withdrawal-history` array in `localStorage` under
+ * keys that were not scoped to a user, so a second person signing in on the same
+ * browser could read the previous applicant's withdrawal. The request now lives
+ * in a TanStack mutation under the identity-scoped scholarship key, and this
+ * store is session-only — it is never persisted and never calls the network.
+ */
+export const useScholarshipWithdrawalStore = create<WithdrawalStore>()((set) => ({
+  withdrawal: null,
+  setWithdrawal: (record) => set({ withdrawal: record }),
+  reset: () => set({ withdrawal: null }),
+}));

@@ -1,4 +1,6 @@
 import { assertServerAssignedId, UnverifiedServerIdentifierError } from '../lib/server-identity';
+import { authFetch } from '../services/scholarship-api';
+import { useAuthStore } from '@/src/store/authStore';
 import type {
   AwardInventory,
   AwardInventoryDecision,
@@ -69,12 +71,11 @@ export async function getAwardInventory(programId: string): Promise<AwardInvento
   }
 
   try {
-    const response = await fetch(`${baseUrl}${INVENTORY_PATH}?programId=${encodeURIComponent(programId)}`);
-    if (!response.ok) {
-      return clampRemainingCapacity({ ...fallbackInventory, programId, programName: fallbackInventory.programName });
-    }
-
-    const data = (await response.json()) as Partial<AwardInventory>;
+    // Issue #1227: unauthenticated read; `authFetch` throws on non-2xx and the
+    // catch below supplies the fallback inventory.
+    const data = await authFetch<Partial<AwardInventory>>(
+      `${INVENTORY_PATH}?programId=${encodeURIComponent(programId)}`,
+    );
     const resolved = { ...fallbackInventory, ...data, programId };
     return clampRemainingCapacity(resolved);
   } catch {
@@ -105,17 +106,11 @@ export async function updateAwardInventory(input: AwardInventoryUpdateInput): Pr
   }
 
   try {
-    const response = await fetch(`${baseUrl}${INVENTORY_PATH}`, {
+    // Issue #1227: budget write previously sent no Authorization header.
+    const data = await authFetch<Partial<AwardInventory>>(INVENTORY_PATH, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(next),
+      body: next,
     });
-
-    if (!response.ok) {
-      return next;
-    }
-
-    const data = (await response.json()) as Partial<AwardInventory>;
     return clampRemainingCapacity({ ...next, ...data });
   } catch {
     return next;
@@ -173,9 +168,16 @@ export async function recordAwardDecision(
 
   let response: Response;
   try {
+    // Issue #1227: the award-decision write carried no Authorization header.
+    // The injectable `fetchImpl` seam is preserved so the existing tests can
+    // still drive 409/401/403 responses; only the header is added.
+    const token = useAuthStore.getState().token;
     response = await fetchImpl(`${baseUrl}${DECISIONS_PATH}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ ...proposal, clientToken }),
     });
   } catch (error) {

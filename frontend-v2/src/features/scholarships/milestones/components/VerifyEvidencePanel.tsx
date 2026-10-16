@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useId, useState } from 'react';
-import { milestoneEvidenceService, milestoneVerifierService } from '../service';
+import { useId, useState } from 'react';
+import { useMilestoneDecisions, useMilestoneEvidence, useRecordMilestoneDecision } from '../hooks';
 import type {
-  MilestoneEvidence,
   RecordDecisionPayload,
   VerificationAction,
   VerifierDecision,
@@ -35,65 +34,62 @@ const ACTION_REASON_MAP: Record<VerificationAction, VerifierDecisionReasonCode[]
 
 export function VerifyEvidencePanel({ evidenceId, verifierId, onDecision }: Props) {
   const formId = useId();
-  const [evidence, setEvidence] = useState<MilestoneEvidence | null>(null);
-  const [existingDecisions, setExistingDecisions] = useState<VerifierDecision[]>([]);
+  // Issue #1227: the evidence and its decision history are TanStack queries and
+  // the decision is a TanStack mutation, so recording a decision refreshes the
+  // schedule, disbursement and award views it advances. The previous version
+  // hand-rolled a `useEffect` fetch plus local `useState`, so nothing outside
+  // this component ever learned that a milestone had been verified.
+  const evidenceQuery = useMilestoneEvidence(evidenceId);
+  const decisionsQuery = useMilestoneDecisions(evidenceId);
+  // The evidence owns the award, and the award owns the schedule a verification
+  // advances. Passing it in lets the mutation target that schedule instead of
+  // widening to every award's schedule on the page.
+  const awardId = evidenceQuery.data?.awardId;
+  const decide = useRecordMilestoneDecision({ awardId });
   const [action, setAction] = useState<VerificationAction>('approve');
   const [reasonCode, setReasonCode] = useState<VerifierDecisionReasonCode>('EVIDENCE_COMPLETE');
   const [reasonNote, setReasonNote] = useState('');
-  const [status, setStatus] = useState<PanelStatus>('loading');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [lastDecision, setLastDecision] = useState<VerifierDecision | null>(null);
+
+  const evidence = evidenceQuery.data ?? null;
+  const existingDecisions = decisionsQuery.data ?? [];
+  const lastDecision: VerifierDecision | null = decide.data ?? null;
+
+  // A verifier may not review their own submission. This is a client-side
+  // guardrail for the UI; the server enforces the same rule independently.
+  const hasConflict = Boolean(evidence && evidence.recipientId === verifierId);
+  const loadFailed = evidenceQuery.isError || decisionsQuery.isError;
+
+  const status: PanelStatus = decide.isPending
+    ? 'submitting'
+    : decide.isSuccess
+    ? 'decided'
+    : hasConflict
+    ? 'conflict'
+    : loadFailed
+    ? 'error'
+    : evidenceQuery.isPending || decisionsQuery.isPending
+    ? 'loading'
+    : evidence
+    ? 'ready'
+    : 'empty';
+
+  const errorMessage = decide.isError
+    ? decide.error instanceof Error
+      ? decide.error.message
+      : 'Decision submission failed. Please try again.'
+    : loadFailed
+    ? 'Failed to load evidence. Please refresh and try again.'
+    : '';
+
   const statusRegionId = `${formId}-status`;
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      try {
-        const [evidenceData, decisions] = await Promise.all([
-          milestoneEvidenceService.getById(evidenceId),
-          milestoneVerifierService.getDecisions(evidenceId),
-        ]);
-
-        if (!isMounted) return;
-
-        const conflict = evidenceData.recipientId === verifierId;
-        if (conflict) {
-          setStatus('conflict');
-          return;
-        }
-
-        if (!evidenceData) {
-          setStatus('empty');
-          return;
-        }
-
-        setEvidence(evidenceData);
-        setExistingDecisions(decisions);
-        setStatus('ready');
-      } catch {
-        if (!isMounted) return;
-        setErrorMessage('Failed to load evidence. Please refresh and try again.');
-        setStatus('error');
-      }
-    };
-
-    void load();
-    return () => {
-      isMounted = false;
-    };
-  }, [evidenceId, verifierId]);
 
   const handleActionChange = (nextAction: VerificationAction) => {
     setAction(nextAction);
     setReasonCode(ACTION_REASON_MAP[nextAction][0]);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setStatus('submitting');
-    setErrorMessage('');
 
     const payload: RecordDecisionPayload = {
       evidenceId,
@@ -102,15 +98,7 @@ export function VerifyEvidencePanel({ evidenceId, verifierId, onDecision }: Prop
       reasonNote: reasonNote.trim() || undefined,
     };
 
-    try {
-      const decision = await milestoneVerifierService.recordDecision(payload);
-      setLastDecision(decision);
-      setStatus('decided');
-      onDecision?.(decision);
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Decision submission failed. Please try again.');
-      setStatus('ready');
-    }
+    decide.mutate(payload, { onSuccess: (decision) => onDecision?.(decision) });
   };
 
   return (

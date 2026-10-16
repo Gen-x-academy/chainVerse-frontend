@@ -1,18 +1,17 @@
-import { ScholarshipsPage } from '@/src/features/scholarships';
-
-export default function ScholarshipsRoute() {
 'use client';
 
 import { useAuthStore } from '@/src/store/authStore';
-import { ScholarshipHub } from '@/src/features/scholarships';
-import { ScholarshipPageShell } from '@/src/features/scholarships';
+import {
+  canAccessScholarshipArea,
+  ScholarshipHub,
+  ScholarshipPageShell,
+} from '@/src/features/scholarships';
 
 const NAV_ITEMS = [{ href: '/scholarships', label: 'Overview' }];
 
-export default function ScholarshipsPage() {
+export default function ScholarshipsHubPage() {
   const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const allowed = isAuthenticated && Boolean(user);
+  const allowed = canAccessScholarshipArea(user?.role, 'hub');
 
   return (
     <ScholarshipPageShell
@@ -25,15 +24,4 @@ export default function ScholarshipsPage() {
       <ScholarshipHub />
     </ScholarshipPageShell>
   );
-}
-import type { Metadata } from 'next';
-import { ScholarshipsPage } from '@/src/features/scholarships/pages/ScholarshipsPage';
-
-export const metadata: Metadata = {
-  title: 'Scholarships Eligibility — ChainVerse',
-  description: 'Configure and evaluate scholarship eligibility rules with deterministic checks and privacy-aware evidence collection.',
-};
-
-export default function Page() {
-  return <ScholarshipsPage />;
 }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
-import { scheduledPaymentService } from '../service';
-import type { PaymentBatchRequest, PaymentBatchResult } from '../types';
+import { useExecutePaymentBatch } from '../hooks';
+import type { PaymentBatchResult } from '../types';
 import { BatchResultSummary } from './BatchResultSummary';
 
 type ExecutionStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -24,37 +24,38 @@ export function PaymentExecutionPanel({ programId, maxItems = 50, onBatchComplet
 
   const [batchSize, setBatchSize] = useState(String(maxItems));
   const [dryRun, setDryRun] = useState(false);
-  const [execStatus, setExecStatus] = useState<ExecutionStatus>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [batchResult, setBatchResult] = useState<PaymentBatchResult | null>(null);
+  // Issue #1227: execution is a TanStack mutation, so the payment queue,
+  // disbursements, schedules and transaction log refetch on success instead of
+  // waiting for a reload. `reset()` clears the mutation state and also re-arms
+  // the batch key for the next run.
+  const executeBatch = useExecutePaymentBatch();
+
+  const execStatus: ExecutionStatus = executeBatch.isPending
+    ? 'loading'
+    : executeBatch.isError
+    ? 'error'
+    : executeBatch.isSuccess
+    ? 'success'
+    : 'idle';
+  const errorMessage =
+    executeBatch.error instanceof Error ? executeBatch.error.message : 'Batch execution failed.';
+  const batchResult: PaymentBatchResult | null = executeBatch.data ?? null;
 
   const handleReset = () => {
-    setExecStatus('idle');
-    setErrorMessage('');
-    setBatchResult(null);
+    executeBatch.reset();
     batchKeyRef.current = generateBatchKey();
   };
 
-  const handleExecute = async () => {
-    setExecStatus('loading');
-    setErrorMessage('');
-
-    const payload: PaymentBatchRequest = {
-      batchKey: batchKeyRef.current,
-      programId,
-      maxItems: Number(batchSize),
-      dryRun,
-    };
-
-    try {
-      const result = await scheduledPaymentService.executeBatch(payload);
-      setBatchResult(result);
-      setExecStatus('success');
-      onBatchComplete?.(result);
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Batch execution failed.');
-      setExecStatus('error');
-    }
+  const handleExecute = () => {
+    executeBatch.mutate(
+      {
+        batchKey: batchKeyRef.current,
+        programId,
+        maxItems: Number(batchSize),
+        dryRun,
+      },
+      { onSuccess: (result) => onBatchComplete?.(result) },
+    );
   };
 
   if (execStatus === 'success' && batchResult) {

@@ -1,3 +1,5 @@
+import { authFetch } from '../services/scholarship-api';
+import { useAuthStore } from '@/src/store/authStore';
 import type { AcceptedProgramTerms, ProgramTermRevision } from './types';
 
 const fallbackTerms: ProgramTermRevision[] = [
@@ -82,11 +84,12 @@ export async function getPublishedProgramTerms(programId: string): Promise<Progr
   }
 
   try {
-    const response = await fetch(`${baseUrl}${PROGRAM_TERMS_PATH}?programId=${encodeURIComponent(programId)}`);
-    if (!response.ok) {
-      return fallbackTerms.filter((term) => term.programId === programId || programId === 'all');
-    }
-    const data = (await response.json()) as { revisions?: ProgramTermRevision[] };
+    // Issue #1227: this read went out unauthenticated, so a tenant-scoped
+    // caller received the public term set instead of its own revision.
+    // `authFetch` throws on a non-2xx, which lands in the fallback below.
+    const data = await authFetch<{ revisions?: ProgramTermRevision[] }>(
+      `${PROGRAM_TERMS_PATH}?programId=${encodeURIComponent(programId)}`,
+    );
     return data.revisions ?? fallbackTerms.filter((term) => term.programId === programId || programId === 'all');
   } catch {
     return fallbackTerms.filter((term) => term.programId === programId || programId === 'all');
@@ -122,17 +125,13 @@ export async function acceptProgramTerms(input: {
   }
 
   try {
-    const response = await fetch(`${baseUrl}${PROGRAM_TERMS_PATH}/accept`, {
+    // Issue #1227: accepting terms is a write against the applicant's record and
+    // previously carried no Authorization header, so it could not be attributed
+    // to a user. Body is passed as an object; `authFetch` serialises it.
+    const data = await authFetch<Partial<AcceptedProgramTerms>>(`${PROGRAM_TERMS_PATH}/accept`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(acceptedTerms),
+      body: acceptedTerms,
     });
-
-    if (!response.ok) {
-      return acceptedTerms;
-    }
-
-    const data = (await response.json()) as Partial<AcceptedProgramTerms>;
     return {
       ...acceptedTerms,
       ...data,

@@ -1,3 +1,4 @@
+import { authFetch } from '../services/scholarship-api';
 import type { WithdrawalRecord, WithdrawalRequest } from './types';
 
 const WITHDRAWAL_PATH = '/scholarship-withdrawals';
@@ -42,17 +43,13 @@ export async function submitWithdrawal(request: WithdrawalRequest): Promise<With
   }
 
   try {
-    const response = await fetch(`${baseUrl}${WITHDRAWAL_PATH}`, {
+    // Issue #1227: this write previously sent no Authorization header, so a
+    // withdrawal could not be attributed to the applicant. `authFetch` throws
+    // on a non-2xx and the catch below returns the locally built record.
+    const data = await authFetch<Partial<WithdrawalRecord>>(WITHDRAWAL_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(record),
+      body: record,
     });
-
-    if (!response.ok) {
-      return record;
-    }
-
-    const data = (await response.json()) as Partial<WithdrawalRecord>;
     return { ...record, ...data };
   } catch {
     return record;

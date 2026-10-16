@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { sponsorOrgService, sponsorTeamService } from './service';
+import { useScholarshipKeys } from '../lib/useScholarshipKeys';
 import type {
   AcceptInvitationPayload,
   CreateSponsorOrgPayload,
@@ -17,21 +18,39 @@ import type {
   UploadComplianceDocPayload,
 } from './types';
 
-export const sponsorTeamQueryKeys = {
-  all: ['sponsor-team'] as const,
-  members: (sponsorId: string, criteria?: MemberFilterCriteria) =>
-    [...sponsorTeamQueryKeys.all, 'members', sponsorId, criteria ?? {}] as const,
-  invitations: (sponsorId: string, criteria?: InvitationFilterCriteria) =>
-    [...sponsorTeamQueryKeys.all, 'invitations', sponsorId, criteria ?? {}] as const,
-  audit: (sponsorId: string) =>
-    [...sponsorTeamQueryKeys.all, 'audit', sponsorId] as const,
-  validateToken: (token: string) =>
-    [...sponsorTeamQueryKeys.all, 'validate-token', token] as const,
-};
+/**
+ * A short, stable, non-reversible digest of an invitation token, used to
+ * partition the cache without exposing the credential.
+ *
+ * This is a cache-partition key, not a security primitive: it only has to make
+ * two different tokens land in two different entries. The previous code put the
+ * raw token in the key, which parked a live bearer credential in the query
+ * cache and in React Query DevTools — readable by anything with devtools open,
+ * and sufficient on its own to accept the invitation as the invitee.
+ */
+function invitationTokenDigest(token: string): string {
+  // Two independent 32-bit hashes (FNV-1a and djb2) concatenated to 64 bits.
+  // Invitation tokens are high-entropy random strings, so this is not reversible
+  // by brute force; the digest is a cache key and must never be treated as a
+  // secret or logged.
+  let fnv = 0x811c9dc5;
+  let djb = 5381;
+  for (let i = 0; i < token.length; i += 1) {
+    const code = token.charCodeAt(i);
+    fnv = Math.imul(fnv ^ code, 0x01000193) >>> 0;
+    djb = (Math.imul(djb, 33) ^ code) >>> 0;
+  }
+  return `${fnv.toString(36)}-${djb.toString(36)}`;
+}
+
+/**
+ * Sponsor-team keys hang off the identity-scoped scholarship root (#1227).
+ */
 
 export function useSponsorTeamMembers(sponsorId: string, criteria?: MemberFilterCriteria) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorTeamQueryKeys.members(sponsorId, criteria),
+    queryKey: keys.sponsorTeam.group('members').list({ ...criteria, sponsorId }),
     queryFn: ({ signal }) => sponsorTeamService.listMembers(sponsorId, criteria, signal),
     enabled: Boolean(sponsorId),
     staleTime: 30 * 1000,
@@ -39,8 +58,9 @@ export function useSponsorTeamMembers(sponsorId: string, criteria?: MemberFilter
 }
 
 export function useSponsorInvitations(sponsorId: string, criteria?: InvitationFilterCriteria) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorTeamQueryKeys.invitations(sponsorId, criteria),
+    queryKey: keys.sponsorTeam.group('invitations').list({ ...criteria, sponsorId }),
     queryFn: ({ signal }) => sponsorTeamService.listInvitations(sponsorId, criteria, signal),
     enabled: Boolean(sponsorId),
     staleTime: 30 * 1000,
@@ -48,8 +68,9 @@ export function useSponsorInvitations(sponsorId: string, criteria?: InvitationFi
 }
 
 export function useSponsorAuditEvents(sponsorId: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorTeamQueryKeys.audit(sponsorId),
+    queryKey: keys.sponsorTeam.group('audit').detail(sponsorId),
     queryFn: ({ signal }) => sponsorTeamService.listAuditEvents(sponsorId, signal),
     enabled: Boolean(sponsorId),
     staleTime: 60 * 1000,
@@ -57,81 +78,94 @@ export function useSponsorAuditEvents(sponsorId: string) {
 }
 
 export function useValidateInvitationToken(token: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorTeamQueryKeys.validateToken(token),
+    // Partitioned by digest so a changed token always fetches its own verdict,
+    // while the credential itself stays out of the cache.
+    queryKey: keys.sponsorTeam.at('validate-invitation', invitationTokenDigest(token)),
     queryFn: () => sponsorTeamService.validateInvitationToken(token),
     enabled: Boolean(token),
     retry: false,
+    // The verdict is single-use: a revoked invitation must stop looking valid.
+    staleTime: 0,
+    refetchOnMount: 'always',
+    gcTime: 0,
   });
 }
 
 export function useInviteSponsorMember(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: (payload: InviteMemberPayload) =>
       sponsorTeamService.inviteMember(sponsorId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.invitations(sponsorId) });
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.audit(sponsorId) });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('invitations').lists() });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('audit').detail(sponsorId) });
     },
   });
 }
 
 export function useUpdateSponsorMemberRole(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({ memberId, payload }: { memberId: string; payload: UpdateMemberRolePayload }) =>
       sponsorTeamService.updateMemberRole(sponsorId, memberId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.members(sponsorId) });
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.audit(sponsorId) });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('members').lists() });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('audit').detail(sponsorId) });
     },
   });
 }
 
 export function useRemoveSponsorMember(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({ memberId, payload }: { memberId: string; payload?: RemoveMemberPayload }) =>
       sponsorTeamService.removeMember(sponsorId, memberId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.members(sponsorId) });
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.audit(sponsorId) });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('members').lists() });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('audit').detail(sponsorId) });
     },
   });
 }
 
 export function useResendSponsorInvitation(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: (invitationId: string) =>
       sponsorTeamService.resendInvitation(sponsorId, invitationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.invitations(sponsorId) });
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.audit(sponsorId) });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('invitations').lists() });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('audit').detail(sponsorId) });
     },
   });
 }
 
 export function useRevokeSponsorInvitation(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: (invitationId: string) =>
       sponsorTeamService.revokeInvitation(sponsorId, invitationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.invitations(sponsorId) });
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.audit(sponsorId) });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('invitations').lists() });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.group('audit').detail(sponsorId) });
     },
   });
 }
 
 export function useAcceptSponsorInvitation() {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: (payload: AcceptInvitationPayload) =>
       sponsorTeamService.acceptInvitation(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorTeamQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorTeam.all });
     },
   });
 }
@@ -140,21 +174,12 @@ export function useAcceptSponsorInvitation() {
 /* SPONSOR ORGANIZATIONS & VERIFIED PROFILES HOOKS                            */
 /* ========================================================================== */
 
-export const sponsorOrgQueryKeys = {
-  all: ['sponsor-orgs'] as const,
-  list: (criteria?: SponsorOrgFilterCriteria) =>
-    [...sponsorOrgQueryKeys.all, 'list', criteria ?? {}] as const,
-  detail: (idOrSlug: string, viewer?: { tenantId?: string; role?: string; userId?: string }) =>
-    [...sponsorOrgQueryKeys.all, 'detail', idOrSlug, viewer ?? {}] as const,
-  public: (idOrSlug: string) =>
-    [...sponsorOrgQueryKeys.all, 'public', idOrSlug] as const,
-  audit: (sponsorId: string) =>
-    [...sponsorOrgQueryKeys.all, 'audit', sponsorId] as const,
-};
+
 
 export function useSponsorOrganizations(criteria?: SponsorOrgFilterCriteria) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorOrgQueryKeys.list(criteria),
+    queryKey: keys.sponsorOrgs.list(criteria),
     queryFn: () => sponsorOrgService.listOrganizations(criteria),
     staleTime: 60 * 1000,
   });
@@ -164,8 +189,9 @@ export function useSponsorOrganization(
   sponsorIdOrSlug: string,
   viewer?: { tenantId?: string; role?: string; userId?: string }
 ) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorOrgQueryKeys.detail(sponsorIdOrSlug, viewer),
+    queryKey: keys.sponsorOrgs.at('detail', sponsorIdOrSlug, viewer ?? {}),
     queryFn: () => sponsorOrgService.getOrganization(sponsorIdOrSlug, viewer),
     enabled: Boolean(sponsorIdOrSlug),
     staleTime: 30 * 1000,
@@ -173,8 +199,9 @@ export function useSponsorOrganization(
 }
 
 export function usePublicSponsorProfile(sponsorIdOrSlug: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorOrgQueryKeys.public(sponsorIdOrSlug),
+    queryKey: keys.sponsorOrgs.at('public', sponsorIdOrSlug),
     queryFn: () => sponsorOrgService.getPublicProfile(sponsorIdOrSlug),
     enabled: Boolean(sponsorIdOrSlug),
     staleTime: 60 * 1000,
@@ -185,8 +212,9 @@ export function useSponsorVerificationAudit(
   sponsorId: string,
   viewer?: { tenantId?: string; role?: string }
 ) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: sponsorOrgQueryKeys.audit(sponsorId),
+    queryKey: keys.sponsorOrgs.at('audit', sponsorId),
     queryFn: () => sponsorOrgService.listVerificationAuditEvents(sponsorId, viewer),
     enabled: Boolean(sponsorId),
     staleTime: 30 * 1000,
@@ -195,6 +223,7 @@ export function useSponsorVerificationAudit(
 
 export function useCreateSponsorOrganization() {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({
       payload,
@@ -204,13 +233,14 @@ export function useCreateSponsorOrganization() {
       actor: { userId: string; userEmail: string; tenantId: string; role?: string };
     }) => sponsorOrgService.createOrganization(payload, actor),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorOrgQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorOrgs.all });
     },
   });
 }
 
 export function useUpdateSponsorProfile(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({
       payload,
@@ -220,13 +250,14 @@ export function useUpdateSponsorProfile(sponsorId: string) {
       actor: { userId: string; tenantId: string; role?: string };
     }) => sponsorOrgService.updateProfile(sponsorId, payload, actor),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorOrgQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorOrgs.all });
     },
   });
 }
 
 export function useRequestSponsorVerification(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({
       payload,
@@ -236,13 +267,14 @@ export function useRequestSponsorVerification(sponsorId: string) {
       actor: { userId: string; userEmail: string; tenantId: string; role?: string };
     }) => sponsorOrgService.requestVerification(sponsorId, payload, actor),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorOrgQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorOrgs.all });
     },
   });
 }
 
 export function useReviewSponsorVerification(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({
       payload,
@@ -252,13 +284,14 @@ export function useReviewSponsorVerification(sponsorId: string) {
       auditor: { userId: string; userEmail: string; role: string };
     }) => sponsorOrgService.reviewVerification(sponsorId, payload, auditor),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorOrgQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorOrgs.all });
     },
   });
 }
 
 export function useUploadComplianceDocument(sponsorId: string) {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
   return useMutation({
     mutationFn: ({
       payload,
@@ -268,7 +301,7 @@ export function useUploadComplianceDocument(sponsorId: string) {
       actor: { userId: string; userEmail: string; tenantId: string; role?: string };
     }) => sponsorOrgService.uploadComplianceDocument(sponsorId, payload, actor),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sponsorOrgQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: keys.sponsorOrgs.all });
     },
   });
 }

@@ -2,21 +2,16 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { configurableFormService } from './service';
-import type {
-  CreateDraftSchemaPayload,
+import type {  CreateDraftSchemaPayload,
   ForkSchemaPayload,
   UpdateDraftSchemaPayload,
 } from './types';
-
-export const formSchemaQueryKeys = {
-  all: ['configurable-form-schemas'] as const,
-  detail: (id: string) => [...formSchemaQueryKeys.all, 'detail', id] as const,
-  round: (roundId: string) => [...formSchemaQueryKeys.all, 'round', roundId] as const,
-};
+import { useScholarshipKeys } from '../../lib/useScholarshipKeys';
 
 export function useFormSchema(id: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: formSchemaQueryKeys.detail(id),
+    queryKey: keys.formSchemas.detail(id),
     queryFn: ({ signal }) => configurableFormService.getSchema(id, signal),
     enabled: Boolean(id),
     staleTime: 60 * 1000,
@@ -24,8 +19,9 @@ export function useFormSchema(id: string) {
 }
 
 export function useRoundFormSchemas(roundId: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: formSchemaQueryKeys.round(roundId),
+    queryKey: keys.formSchemas.at('round', roundId),
     queryFn: ({ signal }) => configurableFormService.listRoundSchemas(roundId, signal),
     enabled: Boolean(roundId),
     staleTime: 30 * 1000,
@@ -33,35 +29,38 @@ export function useRoundFormSchemas(roundId: string) {
 }
 
 export function usePublishFormSchema() {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, actor }: { id: string; actor: string }) =>
       configurableFormService.publishSchema(id, actor),
     onSuccess: (published) => {
-      queryClient.invalidateQueries({ queryKey: formSchemaQueryKeys.detail(published.id) });
-      queryClient.invalidateQueries({ queryKey: formSchemaQueryKeys.round(published.roundId) });
+      queryClient.invalidateQueries({ queryKey: keys.formSchemas.detail(published.id) });
+      queryClient.invalidateQueries({ queryKey: keys.formSchemas.at('round', published.roundId) });
     },
   });
 }
 
 export function useForkFormSchema() {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: ForkSchemaPayload }) =>
       configurableFormService.forkSchema(id, payload),
     onSuccess: (forked) => {
-      queryClient.invalidateQueries({ queryKey: formSchemaQueryKeys.round(forked.roundId) });
+      queryClient.invalidateQueries({ queryKey: keys.formSchemas.at('round', forked.roundId) });
     },
   });
 }
 
 export function useUpdateDraftSchema() {
+  const keys = useScholarshipKeys();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateDraftSchemaPayload }) =>
       configurableFormService.updateDraftSchema(id, payload),
     onSuccess: (updated) => {
-      queryClient.invalidateQueries({ queryKey: formSchemaQueryKeys.detail(updated.id) });
+      queryClient.invalidateQueries({ queryKey: keys.formSchemas.detail(updated.id) });
     },
   });
 }

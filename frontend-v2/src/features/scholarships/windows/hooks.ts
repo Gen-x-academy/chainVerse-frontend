@@ -2,6 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { programWindowService } from './service';
+import { useScholarshipKeys } from '../lib/useScholarshipKeys';
+import { applyScholarshipInvalidation } from '../lib/invalidation';
 import type {
   ApplicationWindow,
   CreateWindowPayload,
@@ -9,22 +11,20 @@ import type {
   WindowQueryParams,
 } from './types';
 
-export const windowQueryKeys = {
-  all: ['application-windows'] as const,
-  list: (query?: WindowQueryParams) => [...windowQueryKeys.all, 'list', query ?? {}] as const,
-  detail: (id: string) => [...windowQueryKeys.all, 'detail', id] as const,
-  assessment: (id: string, proposedUtc: string) =>
-    [...windowQueryKeys.all, 'assessment', id, proposedUtc] as const,
-  timing: (id: string) => [...windowQueryKeys.all, 'timing', id] as const,
-  audits: (id: string) => [...windowQueryKeys.all, 'audits', id] as const,
-};
+/**
+ * Window keys live under the identity-scoped scholarship root (#1227) so a
+ * deadline change can invalidate the window, round and application views
+ * together. The old `['application-windows']` root was reachable from no other
+ * namespace, so nothing could fan out to it.
+ */
 
 /**
  * Hook to list program application windows.
  */
 export function useProgramWindows(query?: WindowQueryParams) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: windowQueryKeys.list(query),
+    queryKey: keys.windows.list(query),
     queryFn: ({ signal }) => programWindowService.listWindows(query, signal),
     staleTime: 30 * 1000,
   });
@@ -34,8 +34,9 @@ export function useProgramWindows(query?: WindowQueryParams) {
  * Hook to retrieve a single window by ID.
  */
 export function useProgramWindow(id: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: windowQueryKeys.detail(id),
+    queryKey: keys.windows.detail(id),
     queryFn: ({ signal }) => programWindowService.getWindow(id, signal),
     enabled: Boolean(id),
     staleTime: 60 * 1000,
@@ -46,8 +47,9 @@ export function useProgramWindow(id: string) {
  * Hook to evaluate proposed deadline change impact on submitted applications.
  */
 export function useDeadlineChangeAssessment(windowId: string, proposedCloseUtc?: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: windowQueryKeys.assessment(windowId, proposedCloseUtc ?? ''),
+    queryKey: keys.windows.at('assessment', windowId, proposedCloseUtc ?? ''),
     queryFn: () => programWindowService.evaluateDeadlineChange(windowId, proposedCloseUtc!),
     enabled: Boolean(windowId) && Boolean(proposedCloseUtc),
     staleTime: 10 * 1000,
@@ -58,8 +60,9 @@ export function useDeadlineChangeAssessment(windowId: string, proposedCloseUtc?:
  * Hook to evaluate submission timing against window boundaries.
  */
 export function useSubmissionTiming(windowId: string, waiverToken?: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: windowQueryKeys.timing(windowId),
+    queryKey: keys.windows.at('timing', windowId),
     queryFn: () => programWindowService.evaluateSubmissionTiming(windowId, new Date(), waiverToken),
     enabled: Boolean(windowId),
     staleTime: 10 * 1000,
@@ -71,12 +74,11 @@ export function useSubmissionTiming(windowId: string, waiverToken?: string) {
  */
 export function useCreateProgramWindow() {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
 
   return useMutation({
     mutationFn: (payload: CreateWindowPayload) => programWindowService.createWindow(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: windowQueryKeys.all });
-    },
+    onSuccess: () => applyScholarshipInvalidation(queryClient, keys, 'window.create'),
   });
 }
 
@@ -85,14 +87,15 @@ export function useCreateProgramWindow() {
  */
 export function useUpdateProgramWindow() {
   const queryClient = useQueryClient();
+  const keys = useScholarshipKeys();
 
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: UpdateWindowPayload }) =>
       programWindowService.updateWindow(id, updates),
-    onSuccess: (data: ApplicationWindow) => {
-      queryClient.invalidateQueries({ queryKey: windowQueryKeys.all });
-      queryClient.invalidateQueries({ queryKey: windowQueryKeys.detail(data.id) });
-    },
+    onSuccess: (data: ApplicationWindow) =>
+      applyScholarshipInvalidation(queryClient, keys, 'window.update', {
+        windowId: data.id,
+      }),
   });
 }
 
@@ -100,8 +103,9 @@ export function useUpdateProgramWindow() {
  * Hook to fetch audit log for deadline modifications.
  */
 export function useDeadlineAuditHistory(windowId: string) {
+  const keys = useScholarshipKeys();
   return useQuery({
-    queryKey: windowQueryKeys.audits(windowId),
+    queryKey: keys.windows.at('audits', windowId),
     queryFn: () => programWindowService.getAuditHistory(windowId),
     enabled: Boolean(windowId),
     staleTime: 15 * 1000,

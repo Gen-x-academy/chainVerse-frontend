@@ -7,6 +7,12 @@ Status: Working document for the scholarships feature (`closes #1078` route).
 A role-scoped frontend for scholarship, sponsorship, and bursary journeys.
 Actors: **student**, **sponsor**, **reviewer**, **finance**, **administrator**.
 
+Cross-cutting foundation docs (apply to every module below):
+
+- [../scholarships-query-keys.md](../scholarships-query-keys.md) — the single
+  identity-scoped query-key factory, the mutation invalidation matrix, and the
+  cache teardown rules every scholarship read and write must follow.
+
 Routes under `/scholarships`:
 
 | Route | Access | Purpose |
