@@ -14,16 +14,26 @@ work can be located.
 | [MENTOR-002 capability config](./MENTOR-002-capability-config.md) | MENTOR-002 | #1249 | Feature flags, limits, currencies, durations, evidence rules |
 | [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md) | MENTOR-003 | #1250 | Least-privilege role and permission matrix |
 | [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md) | MENTOR-120 | #1367 | Rollout, flags, migrations, rollback, privacy, GA gates |
+| [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251 | Guarded, auditable engagement state machine |
+| [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
+| [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
+| [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
 
 ## Module layout
 
 ```
 src/features/mentorship/
-  glossary.ts        # MENTOR-001 — vocabulary and lifecycles
-  rbac.ts            # MENTOR-003 — permission matrix and role-aware nav
-  config/            # MENTOR-002 — capability configuration
+  glossary.ts            # MENTOR-001 — vocabulary and lifecycles
+  public-identifiers.ts  # MENTOR-005 — stable public id generation
+  contracts.ts           # MENTOR-006 — versioned envelopes and primitives
+  rbac.ts                # MENTOR-003 — permission matrix and role-aware nav
+  config/                # MENTOR-002 — capability configuration
     types.ts  service.ts  index.ts
     components/MentorshipCapabilityConfigPanel.tsx
+  engagements/           # MENTOR-004 — lifecycle state machine + flows
+    lifecycle-state-machine.ts
+  seed/                  # MENTOR-007 — deterministic dataset
+    dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
   index.ts           # public entrypoint
 ```
