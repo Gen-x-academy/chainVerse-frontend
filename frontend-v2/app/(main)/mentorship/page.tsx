@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useAuthStore } from '@/src/store/authStore';
+import { toIdentityRole } from '@/src/features/mentorship/identity/access';
 import {
   MENTORSHIP_GLOSSARY,
   MENTORSHIP_VOCABULARY_VERSION,
@@ -23,11 +24,16 @@ const AREA_LABELS: Record<string, string> = {
   verification: 'Identity verification',
   roles: 'Role & permission matrix',
   config: 'Capability configuration',
+  lifecycle: 'Engagement lifecycle',
+  contracts: 'Versioned contracts',
+  seed: 'Seed data console',
 };
 
 export default function MentorshipHubPage() {
   const user = useAuthStore((state) => state.user);
-  const role = user?.role;
+  // The auth store carries the legacy `admin | instructor | student` roles;
+  // map them onto the mentorship vocabulary before the access check.
+  const role = toIdentityRole(user?.role);
   const allowed = canAccessMentorshipArea(role, 'hub');
   const areas = accessibleMentorshipAreas(role);
 
