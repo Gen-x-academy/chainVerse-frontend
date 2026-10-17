@@ -11,3 +11,4 @@ export * from './glossary';
 export * from './rbac';
 export * from './config';
 export * from './components';
+export * from './operations';
