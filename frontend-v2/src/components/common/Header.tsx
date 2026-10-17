@@ -24,12 +24,14 @@ export const Header: React.FC = () => {
       ? [
           { label: 'Instructor Dashboard', href: '/instructors/dashboard' },
           { label: 'Courses', href: '/courses' },
+          { label: 'Mentorship', href: '/mentorship' },
         ]
       : [
           { label: 'Dashboard', href: '/dashboard' },
           { label: 'Courses', href: '/courses' },
           { label: 'Wallet', href: '/wallet' },
           { label: 'Scholarships', href: '/scholarships' },
+          { label: 'Mentorship', href: '/mentorship' },
         ]
     : [
         { label: 'Courses', href: '/courses' },
