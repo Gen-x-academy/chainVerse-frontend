@@ -249,7 +249,8 @@ export type MentorshipArea =
   | 'taxonomy'
   | 'verification'
   | 'roles'
-  | 'config';
+  | 'config'
+  | 'operations';
 
 const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   hub: MENTORSHIP_ROLES,
@@ -259,6 +260,7 @@ const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   verification: ['mentor', 'moderator', 'administrator'],
   roles: ['administrator'],
   config: ['organization-staff', 'administrator'],
+  operations: ['organization-staff', 'moderator', 'finance', 'administrator'],
 };
 
 export const MENTORSHIP_AREA_ACCESS = AREA_ACCESS;
