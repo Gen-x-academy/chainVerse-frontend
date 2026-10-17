@@ -13,6 +13,7 @@ work can be located.
 | [MENTOR-001 bounded contexts](./MENTOR-001-bounded-contexts.md) | MENTOR-001 | #1248 | Vocabulary, ownership, identifiers, lifecycles, invariants |
 | [MENTOR-002 capability config](./MENTOR-002-capability-config.md) | MENTOR-002 | #1249 | Feature flags, limits, currencies, durations, evidence rules |
 | [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md) | MENTOR-003 | #1250 | Least-privilege role and permission matrix |
+| [MENTOR-112 abuse threat model](./MENTOR-112-mentorship-abuse-threat-model.md) | MENTOR-112 | #1359 | Abuse threat model: assets, boundaries, payments, minors, calendar, messaging |
 | [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md) | MENTOR-120 | #1367 | Rollout, flags, migrations, rollback, privacy, GA gates |
 | [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251 | Guarded, auditable engagement state machine |
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
