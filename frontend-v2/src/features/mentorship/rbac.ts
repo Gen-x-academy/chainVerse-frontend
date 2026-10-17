@@ -250,6 +250,9 @@ export type MentorshipArea =
   | 'verification'
   | 'roles'
   | 'config'
+  | 'lifecycle'
+  | 'contracts'
+  | 'seed';
   | 'availability'
   | 'credentials'
   | 'trust'
@@ -263,6 +266,9 @@ const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   verification: ['mentor', 'moderator', 'administrator'],
   roles: ['administrator'],
   config: ['organization-staff', 'administrator'],
+  lifecycle: ['mentor', 'organization-staff', 'moderator', 'administrator'],
+  contracts: ['organization-staff', 'moderator', 'finance', 'administrator'],
+  seed: ['administrator'],
   availability: ['mentor', 'organization-staff', 'administrator'],
   credentials: ['mentor', 'moderator', 'administrator'],
   trust: ['student', 'organization-staff', 'moderator', 'administrator'],
