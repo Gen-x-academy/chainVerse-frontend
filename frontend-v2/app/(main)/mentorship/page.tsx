@@ -27,12 +27,17 @@ const AREA_LABELS: Record<string, string> = {
   lifecycle: 'Engagement lifecycle',
   contracts: 'Versioned contracts',
   seed: 'Seed data console',
+  availability: 'Mentor availability',
+  credentials: 'Credential verification',
+  trust: 'Trust indicators',
+  programs: 'Organization programs',
 };
 
 export default function MentorshipHubPage() {
   const user = useAuthStore((state) => state.user);
   // The auth store carries the legacy `admin | instructor | student` roles;
   // map them onto the mentorship vocabulary before the access check.
+  // map them onto the mentorship vocabulary before the checks.
   const role = toIdentityRole(user?.role);
   const allowed = canAccessMentorshipArea(role, 'hub');
   const areas = accessibleMentorshipAreas(role);
