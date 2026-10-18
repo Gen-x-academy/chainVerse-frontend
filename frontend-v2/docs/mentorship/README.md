@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
 
 ## Module layout
 
@@ -33,6 +34,9 @@ src/features/mentorship/
     components/MentorshipCapabilityConfigPanel.tsx
   engagements/           # MENTOR-004 — lifecycle state machine + flows
     lifecycle-state-machine.ts
+  availability/          # MENTOR-013/MENTOR-054 - weekly availability and external free/busy
+    external-calendar.ts  external-calendar.service.ts
+    components/ExternalCalendarPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
