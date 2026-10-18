@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
 
 ## Module layout
 
@@ -33,6 +34,9 @@ src/features/mentorship/
     components/MentorshipCapabilityConfigPanel.tsx
   engagements/           # MENTOR-004 — lifecycle state machine + flows
     lifecycle-state-machine.ts
+  availability/          # MENTOR-013/MENTOR-053 - weekly availability and exceptions
+    recurring-availability.ts  recurring-availability.service.ts
+    components/RecurringAvailabilityPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
