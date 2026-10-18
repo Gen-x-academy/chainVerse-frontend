@@ -61,6 +61,21 @@ export interface SchedulingAgreement {
 
 export type SessionStatus = 'booked' | 'cancelled' | 'completed';
 
+/** One applied change of time. Together they trace every move from the original. */
+export interface SessionTimeChange {
+  proposalId: string;
+  fromStartsAt: string;
+  toStartsAt: string;
+  changedAt: string;
+  /** Who asked for the change. */
+  requestedBy: string;
+  /** Who approved it, or the coordinator who applied it directly. */
+  approvedBy: string;
+  /** Visible to the participants and coordinators; never sent in events. */
+  reason: string;
+  override: boolean;
+}
+
 export interface MentorshipSession {
   sessionId: string;
   agreementId: string;
@@ -76,6 +91,10 @@ export interface MentorshipSession {
   locationRef?: string;
   agenda?: string;
   status: SessionStatus;
+  /** The time first booked. It is never overwritten, so it stays traceable. */
+  originalStartsAt: string;
+  /** Applied time changes, oldest first. */
+  timeChanges: readonly SessionTimeChange[];
   /** Increments on every change so events and approvals can be tied to a state. */
   revision: number;
   bookedAt: string;
@@ -148,6 +167,41 @@ export const SCHEDULING_ERRORS = {
     message: 'This request key was already used for different details. Reload the page and try again.',
     retryable: false,
   },
+  SESSION_NOT_BOOKED: {
+    status: 409,
+    message: 'Only a booked session can be changed. Check the session status.',
+    retryable: false,
+  },
+  RESCHEDULE_NOTICE_VIOLATION: {
+    status: 422,
+    message: 'It is too close to the session start to reschedule. Contact a coordinator if this is urgent.',
+    retryable: false,
+  },
+  PAYMENT_PREVIEW_MISMATCH: {
+    status: 409,
+    message: 'The fee for this change has changed. Review the updated amount and confirm again.',
+    retryable: false,
+  },
+  PROPOSAL_NOT_PENDING: {
+    status: 409,
+    message: 'This reschedule request has already been answered or replaced.',
+    retryable: false,
+  },
+  PROPOSAL_STALE: {
+    status: 409,
+    message: 'The session changed after this request was made, so it can no longer be approved. Ask for a new time.',
+    retryable: false,
+  },
+  PROPOSAL_EXPIRED: {
+    status: 410,
+    message: 'This reschedule request has expired. Ask for a new time.',
+    retryable: false,
+  },
+  APPROVAL_NOT_ALLOWED: {
+    status: 403,
+    message: 'Only the other participant can answer this request. You can withdraw it instead.',
+    retryable: false,
+  },
   UNKNOWN: {
     status: 500,
     message: 'The scheduling request failed. Check your connection and try again. Retrying will not create duplicates.',
@@ -210,10 +264,48 @@ export function describeSchedulingFailure(error: unknown): SchedulingError {
 }
 
 // ---------------------------------------------------------------------------
+// Reschedule requests
+// ---------------------------------------------------------------------------
+
+export type RescheduleStatus =
+  | 'pending'
+  | 'approved'
+  | 'declined'
+  | 'withdrawn'
+  | 'superseded'
+  | 'expired';
+
+export interface RescheduleProposal {
+  proposalId: string;
+  sessionId: string;
+  agreementId: string;
+  tenantId: string;
+  proposedBy: string;
+  /** The session revision this request was made against. */
+  baseRevision: number;
+  currentStartsAt: string;
+  proposedStartsAt: string;
+  proposedEndsAt: string;
+  /** Visible to both participants and coordinators; never sent in events. */
+  reason: string;
+  status: RescheduleStatus;
+  /** Fee the requester accepted when they saw the preview, in minor units. */
+  feeMinor: number;
+  createdAt: string;
+  expiresAt: string;
+  decidedAt?: string;
+  decidedBy?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Events
 // ---------------------------------------------------------------------------
 
-export type SchedulingEventType = 'mentorship.session.booked';
+export type SchedulingEventType =
+  | 'mentorship.session.booked'
+  | 'mentorship.session.reschedule_proposed'
+  | 'mentorship.session.rescheduled'
+  | 'mentorship.session.reschedule_closed';
 
 /**
  * Canonical domain event. The id is derived from the type, the session and its
@@ -233,17 +325,25 @@ export interface SchedulingEvent {
   actorId: string;
   startsAt: string;
   endsAt: string;
+  /** Present on reschedule events: the time before the change. */
+  previousStartsAt?: string;
+  /** Present on reschedule events: the request the event belongs to. */
+  proposalId?: string;
+  /** Present on a closed reschedule request. */
+  outcome?: 'declined' | 'withdrawn';
 }
 
 /** Idempotency record kept per actor and key. */
 export interface IdempotencyRecord {
   fingerprint: string;
   sessionId: string;
+  proposalId?: string;
 }
 
 /** The serialisation point: every mutation returns a new ledger. */
 export interface SessionLedger {
   sessions: readonly MentorshipSession[];
+  proposals: readonly RescheduleProposal[];
   idempotency: Readonly<Record<string, IdempotencyRecord>>;
   events: readonly SchedulingEvent[];
 }
@@ -251,6 +351,7 @@ export interface SessionLedger {
 export function createSessionLedger(initial: Partial<SessionLedger> = {}): SessionLedger {
   return {
     sessions: initial.sessions ?? [],
+    proposals: initial.proposals ?? [],
     idempotency: initial.idempotency ?? {},
     events: initial.events ?? [],
   };
@@ -278,8 +379,26 @@ export function stableHash(input: string): string {
   return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
 }
 
-export function buildEventId(type: SchedulingEventType, sessionId: string, revision: number): string {
-  return `evt-${stableHash(`${type}|${sessionId}|${revision}`)}`;
+/**
+ * The id is fixed by the type, the session, its revision and, for request
+ * events, the request itself. Two requests made against one revision therefore
+ * never share an id, and a retry always reproduces the same one.
+ */
+export function buildEventId(
+  type: SchedulingEventType,
+  sessionId: string,
+  revision: number,
+  discriminator = '',
+): string {
+  return `evt-${stableHash(`${type}|${sessionId}|${revision}|${discriminator}`)}`;
+}
+
+/** A fresh request key for one user intent, for example `resch-<uuid>`. */
+export function createIdempotencyKey(prefix: string): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
 }
 
 export function isValidTimeZone(timeZone: string): boolean {
@@ -305,6 +424,36 @@ export function intervalsOverlap(
   b: { startMs: number; endMs: number },
 ): boolean {
   return a.startMs < b.endMs && b.startMs < a.endMs;
+}
+
+/**
+ * True when a session of either participant overlaps the wanted range once the
+ * buffer is applied. Half open, so back-to-back sessions only clash through the
+ * buffer. Cancelled sessions never block, and a session being moved can be
+ * excluded so it does not conflict with itself.
+ */
+export function hasSessionConflict(
+  sessions: readonly MentorshipSession[],
+  participants: { mentorId: string; menteeId: string },
+  range: { startMs: number; endMs: number },
+  bufferMinutes: number,
+  excludeSessionId?: string,
+): boolean {
+  const bufferMs = bufferMinutes * MINUTES;
+  const wanted = { startMs: range.startMs - bufferMs, endMs: range.endMs + bufferMs };
+  return sessions.some((session) => {
+    if (session.status !== 'booked' || session.sessionId === excludeSessionId) return false;
+    const shares =
+      session.mentorId === participants.mentorId ||
+      session.mentorId === participants.menteeId ||
+      session.menteeId === participants.mentorId ||
+      session.menteeId === participants.menteeId;
+    if (!shares) return false;
+    return intervalsOverlap(wanted, {
+      startMs: Date.parse(session.startsAt),
+      endMs: Date.parse(session.endsAt),
+    });
+  });
 }
 
 const UNSAFE_TEXT = /<\s*\/?\s*[a-z!][^>]*>|javascript:/i;

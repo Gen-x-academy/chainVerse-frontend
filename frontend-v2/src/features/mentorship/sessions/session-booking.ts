@@ -8,7 +8,7 @@ import {
   canScheduleForAgreement,
   createSessionLedger,
   formatLocalAndUtc,
-  intervalsOverlap,
+  hasSessionConflict,
   isSafePlainText,
   isValidTimeZone,
   schedulingError,
@@ -200,23 +200,14 @@ export function bookSession(
   }
 
   const endMs = startMs + input.durationMinutes * MINUTES;
-  const bufferMs = policy.bufferMinutes * MINUTES;
-  const wanted = { startMs: startMs - bufferMs, endMs: endMs + bufferMs };
-
-  const conflict = ledger.sessions.some((session) => {
-    if (session.status !== 'booked') return false;
-    const sharesParticipant =
-      session.mentorId === agreement.mentorId ||
-      session.mentorId === agreement.menteeId ||
-      session.menteeId === agreement.mentorId ||
-      session.menteeId === agreement.menteeId;
-    if (!sharesParticipant) return false;
-    return intervalsOverlap(wanted, {
-      startMs: Date.parse(session.startsAt),
-      endMs: Date.parse(session.endsAt),
-    });
-  });
-  if (conflict) {
+  if (
+    hasSessionConflict(
+      ledger.sessions,
+      { mentorId: agreement.mentorId, menteeId: agreement.menteeId },
+      { startMs, endMs },
+      policy.bufferMinutes,
+    )
+  ) {
     return { ok: false, error: schedulingError('SLOT_CONFLICT') };
   }
 
@@ -234,6 +225,8 @@ export function bookSession(
     durationMinutes: input.durationMinutes,
     mode: input.mode,
     status: 'booked',
+    originalStartsAt: startsAt,
+    timeChanges: [],
     revision: 1,
     bookedAt: now.toISOString(),
     bookedBy: actor.userId,
@@ -257,6 +250,7 @@ export function bookSession(
 
   const next = createSessionLedger({
     sessions: [...ledger.sessions, session],
+    proposals: ledger.proposals,
     idempotency: {
       ...ledger.idempotency,
       [scopedKey]: { fingerprint: fingerprintOf(input, startsAt), sessionId },

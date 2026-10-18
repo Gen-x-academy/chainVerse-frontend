@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-057 reschedule sessions](./MENTOR-057-reschedule-sessions.md) | MENTOR-057 | #1304 | Approval based reschedule with notice policy, fee preview, stale approval protection and calendar convergence |
 | [MENTOR-056 book sessions](./MENTOR-056-book-sessions.md) | MENTOR-056 | #1303 | Idempotent, conflict-safe booking from an active agreement with local plus UTC confirmation |
 | [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
 | [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
@@ -43,9 +44,10 @@ src/features/mentorship/
     external-calendar.ts  external-calendar.service.ts
     slot-finder.ts  slot-finder.service.ts
     components/RecurringAvailabilityPanel.tsx  ExternalCalendarPanel.tsx  MutualSlotFinder.tsx
-  sessions/              # MENTOR-056 - booking, with shared scheduling primitives
+  sessions/              # MENTOR-056/057 - booking and rescheduling, with shared primitives
     session-core.ts  session-booking.ts  session-booking.service.ts
-    components/SessionBookingForm.tsx
+    session-reschedule.ts  session-reschedule.service.ts
+    components/SessionBookingForm.tsx  RescheduleSessionPanel.tsx
   agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
     engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
     agreement-export.service.ts  components/AgreementExportPanel.tsx

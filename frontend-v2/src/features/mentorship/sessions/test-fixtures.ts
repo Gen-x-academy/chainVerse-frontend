@@ -4,8 +4,15 @@
  * Test-only; never import this from production code.
  */
 
-import { DEFAULT_BOOKING_POLICY, type BookSessionInput, type BookingPolicy } from './session-booking';
-import type { SchedulingActor, SchedulingAgreement } from './session-core';
+import { DEFAULT_BOOKING_POLICY, bookSession, type BookSessionInput, type BookingPolicy } from './session-booking';
+import {
+  createSessionLedger,
+  type MentorshipSession,
+  type SchedulingActor,
+  type SchedulingAgreement,
+  type SessionLedger,
+} from './session-core';
+import type { ReschedulePolicy } from './session-reschedule';
 
 /** A Monday at 09:00 UTC. */
 export const FIXTURE_NOW = new Date('2026-11-02T09:00:00.000Z');
@@ -51,4 +58,28 @@ export function bookingInput(overrides: Partial<BookSessionInput> = {}): BookSes
     policy: fixturePolicy,
     ...overrides,
   };
+}
+
+/** Tuesday afternoon, one day after the fixture slot. */
+export const FIXTURE_NEW_START = '2026-11-04T15:00:00.000Z';
+/** Ten units of currency in minor units. */
+export const SESSION_AMOUNT_MINOR = 10_000;
+
+export const reschedulePolicy: ReschedulePolicy = {
+  minNoticeHours: 12,
+  freeNoticeHours: 48,
+  lateFeeBps: 2500,
+  approvalTtlHours: 48,
+  leadTimeMinutes: 120,
+  bufferMinutes: 0,
+};
+
+/** A ledger holding one booked session, built through the real booking logic. */
+export function bookedLedger(startsAt: string = FIXTURE_SLOT_START): {
+  ledger: SessionLedger;
+  session: MentorshipSession;
+} {
+  const result = bookSession(createSessionLedger(), bookingInput({ startsAt }), FIXTURE_NOW);
+  if (!result.ok) throw new Error(`fixture booking failed: ${result.error.code}`);
+  return { ledger: result.ledger, session: result.session };
 }

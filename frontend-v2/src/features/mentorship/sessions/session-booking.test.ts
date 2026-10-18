@@ -419,6 +419,13 @@ describe('scheduling errors', () => {
       ['SLOT_CONFLICT', 409],
       ['IDEMPOTENCY_KEY_INVALID', 400],
       ['IDEMPOTENCY_KEY_REUSED', 422],
+      ['SESSION_NOT_BOOKED', 409],
+      ['RESCHEDULE_NOTICE_VIOLATION', 422],
+      ['PAYMENT_PREVIEW_MISMATCH', 409],
+      ['PROPOSAL_NOT_PENDING', 409],
+      ['PROPOSAL_STALE', 409],
+      ['PROPOSAL_EXPIRED', 410],
+      ['APPROVAL_NOT_ALLOWED', 403],
       ['UNKNOWN', 500],
     ]);
   });

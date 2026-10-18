@@ -10,6 +10,7 @@ import {
 import type { BookSessionRequest, BookSessionResponse } from '../session-booking.service';
 import {
   SESSION_MODES,
+  createIdempotencyKey,
   SESSION_MODE_LABELS,
   describeSchedulingFailure,
   formatLocalAndUtc,
@@ -34,12 +35,7 @@ export interface SessionBookingFormProps {
   createIdempotencyKey?: () => string;
 }
 
-function defaultKey(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return `book-${crypto.randomUUID()}`;
-  }
-  return `book-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
-}
+const defaultKey = (): string => createIdempotencyKey('book');
 
 const FIELD_NAMES = ['mode', 'locationRef', 'agenda', 'startsAt', 'durationMinutes'] as const;
 type FieldName = (typeof FIELD_NAMES)[number];
