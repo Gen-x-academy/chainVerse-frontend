@@ -15,7 +15,8 @@ export type MentorshipAnalyticsStage =
   | 'mentor_availability'
   | 'credential_verification'
   | 'trust_indicators'
-  | 'organization_programs';
+  | 'organization_programs'
+  | 'session_slot_search';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;

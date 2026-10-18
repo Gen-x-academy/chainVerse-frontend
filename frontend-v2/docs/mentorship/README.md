@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
 
 ## Module layout
 
@@ -33,6 +34,9 @@ src/features/mentorship/
     components/MentorshipCapabilityConfigPanel.tsx
   engagements/           # MENTOR-004 — lifecycle state machine + flows
     lifecycle-state-machine.ts
+  availability/          # MENTOR-013/MENTOR-055 - availability and mutual slot finding
+    slot-finder.ts  slot-finder.service.ts
+    components/MutualSlotFinder.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
