@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md) | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records |
 
 ## Module layout
 
@@ -33,6 +34,9 @@ src/features/mentorship/
     components/MentorshipCapabilityConfigPanel.tsx
   engagements/           # MENTOR-004 — lifecycle state machine + flows
     lifecycle-state-machine.ts
+  agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
+    engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
+    agreement-export.service.ts  components/AgreementExportPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
