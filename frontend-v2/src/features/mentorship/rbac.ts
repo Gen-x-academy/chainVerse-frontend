@@ -250,10 +250,10 @@ export type MentorshipArea =
   | 'verification'
   | 'roles'
   | 'config'
-  | 'operations';
+  | 'operations'
   | 'lifecycle'
   | 'contracts'
-  | 'seed';
+  | 'seed'
   | 'availability'
   | 'credentials'
   | 'trust'
