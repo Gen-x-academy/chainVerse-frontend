@@ -4,5 +4,7 @@ export * from './external-calendar.service';
 export * from './logic';
 export * from './recurring-availability';
 export * from './recurring-availability.service';
+export * from './slot-finder';
+export * from './slot-finder.service';
 export * from './store';
 export * from './types';
