@@ -20,6 +20,8 @@ work can be located.
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
 | [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
+| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
+| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md) | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records |
 
 ## Module layout
 
@@ -37,6 +39,12 @@ src/features/mentorship/
   availability/          # MENTOR-013/MENTOR-054 - weekly availability and external free/busy
     external-calendar.ts  external-calendar.service.ts
     components/ExternalCalendarPanel.tsx
+  availability/          # MENTOR-013/MENTOR-053 - weekly availability and exceptions
+    recurring-availability.ts  recurring-availability.service.ts
+    components/RecurringAvailabilityPanel.tsx
+  agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
+    engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
+    agreement-export.service.ts  components/AgreementExportPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix

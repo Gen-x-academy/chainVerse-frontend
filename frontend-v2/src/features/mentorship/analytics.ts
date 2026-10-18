@@ -17,6 +17,7 @@ export type MentorshipAnalyticsStage =
   | 'trust_indicators'
   | 'organization_programs'
   | 'calendar_sync';
+  | 'agreement_export';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;
