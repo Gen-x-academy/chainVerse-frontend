@@ -1,9 +1,9 @@
 /** MENTOR-055: find mutually available mentorship session slots. */
 
-export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type SlotWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface ParticipantAvailabilityWindow {
-  dayOfWeek: Weekday;
+  dayOfWeek: SlotWeekday;
   /** Local wall-clock start (HH:mm) in the participant's time zone. */
   start: string;
   /** Local wall-clock end (HH:mm) in the participant's time zone. */
@@ -375,7 +375,7 @@ function validateInput(input: SlotSearchInput): SlotSearchIssue[] {
     }
     for (const [index, window] of participant.windows.entries()) {
       if (!Number.isInteger(window.dayOfWeek) || window.dayOfWeek < 0 || window.dayOfWeek > 6) {
-        issues.push({ field: `participants.${participant.participantId}.windows[${index}]`, message: 'Choose a weekday between Sunday and Saturday.' });
+        issues.push({ field: `participants.${participant.participantId}.windows[${index}]`, message: 'Choose a SlotWeekday between Sunday and Saturday.' });
       }
       const start = parseTime(window.start);
       const end = parseTime(window.end);
@@ -405,7 +405,7 @@ function expandParticipant(
   const lastMs = dateToUtcMs(last);
   if (firstMs === null || lastMs === null || lastMs < firstMs) return [];
 
-  const windowsByDay = new Map<Weekday, ParticipantAvailabilityWindow[]>();
+  const windowsByDay = new Map<SlotWeekday, ParticipantAvailabilityWindow[]>();
   for (const window of participant.windows) {
     const existing = windowsByDay.get(window.dayOfWeek) ?? [];
     existing.push(window);
@@ -415,7 +415,7 @@ function expandParticipant(
   const intervals: Interval[] = [];
   for (let cursor = firstMs; cursor <= lastMs; cursor += DAY_MS) {
     const date = dateFromUtcMs(cursor);
-    const dayOfWeek = new Date(cursor).getUTCDay() as Weekday;
+    const dayOfWeek = new Date(cursor).getUTCDay() as SlotWeekday;
     for (const window of windowsByDay.get(dayOfWeek) ?? []) {
       const start = localWallClockToUtc(date, window.start, timeZone);
       const end = localWallClockToUtc(date, window.end, timeZone);

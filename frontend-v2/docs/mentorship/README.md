@@ -20,6 +20,9 @@ work can be located.
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
 | [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
+| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
+| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
+| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md) | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records |
 
 ## Module layout
 
@@ -34,9 +37,14 @@ src/features/mentorship/
     components/MentorshipCapabilityConfigPanel.tsx
   engagements/           # MENTOR-004 — lifecycle state machine + flows
     lifecycle-state-machine.ts
-  availability/          # MENTOR-013/MENTOR-055 - availability and mutual slot finding
+  availability/          # MENTOR-013/053/054/055 - availability, calendars, mutual slots
+    recurring-availability.ts  recurring-availability.service.ts
+    external-calendar.ts  external-calendar.service.ts
     slot-finder.ts  slot-finder.service.ts
-    components/MutualSlotFinder.tsx
+    components/RecurringAvailabilityPanel.tsx  ExternalCalendarPanel.tsx  MutualSlotFinder.tsx
+  agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
+    engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
+    agreement-export.service.ts  components/AgreementExportPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix
