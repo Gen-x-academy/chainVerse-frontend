@@ -105,6 +105,7 @@ export const MENTORSHIP_ROLE_PERMISSIONS: MentorshipRolePermissionMatrix = {
     session: ['read'],
     deliverable: ['read'],
     payment: ['read'],
+    dispute: ['read', 'create', 'update'],
   },
   tutor: {
     'mentor-profile': ['read', 'update'],
@@ -121,6 +122,7 @@ export const MENTORSHIP_ROLE_PERMISSIONS: MentorshipRolePermissionMatrix = {
     session: ['read', 'create', 'update'],
     deliverable: ['read', 'approve'],
     payment: ['read'],
+    dispute: ['read', 'create', 'update'],
   },
   guardian: {
     'mentor-profile': ['read'],
@@ -257,7 +259,8 @@ export type MentorshipArea =
   | 'availability'
   | 'credentials'
   | 'trust'
-  | 'programs';
+  | 'programs'
+  | 'disputes';
 
 const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   hub: MENTORSHIP_ROLES,
@@ -275,6 +278,7 @@ const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   credentials: ['mentor', 'moderator', 'administrator'],
   trust: ['student', 'organization-staff', 'moderator', 'administrator'],
   programs: MENTORSHIP_ROLES,
+  disputes: ['student', 'mentor', 'moderator', 'finance', 'administrator'],
 };
 
 export const MENTORSHIP_AREA_ACCESS = AREA_ACCESS;

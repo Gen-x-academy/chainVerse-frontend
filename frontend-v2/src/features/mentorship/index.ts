@@ -7,8 +7,9 @@
  * here; the identity modules (MENTOR-008…011) are exported from their own
  * submodules to keep this barrel from widening the dependency graph.
  */
-export * from './glossary';
-export * from './rbac';
-export * from './config';
-export * from './components';
-export * from './operations';
+export * from "./glossary";
+export * from "./rbac";
+export * from "./config";
+export * from "./components";
+export * from "./operations";
+export * from "./disputes";
