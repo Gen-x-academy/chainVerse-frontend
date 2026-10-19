@@ -19,6 +19,7 @@ export type MentorshipAnalyticsStage =
   | "calendar_sync"
   | "agreement_export"
   | "session_slot_search"
+  | "session_dispute";
   | "session_recording_consent_granted"
   | "session_recording_consent_declined"
   | "session_recording_consent_revoked"
