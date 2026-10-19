@@ -1,14 +1,22 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { clearUserScopedCache } from '@/src/lib/clear-user-query-cache';
-import { queryClient } from '@/src/lib/query-client';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { clearUserScopedCache } from "@/src/lib/clear-user-query-cache";
+import { queryClient } from "@/src/lib/query-client";
 
 interface AuthUser {
   id?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
-  role?: 'admin' | 'instructor' | 'student';
+  role?:
+    | "admin"
+    | "administrator"
+    | "instructor"
+    | "student"
+    | "mentor"
+    | "tutor"
+    | "guardian"
+    | "moderator";
   avatarUrl?: string;
   /**
    * Owning tenant. Scholarship query keys are scoped by tenant as well as user
@@ -35,11 +43,11 @@ interface AuthState {
   setWalletPublicKey: (key: string | null) => void;
 }
 
-const ACCESS_TOKEN_KEY = 'accessToken';
-const USER_KEY = 'auth_user';
+const ACCESS_TOKEN_KEY = "accessToken";
+const USER_KEY = "auth_user";
 
 function getStoredUser(): AuthUser | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(USER_KEY);
     return raw ? (JSON.parse(raw) as AuthUser) : null;
@@ -69,8 +77,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('token_expiry');
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("token_expiry");
         set({
           isAuthenticated: false,
           user: null,
@@ -91,7 +99,7 @@ export const useAuthStore = create<AuthState>()(
       setWalletPublicKey: (key) => set({ walletPublicKey: key }),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         user: state.user,
