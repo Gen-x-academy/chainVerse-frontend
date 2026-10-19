@@ -8,21 +8,22 @@ This directory holds the frontend documentation for the **Foundation**,
 names its shared work item so the corresponding backend, contract, and mobile
 work can be located.
 
-| Doc | Work item | Issue | Scope |
-| --- | --- | --- | --- |
-| [MENTOR-001 bounded contexts](./MENTOR-001-bounded-contexts.md) | MENTOR-001 | #1248 | Vocabulary, ownership, identifiers, lifecycles, invariants |
-| [MENTOR-002 capability config](./MENTOR-002-capability-config.md) | MENTOR-002 | #1249 | Feature flags, limits, currencies, durations, evidence rules |
-| [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md) | MENTOR-003 | #1250 | Least-privilege role and permission matrix |
-| [MENTOR-112 abuse threat model](./MENTOR-112-mentorship-abuse-threat-model.md) | MENTOR-112 | #1359 | Abuse threat model: assets, boundaries, payments, minors, calendar, messaging |
-| [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md) | MENTOR-120 | #1367 | Rollout, flags, migrations, rollback, privacy, GA gates |
-| [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251 | Guarded, auditable engagement state machine |
-| [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
-| [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
-| [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
-| [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
-| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
-| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
-| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md) | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records |
+| Doc                                                                                   | Work item  | Issue | Scope                                                                                    |
+| ------------------------------------------------------------------------------------- | ---------- | ----- | ---------------------------------------------------------------------------------------- |
+| [MENTOR-001 bounded contexts](./MENTOR-001-bounded-contexts.md)                       | MENTOR-001 | #1248 | Vocabulary, ownership, identifiers, lifecycles, invariants                               |
+| [MENTOR-002 capability config](./MENTOR-002-capability-config.md)                     | MENTOR-002 | #1249 | Feature flags, limits, currencies, durations, evidence rules                             |
+| [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md)                      | MENTOR-003 | #1250 | Least-privilege role and permission matrix                                               |
+| [MENTOR-112 abuse threat model](./MENTOR-112-mentorship-abuse-threat-model.md)        | MENTOR-112 | #1359 | Abuse threat model: assets, boundaries, payments, minors, calendar, messaging            |
+| [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md)              | MENTOR-120 | #1367 | Rollout, flags, migrations, rollback, privacy, GA gates                                  |
+| [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251 | Guarded, auditable engagement state machine                                              |
+| [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md)            | MENTOR-005 | #1252 | Stable, never display-derived public ids                                                 |
+| [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md)                 | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives                                   |
+| [MENTOR-007 seed data](./MENTOR-007-seed-data.md)                                     | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset                                           |
+| [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md)               | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery                                   |
+| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md)                     | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync                           |
+| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md)           | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection                  |
+| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md)                       | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records                          |
+| [MENTOR-068 session recording consent](./MENTOR-068-session-recording-consent.md)     | MENTOR-068 | —     | Per-session consent, recording policy, minor safeguards, and private provider references |
 
 ## Module layout
 

@@ -7,18 +7,26 @@
  * flow.
  */
 
-import { apiClient } from '@/src/lib/api-client';
+import { apiClient } from "@/src/lib/api-client";
 
 /** Analytics stages emitted by the mentorship subdomains. */
 export type MentorshipAnalyticsStage =
-  | 'engagement_lifecycle'
-  | 'mentor_availability'
-  | 'credential_verification'
-  | 'trust_indicators'
-  | 'organization_programs'
-  | 'calendar_sync'
-  | 'agreement_export'
-  | 'session_slot_search';
+  | "engagement_lifecycle"
+  | "mentor_availability"
+  | "credential_verification"
+  | "trust_indicators"
+  | "organization_programs"
+  | "calendar_sync"
+  | "agreement_export"
+  | "session_slot_search"
+  | "session_recording_consent_granted"
+  | "session_recording_consent_declined"
+  | "session_recording_consent_revoked"
+  | "session_guardian_recording_consent_granted"
+  | "session_guardian_recording_consent_declined"
+  | "session_guardian_recording_consent_revoked"
+  | "session_recording_started"
+  | "session_recording_stopped";
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;
@@ -49,7 +57,7 @@ export function buildMentorshipEvent(
   stage: MentorshipAnalyticsStage,
   entityId: string,
   actorKey: string,
-  occurredAt: Date = new Date()
+  occurredAt: Date = new Date(),
 ): MentorshipAnalyticsEvent {
   const dayBucket = occurredAt.toISOString().slice(0, 10);
   return {
@@ -63,9 +71,7 @@ export function buildMentorshipEvent(
 
 /** Fire-and-forget delivery; never rejects. */
 export function trackMentorshipEvent(event: MentorshipAnalyticsEvent): void {
-  apiClient
-    .post<void>('/mentorship/analytics/events', event)
-    .catch(() => {
-      // Analytics must never break a user flow.
-    });
+  apiClient.post<void>("/mentorship/analytics/events", event).catch(() => {
+    // Analytics must never break a user flow.
+  });
 }
