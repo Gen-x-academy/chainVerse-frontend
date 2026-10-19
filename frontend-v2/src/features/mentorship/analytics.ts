@@ -20,7 +20,8 @@ export type MentorshipAnalyticsStage =
   | 'agreement_export'
   | 'session_slot_search'
   | 'session_booking'
-  | 'session_reschedule';
+  | 'session_reschedule'
+  | 'session_cancellation';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;

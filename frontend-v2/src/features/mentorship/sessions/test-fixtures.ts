@@ -12,6 +12,7 @@ import {
   type SchedulingAgreement,
   type SessionLedger,
 } from './session-core';
+import type { CancellationPolicySnapshot } from './session-cancellation';
 import type { ReschedulePolicy } from './session-reschedule';
 
 /** A Monday at 09:00 UTC. */
@@ -83,3 +84,17 @@ export function bookedLedger(startsAt: string = FIXTURE_SLOT_START): {
   if (!result.ok) throw new Error(`fixture booking failed: ${result.error.code}`);
   return { ledger: result.ledger, session: result.session };
 }
+
+/** Full refund from 48 hours, half from 24 hours, nothing after that. */
+export const cancellationSnapshot: CancellationPolicySnapshot = {
+  policy: {
+    id: 'pol-standard',
+    tiers: [
+      { minNoticeHours: 48, refundBps: 10_000 },
+      { minNoticeHours: 24, refundBps: 5_000 },
+      { minNoticeHours: 0, refundBps: 0 },
+    ],
+  },
+  version: 3,
+  platformFeeBps: 1_000,
+};

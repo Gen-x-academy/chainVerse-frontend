@@ -76,6 +76,58 @@ export interface SessionTimeChange {
   override: boolean;
 }
 
+export type CancellationReasonCode =
+  | 'schedule_conflict'
+  | 'illness'
+  | 'emergency'
+  | 'no_longer_needed'
+  | 'technical_problem'
+  | 'other'
+  | 'platform_action';
+
+export const CANCELLATION_REASON_LABELS: Record<CancellationReasonCode, string> = {
+  schedule_conflict: 'Schedule conflict',
+  illness: 'Illness',
+  emergency: 'Emergency',
+  no_longer_needed: 'No longer needed',
+  technical_problem: 'Technical problem',
+  other: 'Other',
+  platform_action: 'Platform action',
+};
+
+/** What the cancellation cost, frozen at the moment it happened. */
+export interface SessionCancellation {
+  cancelledAt: string;
+  cancelledBy: string;
+  cancelledByRole: 'mentee' | 'mentor' | 'platform';
+  reasonCode: CancellationReasonCode;
+  /** Visible to participants and coordinators; never sent in events. */
+  note: string;
+  noticeHours: number;
+  /** The policy that priced this cancellation, so it can be audited later. */
+  policyId: string;
+  policyVersion: number;
+  appliedRefundBps: number;
+  refundMinor: number;
+  mentorCompensationMinor: number;
+  platformFeeMinor: number;
+  settlementInstructionId: string;
+}
+
+/** The single instruction sent downstream to settlement for a cancelled session. */
+export interface SettlementInstruction {
+  instructionId: string;
+  sessionId: string;
+  agreementId: string;
+  tenantId: string;
+  policyId: string;
+  policyVersion: number;
+  refundMinor: number;
+  mentorCompensationMinor: number;
+  platformFeeMinor: number;
+  createdAt: string;
+}
+
 export interface MentorshipSession {
   sessionId: string;
   agreementId: string;
@@ -95,6 +147,8 @@ export interface MentorshipSession {
   originalStartsAt: string;
   /** Applied time changes, oldest first. */
   timeChanges: readonly SessionTimeChange[];
+  /** Present once the session has been cancelled. */
+  cancellation?: SessionCancellation;
   /** Increments on every change so events and approvals can be tied to a state. */
   revision: number;
   bookedAt: string;
@@ -202,6 +256,11 @@ export const SCHEDULING_ERRORS = {
     message: 'Only the other participant can answer this request. You can withdraw it instead.',
     retryable: false,
   },
+  SESSION_STARTED: {
+    status: 409,
+    message: 'This session has already started, so it can no longer be cancelled. Report a no-show if someone did not attend.',
+    retryable: false,
+  },
   UNKNOWN: {
     status: 500,
     message: 'The scheduling request failed. Check your connection and try again. Retrying will not create duplicates.',
@@ -305,7 +364,8 @@ export type SchedulingEventType =
   | 'mentorship.session.booked'
   | 'mentorship.session.reschedule_proposed'
   | 'mentorship.session.rescheduled'
-  | 'mentorship.session.reschedule_closed';
+  | 'mentorship.session.reschedule_closed'
+  | 'mentorship.session.cancelled';
 
 /**
  * Canonical domain event. The id is derived from the type, the session and its
@@ -331,6 +391,11 @@ export interface SchedulingEvent {
   proposalId?: string;
   /** Present on a closed reschedule request. */
   outcome?: 'declined' | 'withdrawn';
+  /** Present on a cancellation: a category, never free text. */
+  reasonCode?: CancellationReasonCode;
+  cancelledByRole?: 'mentee' | 'mentor' | 'platform';
+  /** Present on a cancellation: the one settlement instruction it produced. */
+  settlementInstructionId?: string;
 }
 
 /** Idempotency record kept per actor and key. */
@@ -344,6 +409,7 @@ export interface IdempotencyRecord {
 export interface SessionLedger {
   sessions: readonly MentorshipSession[];
   proposals: readonly RescheduleProposal[];
+  settlements: readonly SettlementInstruction[];
   idempotency: Readonly<Record<string, IdempotencyRecord>>;
   events: readonly SchedulingEvent[];
 }
@@ -352,6 +418,7 @@ export function createSessionLedger(initial: Partial<SessionLedger> = {}): Sessi
   return {
     sessions: initial.sessions ?? [],
     proposals: initial.proposals ?? [],
+    settlements: initial.settlements ?? [],
     idempotency: initial.idempotency ?? {},
     events: initial.events ?? [],
   };
@@ -454,6 +521,20 @@ export function hasSessionConflict(
       endMs: Date.parse(session.endsAt),
     });
   });
+}
+
+/** Closes every other pending request on a session so it can no longer be approved. */
+export function supersedePendingProposals(
+  proposals: readonly RescheduleProposal[],
+  sessionId: string,
+  keepProposalId: string | null,
+  now: Date,
+): RescheduleProposal[] {
+  return proposals.map((proposal) =>
+    proposal.sessionId === sessionId && proposal.proposalId !== keepProposalId && proposal.status === 'pending'
+      ? { ...proposal, status: 'superseded' as const, decidedAt: now.toISOString() }
+      : proposal,
+  );
 }
 
 const UNSAFE_TEXT = /<\s*\/?\s*[a-z!][^>]*>|javascript:/i;

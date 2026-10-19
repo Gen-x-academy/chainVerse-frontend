@@ -249,8 +249,8 @@ export function bookSession(
   };
 
   const next = createSessionLedger({
+    ...ledger,
     sessions: [...ledger.sessions, session],
-    proposals: ledger.proposals,
     idempotency: {
       ...ledger.idempotency,
       [scopedKey]: { fingerprint: fingerprintOf(input, startsAt), sessionId },

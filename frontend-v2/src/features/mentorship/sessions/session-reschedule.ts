@@ -11,6 +11,7 @@ import {
   isSafePlainText,
   schedulingError,
   stableHash,
+  supersedePendingProposals,
   toUtcIso,
   type MentorshipSession,
   type RescheduleProposal,
@@ -172,14 +173,6 @@ function newRange(session: MentorshipSession, startsAt: string) {
   return { startMs, endMs: startMs + session.durationMinutes * MINUTES };
 }
 
-function closeSuperseded(proposals: readonly RescheduleProposal[], sessionId: string, keepId: string, now: Date) {
-  return proposals.map((proposal) =>
-    proposal.sessionId === sessionId && proposal.proposalId !== keepId && proposal.status === 'pending'
-      ? { ...proposal, status: 'superseded' as const, decidedAt: now.toISOString() }
-      : proposal,
-  );
-}
-
 function eventFor(
   type: SchedulingEventType,
   session: MentorshipSession,
@@ -297,8 +290,8 @@ export function proposeReschedule(
   });
 
   const next = createSessionLedger({
-    sessions: ledger.sessions,
-    proposals: [...closeSuperseded(ledger.proposals, session.sessionId, proposalId, now), proposal],
+    ...ledger,
+    proposals: [...supersedePendingProposals(ledger.proposals, session.sessionId, proposalId, now), proposal],
     idempotency: { ...ledger.idempotency, [scopedKey]: { fingerprint, sessionId: session.sessionId, proposalId } },
     events: [...ledger.events, event],
   });
@@ -357,14 +350,14 @@ function commitChange(
     previousStartsAt: session.startsAt,
   });
   const next = createSessionLedger({
+    ...ledger,
     sessions: ledger.sessions.map((candidate) => (candidate.sessionId === session.sessionId ? moved : candidate)),
     proposals: [
-      ...closeSuperseded(ledger.proposals, session.sessionId, proposal.proposalId, now).filter(
+      ...supersedePendingProposals(ledger.proposals, session.sessionId, proposal.proposalId, now).filter(
         (candidate) => candidate.proposalId !== proposal.proposalId,
       ),
       settled,
     ],
-    idempotency: ledger.idempotency,
     events: [...ledger.events, event],
   });
   return { ok: true, ledger: next, proposal: settled, session: moved, event, replayed: false };
@@ -433,9 +426,8 @@ export function decideReschedule(
     outcome: decision === 'decline' ? 'declined' : 'withdrawn',
   });
   const next = createSessionLedger({
-    sessions: ledger.sessions,
+    ...ledger,
     proposals: ledger.proposals.map((candidate) => (candidate.proposalId === proposal.proposalId ? closed : candidate)),
-    idempotency: ledger.idempotency,
     events: [...ledger.events, event],
   });
   return { ok: true, ledger: next, proposal: closed, session, event, replayed: false };

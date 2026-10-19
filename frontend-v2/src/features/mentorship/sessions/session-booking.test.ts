@@ -426,6 +426,7 @@ describe('scheduling errors', () => {
       ['PROPOSAL_STALE', 409],
       ['PROPOSAL_EXPIRED', 410],
       ['APPROVAL_NOT_ALLOWED', 403],
+      ['SESSION_STARTED', 409],
       ['UNKNOWN', 500],
     ]);
   });
