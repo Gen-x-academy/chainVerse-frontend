@@ -12,6 +12,7 @@ import {
   type SchedulingAgreement,
   type SessionLedger,
 } from './session-core';
+import type { NoShowPolicy } from './no-show-reports';
 import type { CancellationPolicySnapshot } from './session-cancellation';
 import type { ReschedulePolicy } from './session-reschedule';
 
@@ -97,4 +98,18 @@ export const cancellationSnapshot: CancellationPolicySnapshot = {
   },
   version: 3,
   platformFeeBps: 1_000,
+};
+
+/** Twenty minutes after the fixture session starts: past the grace period, inside the window. */
+export const NO_SHOW_NOW = new Date('2026-11-03T14:20:00.000Z');
+
+export const noShowPolicy: NoShowPolicy = {
+  opensAfterMinutes: 10,
+  reportWindowHours: 24,
+  responseWindowHours: 48,
+  maxEvidenceItems: 3,
+  maxNoteLength: 500,
+  maxAttachmentBytes: 5 * 1024 * 1024,
+  allowedMimeTypes: ['image/png', 'image/jpeg', 'application/pdf'],
+  autoConsequences: false,
 };

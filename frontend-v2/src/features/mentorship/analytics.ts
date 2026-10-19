@@ -21,7 +21,8 @@ export type MentorshipAnalyticsStage =
   | 'session_slot_search'
   | 'session_booking'
   | 'session_reschedule'
-  | 'session_cancellation';
+  | 'session_cancellation'
+  | 'session_no_show';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;

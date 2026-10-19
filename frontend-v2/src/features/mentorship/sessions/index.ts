@@ -6,3 +6,5 @@ export * from './session-reschedule';
 export * from './session-reschedule.service';
 export * from './session-cancellation';
 export * from './session-cancellation.service';
+export * from './no-show-reports';
+export * from './no-show-reports.service';

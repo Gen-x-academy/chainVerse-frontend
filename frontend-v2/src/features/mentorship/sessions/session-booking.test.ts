@@ -427,6 +427,12 @@ describe('scheduling errors', () => {
       ['PROPOSAL_EXPIRED', 410],
       ['APPROVAL_NOT_ALLOWED', 403],
       ['SESSION_STARTED', 409],
+      ['NO_SHOW_TOO_EARLY', 409],
+      ['NO_SHOW_WINDOW_CLOSED', 409],
+      ['NO_SHOW_ALREADY_REPORTED', 409],
+      ['NO_SHOW_ALREADY_RESPONDED', 409],
+      ['NO_SHOW_ALREADY_RESOLVED', 409],
+      ['DUE_PROCESS_PENDING', 409],
       ['UNKNOWN', 500],
     ]);
   });

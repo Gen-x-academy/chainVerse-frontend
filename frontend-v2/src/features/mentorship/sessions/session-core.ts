@@ -128,6 +128,84 @@ export interface SettlementInstruction {
   createdAt: string;
 }
 
+// ---------------------------------------------------------------------------
+// No-show reports
+// ---------------------------------------------------------------------------
+
+export type NoShowType = 'mentor' | 'mentee' | 'both' | 'technical';
+
+export const NO_SHOW_TYPE_LABELS: Record<NoShowType, string> = {
+  mentor: 'The mentor did not attend',
+  mentee: 'The mentee did not attend',
+  both: 'Neither of us attended',
+  technical: 'A technical problem stopped the session',
+};
+
+/**
+ * Evidence is limited and held by reference. A note is short plain text. An
+ * attachment is an opaque id of a file stored elsewhere, so the file itself is
+ * never copied into a report, and its reference is restricted.
+ */
+export type NoShowEvidence =
+  | { kind: 'note'; text: string }
+  | {
+      kind: 'attachment';
+      /** Absent when the viewer is not allowed to see the reference. */
+      attachmentRef?: string;
+      mimeType?: string;
+      sizeBytes?: number;
+      restricted?: true;
+    };
+
+export interface NoShowClaim {
+  claimId: string;
+  reporterId: string;
+  reporterRole: 'mentor' | 'mentee';
+  type: NoShowType;
+  statement: string;
+  evidence: readonly NoShowEvidence[];
+  reportedAt: string;
+}
+
+export interface NoShowResponse {
+  responderId: string;
+  statement: string;
+  evidence: readonly NoShowEvidence[];
+  respondedAt: string;
+}
+
+export type NoShowOutcome =
+  | 'uphold_mentor_no_show'
+  | 'uphold_mentee_no_show'
+  | 'uphold_both_absent'
+  | 'technical_issue'
+  | 'dismiss';
+
+export type NoShowConsequence = 'pending_policy' | 'none' | 'refund_mentee' | 'compensate_mentor';
+
+/** One report per session: later claims from the other participant merge into it. */
+export interface NoShowReport {
+  reportId: string;
+  sessionId: string;
+  agreementId: string;
+  tenantId: string;
+  status: 'open' | 'resolved';
+  claims: readonly NoShowClaim[];
+  responses: readonly NoShowResponse[];
+  /** True when the participants disagree about what happened. Never auto-resolved. */
+  conflicting: boolean;
+  /** Fixed when the report is opened; merging claims does not extend it. */
+  responseDeadline: string;
+  /** Stays `pending_policy` until a coordinator or an enabled policy resolves it. */
+  consequence: NoShowConsequence;
+  outcome?: NoShowOutcome;
+  resolvedBy?: string;
+  resolvedAt?: string;
+  /** Visible to participants and coordinators; never sent in events. */
+  resolutionNote?: string;
+  createdAt: string;
+}
+
 export interface MentorshipSession {
   sessionId: string;
   agreementId: string;
@@ -261,6 +339,36 @@ export const SCHEDULING_ERRORS = {
     message: 'This session has already started, so it can no longer be cancelled. Report a no-show if someone did not attend.',
     retryable: false,
   },
+  NO_SHOW_TOO_EARLY: {
+    status: 409,
+    message: 'It is too early to report a no-show. Wait until the grace period after the start has passed.',
+    retryable: false,
+  },
+  NO_SHOW_WINDOW_CLOSED: {
+    status: 409,
+    message: 'The window for reporting a no-show for this session has closed. Contact a coordinator.',
+    retryable: false,
+  },
+  NO_SHOW_ALREADY_REPORTED: {
+    status: 409,
+    message: 'You have already reported this session. Contact a coordinator if you need to change your report.',
+    retryable: false,
+  },
+  NO_SHOW_ALREADY_RESPONDED: {
+    status: 409,
+    message: 'You have already responded to this report. Contact a coordinator if you need to add anything.',
+    retryable: false,
+  },
+  NO_SHOW_ALREADY_RESOLVED: {
+    status: 409,
+    message: 'This report has already been resolved.',
+    retryable: false,
+  },
+  DUE_PROCESS_PENDING: {
+    status: 409,
+    message: 'The other participant has not yet had the chance to respond. Wait for their response or the deadline.',
+    retryable: false,
+  },
   UNKNOWN: {
     status: 500,
     message: 'The scheduling request failed. Check your connection and try again. Retrying will not create duplicates.',
@@ -365,7 +473,10 @@ export type SchedulingEventType =
   | 'mentorship.session.reschedule_proposed'
   | 'mentorship.session.rescheduled'
   | 'mentorship.session.reschedule_closed'
-  | 'mentorship.session.cancelled';
+  | 'mentorship.session.cancelled'
+  | 'mentorship.session.no_show_reported'
+  | 'mentorship.session.no_show_responded'
+  | 'mentorship.session.no_show_resolved';
 
 /**
  * Canonical domain event. The id is derived from the type, the session and its
@@ -396,6 +507,11 @@ export interface SchedulingEvent {
   cancelledByRole?: 'mentee' | 'mentor' | 'platform';
   /** Present on a cancellation: the one settlement instruction it produced. */
   settlementInstructionId?: string;
+  /** Present on no-show events: a category and ids only, never statements or evidence. */
+  reportId?: string;
+  noShowType?: NoShowType;
+  resolution?: NoShowOutcome;
+  consequence?: NoShowConsequence;
 }
 
 /** Idempotency record kept per actor and key. */
@@ -410,6 +526,7 @@ export interface SessionLedger {
   sessions: readonly MentorshipSession[];
   proposals: readonly RescheduleProposal[];
   settlements: readonly SettlementInstruction[];
+  noShowReports: readonly NoShowReport[];
   idempotency: Readonly<Record<string, IdempotencyRecord>>;
   events: readonly SchedulingEvent[];
 }
@@ -419,6 +536,7 @@ export function createSessionLedger(initial: Partial<SessionLedger> = {}): Sessi
     sessions: initial.sessions ?? [],
     proposals: initial.proposals ?? [],
     settlements: initial.settlements ?? [],
+    noShowReports: initial.noShowReports ?? [],
     idempotency: initial.idempotency ?? {},
     events: initial.events ?? [],
   };
