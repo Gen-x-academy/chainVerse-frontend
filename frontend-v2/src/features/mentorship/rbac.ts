@@ -252,15 +252,16 @@ export type MentorshipArea =
   | 'verification'
   | 'roles'
   | 'config'
-  | 'operations';
+  | 'operations'
   | 'lifecycle'
   | 'contracts'
-  | 'seed';
+  | 'seed'
   | 'availability'
   | 'credentials'
   | 'trust'
   | 'programs'
   | 'disputes';
+  | 'sessions';
 
 const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   hub: MENTORSHIP_ROLES,
@@ -279,6 +280,7 @@ const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {
   trust: ['student', 'organization-staff', 'moderator', 'administrator'],
   programs: MENTORSHIP_ROLES,
   disputes: ['student', 'mentor', 'moderator', 'finance', 'administrator'],
+  sessions: ['student', 'mentor', 'organization-staff', 'administrator'],
 };
 
 export const MENTORSHIP_AREA_ACCESS = AREA_ACCESS;
