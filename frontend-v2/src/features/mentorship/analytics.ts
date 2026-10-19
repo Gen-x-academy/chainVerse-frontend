@@ -20,6 +20,13 @@ export type MentorshipAnalyticsStage =
   | 'agreement_export'
   | 'session_slot_search'
   | 'session_workspace';
+  | 'session_agenda';
+  | 'attendance';
+  | 'session_booking'
+  | 'session_reschedule'
+  | 'session_cancellation'
+  | 'session_no_show';
+  | 'private_note';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;
