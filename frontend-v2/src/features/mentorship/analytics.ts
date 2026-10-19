@@ -23,6 +23,7 @@ export type MentorshipAnalyticsStage =
   | 'session_reschedule'
   | 'session_cancellation'
   | 'session_no_show';
+  | 'private_note';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;

@@ -23,6 +23,7 @@ work can be located.
 | [MENTOR-058 cancel sessions](./MENTOR-058-cancel-sessions.md) | MENTOR-058 | #1305 | Policy priced, idempotent cancellation with one settlement instruction and slot release |
 | [MENTOR-057 reschedule sessions](./MENTOR-057-reschedule-sessions.md) | MENTOR-057 | #1304 | Approval based reschedule with notice policy, fee preview, stale approval protection and calendar convergence |
 | [MENTOR-056 book sessions](./MENTOR-056-book-sessions.md) | MENTOR-056 | #1303 | Idempotent, conflict-safe booking from an active agreement with local plus UTC confirmation |
+| [MENTOR-064 private participant notes](./MENTOR-064-private-participant-notes.md) | MENTOR-064 | #1311 | Owner-only notes; id-only search, owner-only export, no text in logs |
 | [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
 | [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
 | [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
@@ -53,6 +54,8 @@ src/features/mentorship/
     no-show-reports.ts  no-show-reports.service.ts
     components/SessionBookingForm.tsx  RescheduleSessionPanel.tsx  CancelSessionPanel.tsx
     components/NoShowReportForm.tsx  NoShowCasePanel.tsx  EvidenceEditor.tsx
+  notes/                 # MENTOR-064 — private participant notes
+    private-notes.ts  private-notes.service.ts  components/PrivateNotesPanel.tsx
   agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
     engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
     agreement-export.service.ts  components/AgreementExportPanel.tsx
