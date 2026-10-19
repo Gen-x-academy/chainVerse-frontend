@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-063 privacy-aware attendance](./MENTOR-063-privacy-aware-attendance.md) | MENTOR-063 | #1310 | Corroborated, partial, correctable attendance with expiring raw signals |
 | [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md) | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery |
 | [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md) | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync |
 | [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md) | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection |
@@ -42,6 +43,8 @@ src/features/mentorship/
     external-calendar.ts  external-calendar.service.ts
     slot-finder.ts  slot-finder.service.ts
     components/RecurringAvailabilityPanel.tsx  ExternalCalendarPanel.tsx  MutualSlotFinder.tsx
+  attendance/            # MENTOR-063 — privacy-aware attendance
+    attendance.ts  attendance.service.ts  components/AttendancePanel.tsx
   agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
     engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
     agreement-export.service.ts  components/AgreementExportPanel.tsx
