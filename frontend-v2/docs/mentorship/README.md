@@ -19,6 +19,7 @@ work can be located.
 | [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md) | MENTOR-005 | #1252 | Stable, never display-derived public ids |
 | [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md) | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives |
 | [MENTOR-007 seed data](./MENTOR-007-seed-data.md) | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset |
+| [MENTOR-061 session workspace](./MENTOR-061-session-workspace.md) | MENTOR-061 | #1308 | Scoped, retention-aware, read-only-aware workspace with separate private notes |
 | [MENTOR-062 collaborative session agendas](./MENTOR-062-collaborative-session-agendas.md) | MENTOR-062 | #1309 | Versioned, conflict-aware agendas with cutoff, history and ordered export |
 | [MENTOR-063 privacy-aware attendance](./MENTOR-063-privacy-aware-attendance.md) | MENTOR-063 | #1310 | Corroborated, partial, correctable attendance with expiring raw signals |
 | [MENTOR-059 no-show reporting](./MENTOR-059-no-show-reporting.md) | MENTOR-059 | #1306 | Windowed no-show reports with limited evidence, merged duplicates, due process and policy gated consequences |
@@ -49,6 +50,8 @@ src/features/mentorship/
     external-calendar.ts  external-calendar.service.ts
     slot-finder.ts  slot-finder.service.ts
     components/RecurringAvailabilityPanel.tsx  ExternalCalendarPanel.tsx  MutualSlotFinder.tsx
+  workspace/             # MENTOR-061 — session workspace
+    workspace.ts  workspace.service.ts  components/SessionWorkspace.tsx
   agenda/                # MENTOR-062 — collaborative session agendas
     agenda.ts  agenda.service.ts  components/AgendaBoard.tsx
   attendance/            # MENTOR-063 — privacy-aware attendance
