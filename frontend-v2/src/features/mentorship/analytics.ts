@@ -19,6 +19,7 @@ export type MentorshipAnalyticsStage =
   | 'calendar_sync'
   | 'agreement_export'
   | 'session_slot_search'
+  | 'attendance';
   | 'session_booking'
   | 'session_reschedule'
   | 'session_cancellation'
