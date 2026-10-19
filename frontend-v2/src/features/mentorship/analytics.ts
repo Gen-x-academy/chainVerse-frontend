@@ -18,7 +18,8 @@ export type MentorshipAnalyticsStage =
   | 'organization_programs'
   | 'calendar_sync'
   | 'agreement_export'
-  | 'session_slot_search';
+  | 'session_slot_search'
+  | 'session_workspace';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;
