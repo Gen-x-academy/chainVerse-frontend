@@ -7,30 +7,40 @@
  * via POST /student/refresh-token before redirecting to /login.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
-export type RequestOptions = Omit<RequestInit, 'body'> & {
+export type RequestOptions = Omit<RequestInit, "body"> & {
   /** Bearer token to include in the Authorization header. */
   token?: string;
   body?: unknown;
 };
 
-const REFRESH_TOKEN_KEY = 'refreshToken';
-const ACCESS_TOKEN_KEY = 'accessToken';
+export class ApiClientError extends Error {
+  constructor(
+    public readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ApiClientError";
+  }
+}
+
+const REFRESH_TOKEN_KEY = "refreshToken";
+const ACCESS_TOKEN_KEY = "accessToken";
 
 /** Attempts to exchange a stored refresh token for a new access token. */
 async function attemptTokenRefresh(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
   if (!refreshToken) return false;
   try {
     const res = await fetch(`${BASE_URL}/student/refresh-token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
     });
     if (!res.ok) return false;
-    const data = await res.json() as { accessToken?: string };
+    const data = (await res.json()) as { accessToken?: string };
     if (data.accessToken) {
       localStorage.setItem(ACCESS_TOKEN_KEY, data.accessToken);
       return true;
@@ -41,19 +51,26 @@ async function attemptTokenRefresh(): Promise<boolean> {
   }
 }
 
-async function request<T>(path: string, options: RequestOptions = {}, isRetry = false): Promise<T> {
+async function request<T>(
+  path: string,
+  options: RequestOptions = {},
+  isRetry = false,
+): Promise<T> {
   if (!BASE_URL) {
-    throw new Error('NEXT_PUBLIC_API_BASE_URL is not configured');
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not configured");
   }
 
   const { token, body, headers: extraHeaders, ...init } = options;
 
   // Include stored access token when available (falls back to explicit token option)
-  const storedToken = typeof window !== 'undefined' ? localStorage.getItem(ACCESS_TOKEN_KEY) : null;
+  const storedToken =
+    typeof window !== "undefined"
+      ? localStorage.getItem(ACCESS_TOKEN_KEY)
+      : null;
   const bearerToken = token ?? storedToken ?? undefined;
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...(extraHeaders as Record<string, string> | undefined),
     ...(bearerToken ? { Authorization: `Bearer ${bearerToken}` } : {}),
   };
@@ -76,19 +93,23 @@ async function request<T>(path: string, options: RequestOptions = {}, isRetry = 
         return request<T>(path, options, true);
       }
       // Refresh failed — clear tokens and redirect to login
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
-        const { authService } = await import('@/src/features/auth/services/auth.service');
+        const { authService } =
+          await import("@/src/features/auth/services/auth.service");
         authService.logout();
-        window.location.href = '/login?reason=session_expired';
+        window.location.href = "/login?reason=session_expired";
       }
-      throw new Error('Session expired');
+      throw new Error("Session expired");
     }
 
     if (!response.ok) {
-      const message = await response.text().catch(() => '');
-      throw new Error(message || `Request failed with status ${response.status}`);
+      const message = await response.text().catch(() => "");
+      throw new ApiClientError(
+        response.status,
+        message || `Request failed with status ${response.status}`,
+      );
     }
 
     return response.json() as Promise<T>;
@@ -99,19 +120,19 @@ async function request<T>(path: string, options: RequestOptions = {}, isRetry = 
 
 export const apiClient = {
   get: <T>(path: string, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: 'GET' }),
+    request<T>(path, { ...options, method: "GET" }),
 
   post: <T>(path: string, body: unknown, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: 'POST', body }),
+    request<T>(path, { ...options, method: "POST", body }),
 
   put: <T>(path: string, body: unknown, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: 'PUT', body }),
+    request<T>(path, { ...options, method: "PUT", body }),
 
   patch: <T>(path: string, body: unknown, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: 'PATCH', body }),
+    request<T>(path, { ...options, method: "PATCH", body }),
 
   delete: <T>(path: string, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: 'DELETE' }),
+    request<T>(path, { ...options, method: "DELETE" }),
 };
 
 export const authedClient = apiClient;

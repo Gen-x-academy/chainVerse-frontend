@@ -32,6 +32,7 @@ const AREA_LABELS: Record<string, string> = {
   credentials: "Credential verification",
   trust: "Trust indicators",
   programs: "Organization programs",
+  disputes: "Session disputes",
 };
 
 export default function MentorshipHubPage() {

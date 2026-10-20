@@ -8,22 +8,21 @@ This directory holds the frontend documentation for the **Foundation**,
 names its shared work item so the corresponding backend, contract, and mobile
 work can be located.
 
-| Doc                                                                                   | Work item  | Issue      | Scope                                                                         |
-| ------------------------------------------------------------------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------- |
-| [MENTOR-001 bounded contexts](./MENTOR-001-bounded-contexts.md)                       | MENTOR-001 | #1248      | Vocabulary, ownership, identifiers, lifecycles, invariants                    |
-| [MENTOR-002 capability config](./MENTOR-002-capability-config.md)                     | MENTOR-002 | #1249      | Feature flags, limits, currencies, durations, evidence rules                  |
-| [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md)                      | MENTOR-003 | #1250      | Least-privilege role and permission matrix                                    |
-| [MENTOR-112 abuse threat model](./MENTOR-112-mentorship-abuse-threat-model.md)        | MENTOR-112 | #1359      | Abuse threat model: assets, boundaries, payments, minors, calendar, messaging |
-| [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md)              | MENTOR-120 | #1367      | Rollout, flags, migrations, rollback, privacy, GA gates                       |
-| [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251      | Guarded, auditable engagement state machine                                   |
-| [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md)            | MENTOR-005 | #1252      | Stable, never display-derived public ids                                      |
-| [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md)                 | MENTOR-006 | #1253      | Versioned command/query/event envelopes and primitives                        |
-| [MENTOR-007 seed data](./MENTOR-007-seed-data.md)                                     | MENTOR-007 | #1254      | Deterministic, synthetic demonstration dataset                                |
-| [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md)               | MENTOR-055 | #1302      | Deterministic, DST-safe, capacity-aware slot discovery                        |
-| [MENTOR-065 shared session summaries](./MENTOR-065-session-summaries.md)              | MENTOR-065 | MENTOR-065 | Participant-authored, revisioned, explicitly confirmed summaries              |
-| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md)                     | MENTOR-054 | #1301      | Revocable free/busy calendar connections with replay-safe sync                |
-| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md)           | MENTOR-053 | #1300      | Weekly windows, exceptions, DST, booking policy and conflict protection       |
-| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md)                       | MENTOR-052 | #1299      | Participant-only, audited, expiring export of agreement records               |
+| Doc                                                                                   | Work item  | Issue | Scope                                                                         |
+| ------------------------------------------------------------------------------------- | ---------- | ----- | ----------------------------------------------------------------------------- |
+| [MENTOR-001 bounded contexts](./MENTOR-001-bounded-contexts.md)                       | MENTOR-001 | #1248 | Vocabulary, ownership, identifiers, lifecycles, invariants                    |
+| [MENTOR-002 capability config](./MENTOR-002-capability-config.md)                     | MENTOR-002 | #1249 | Feature flags, limits, currencies, durations, evidence rules                  |
+| [MENTOR-003 role matrix](./MENTOR-003-role-permission-matrix.md)                      | MENTOR-003 | #1250 | Least-privilege role and permission matrix                                    |
+| [MENTOR-112 abuse threat model](./MENTOR-112-mentorship-abuse-threat-model.md)        | MENTOR-112 | #1359 | Abuse threat model: assets, boundaries, payments, minors, calendar, messaging |
+| [MENTOR-120 rollout & migration](./MENTOR-120-rollout-migration-plan.md)              | MENTOR-120 | #1367 | Rollout, flags, migrations, rollback, privacy, GA gates                       |
+| [MENTOR-004 engagement lifecycle](./MENTOR-004-engagement-lifecycle-state-machine.md) | MENTOR-004 | #1251 | Guarded, auditable engagement state machine                                   |
+| [MENTOR-005 public identifiers](./MENTOR-005-stable-public-identifiers.md)            | MENTOR-005 | #1252 | Stable, never display-derived public ids                                      |
+| [MENTOR-006 versioned contracts](./MENTOR-006-versioned-contracts.md)                 | MENTOR-006 | #1253 | Versioned command/query/event envelopes and primitives                        |
+| [MENTOR-007 seed data](./MENTOR-007-seed-data.md)                                     | MENTOR-007 | #1254 | Deterministic, synthetic demonstration dataset                                |
+| [MENTOR-055 mutual session slots](./MENTOR-055-mutual-session-slots.md)               | MENTOR-055 | #1302 | Deterministic, DST-safe, capacity-aware slot discovery                        |
+| [MENTOR-054 external calendar](./MENTOR-054-external-calendar.md)                     | MENTOR-054 | #1301 | Revocable free/busy calendar connections with replay-safe sync                |
+| [MENTOR-053 recurring availability](./MENTOR-053-recurring-availability.md)           | MENTOR-053 | #1300 | Weekly windows, exceptions, DST, booking policy and conflict protection       |
+| [MENTOR-052 agreement export](./MENTOR-052-agreement-export.md)                       | MENTOR-052 | #1299 | Participant-only, audited, expiring export of agreement records               |
 
 ## Module layout
 
@@ -43,12 +42,29 @@ src/features/mentorship/
     external-calendar.ts  external-calendar.service.ts
     slot-finder.ts  slot-finder.service.ts
     components/RecurringAvailabilityPanel.tsx  ExternalCalendarPanel.tsx  MutualSlotFinder.tsx
+  workspace/             # MENTOR-061 — session workspace
+    workspace.ts  workspace.service.ts  components/SessionWorkspace.tsx
+  agenda/                # MENTOR-062 — collaborative session agendas
+    agenda.ts  agenda.service.ts  components/AgendaBoard.tsx
+  attendance/            # MENTOR-063 — privacy-aware attendance
+    attendance.ts  attendance.service.ts  components/AttendancePanel.tsx
+  sessions/              # MENTOR-056 to 059 - booking, rescheduling, cancelling and no-shows, with shared primitives
+    session-core.ts  session-booking.ts  session-booking.service.ts
+    session-reschedule.ts  session-reschedule.service.ts
+    session-cancellation.ts  session-cancellation.service.ts
+    no-show-reports.ts  no-show-reports.service.ts
+    components/SessionBookingForm.tsx  RescheduleSessionPanel.tsx  CancelSessionPanel.tsx
+    components/NoShowReportForm.tsx  NoShowCasePanel.tsx  EvidenceEditor.tsx
+  notes/                 # MENTOR-064 — private participant notes
+    private-notes.ts  private-notes.service.ts  components/PrivateNotesPanel.tsx
   agreements/            # MENTOR-045/046/048/052 — terms, acceptance, export
     engagement-agreement.ts  agreement-acceptance.ts  agreement-export.ts
     agreement-export.service.ts  components/AgreementExportPanel.tsx
   summaries/             # MENTOR-065 — shared session summaries and confirmation
     types.ts  service.ts  components/SessionSummaryList.tsx
     components/SessionSummaryPanel.tsx
+  disputes/              # MENTOR-067 — completion disputes and due process
+    types.ts  rules.ts  service.ts  components/SessionDisputesPanel.tsx
   seed/                  # MENTOR-007 — deterministic dataset
     dataset.ts  index.ts
   components/        # MentorshipPageShell, RolePermissionMatrix

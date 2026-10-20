@@ -19,8 +19,33 @@ export type MentorshipAnalyticsStage =
   | "calendar_sync"
   | "agreement_export"
   | "session_slot_search"
+  | "session_dispute";
+  | "session_recording_consent_granted"
+  | "session_recording_consent_declined"
+  | "session_recording_consent_revoked"
+  | "session_guardian_recording_consent_granted"
+  | "session_guardian_recording_consent_declined"
+  | "session_guardian_recording_consent_revoked"
+  | "session_recording_started"
+  | "session_recording_stopped";
+  | "engagement_lifecycle"
+  | "mentor_availability"
+  | "credential_verification"
+  | "trust_indicators"
+  | "organization_programs"
+  | "calendar_sync"
+  | "agreement_export"
+  | "session_slot_search"
   | "session_summary_draft"
-  | "session_summary_confirmed";
+  | "session_summary_confirmed"
+  | 'session_workspace';
+  | 'session_agenda';
+  | 'attendance';
+  | 'session_booking'
+  | 'session_reschedule'
+  | 'session_cancellation'
+  | 'session_no_show';
+  | 'private_note';
 
 export interface MentorshipAnalyticsEvent {
   stage: MentorshipAnalyticsStage;
