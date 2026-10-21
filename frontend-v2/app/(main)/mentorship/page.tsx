@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: "/mentorship", label: "Overview" },
   { href: "/mentorship/roles", label: "Roles & permissions" },
   { href: "/mentorship/config", label: "Capabilities" },
+  { href: "/mentorship/sessions", label: "Session summaries" },
 ];
 
 const AREA_LABELS: Record<string, string> = {
@@ -42,6 +43,10 @@ export default function MentorshipHubPage() {
   const role = toIdentityRole(user?.role);
   const allowed = canAccessMentorshipArea(role, "hub");
   const areas = accessibleMentorshipAreas(role);
+  const navItems =
+    role === "mentor" || role === "student"
+      ? NAV_ITEMS
+      : NAV_ITEMS.filter((item) => item.href !== "/mentorship/sessions");
 
   return (
     <MentorshipPageShell
@@ -49,7 +54,7 @@ export default function MentorshipHubPage() {
       title="Mentorship"
       description={`1-on-1 mentorship, backed by the v${MENTORSHIP_VOCABULARY_VERSION} shared vocabulary and a least-privilege role matrix.`}
       activeHref="/mentorship"
-      navItems={NAV_ITEMS}
+      navItems={navItems}
     >
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Your sections</h2>
@@ -70,6 +75,14 @@ export default function MentorshipHubPage() {
               </li>
             ))}
           </ul>
+        )}
+        {(role === "mentor" || role === "student") && (
+          <Link
+            href="/mentorship/sessions"
+            className="mt-4 inline-flex min-h-11 items-center rounded-md border border-slate-300 px-4 py-2 font-semibold text-indigo-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600"
+          >
+            Session summaries
+          </Link>
         )}
       </section>
 
