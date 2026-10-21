@@ -18,7 +18,7 @@
     "test:e2e:visual:update": "playwright test visual-regression --update-snapshots"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^2.7.0",
+    "@creit.tech/stellar-wallets-kit": "^2.7.1",
     "@hookform/resolvers": "^5.9.1",
     "@stellar/stellar-sdk": "^17.2.1",
     "@tanstack/react-query": "^5.104.2",
