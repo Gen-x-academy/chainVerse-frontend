@@ -28,14 +28,16 @@ export type MentorshipAnalyticsStage =
   | "session_guardian_recording_consent_revoked"
   | "session_recording_started"
   | "session_recording_stopped";
-  | 'engagement_lifecycle'
-  | 'mentor_availability'
-  | 'credential_verification'
-  | 'trust_indicators'
-  | 'organization_programs'
-  | 'calendar_sync'
-  | 'agreement_export'
-  | 'session_slot_search'
+  | "engagement_lifecycle"
+  | "mentor_availability"
+  | "credential_verification"
+  | "trust_indicators"
+  | "organization_programs"
+  | "calendar_sync"
+  | "agreement_export"
+  | "session_slot_search"
+  | "session_summary_draft"
+  | "session_summary_confirmed"
   | 'session_workspace';
   | 'session_agenda';
   | 'attendance';
