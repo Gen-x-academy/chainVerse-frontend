@@ -81,6 +81,32 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+function CardSkeleton({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-skeleton"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+      className={cn(
+        "bg-card flex flex-col gap-4 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props}
+    >
+      <span className="sr-only">Loading…</span>
+      <div className="flex flex-col gap-2 px-6">
+        <div className="bg-muted h-4 w-1/3 animate-pulse rounded" />
+        <div className="bg-muted h-3 w-2/3 animate-pulse rounded" />
+      </div>
+      <div className="flex flex-col gap-2 px-6">
+        <div className="bg-muted h-3 w-full animate-pulse rounded" />
+        <div className="bg-muted h-3 w-5/6 animate-pulse rounded" />
+      </div>
+    </div>
+  )
+}
+
 export {
   Card,
   CardHeader,
@@ -89,4 +115,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardSkeleton,
 }

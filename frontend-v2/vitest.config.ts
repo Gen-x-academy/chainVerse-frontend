@@ -13,6 +13,7 @@ export default defineConfig({
       "**/*.{test,spec}.{ts,tsx}",
       "test/**/*.{ts,tsx}",
       "components/**/__tests__/**/*.{ts,tsx}",
+      "src/features/workspace/__tests__/**/*.{ts,tsx}",
     ],
     exclude: ["node_modules", ".next", "e2e"],
     coverage: {
