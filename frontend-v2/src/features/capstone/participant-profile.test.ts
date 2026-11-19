@@ -58,8 +58,13 @@ describe("participant profile", () => {
     const r = validateParticipantProfile({ ...valid(), preferenceVisibility: "supervisors" });
     if (!r.ok) throw new Error("invalid");
     expect(viewProfileFor(r.profile, "supervisors")).toHaveProperty("interests");
-    expect(viewProfileFor(r.profile, "sponsors")).toHaveProperty("interests");
-    expect(viewProfileFor(r.profile, "public")).toHaveProperty("interests");
+    expect(viewProfileFor(r.profile, "sponsors")).not.toHaveProperty("interests");
+    expect(viewProfileFor(r.profile, "public")).not.toHaveProperty("interests");
+    const open = validateParticipantProfile({ ...valid(), preferenceVisibility: "public" });
+    if (!open.ok) throw new Error("invalid");
+    for (const audience of ["supervisors", "sponsors", "public"] as const) {
+      expect(viewProfileFor(open.profile, audience)).toHaveProperty("interests");
+    }
     const strict = validateParticipantProfile({ ...valid(), preferenceVisibility: "private" });
     if (!strict.ok) throw new Error("invalid");
     expect(viewProfileFor(strict.profile, "public")).not.toHaveProperty("interests");

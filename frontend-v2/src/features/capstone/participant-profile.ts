@@ -133,9 +133,11 @@ export function viewProfileFor(profile: ParticipantProfile, audience: Audience):
   const rank = AUDIENCES.indexOf(audience);
   const prefRank = AUDIENCES.indexOf(profile.preferenceVisibility);
   const base: Partial<ParticipantProfile> = { displayName: profile.displayName, kind: profile.kind, skills: profile.skills, portfolio: profile.portfolio };
-  // "private" is the owner's own view; an audience sees preferences only when the owner opened them to it.
+  // "private" is the owner's own view. Visibility widens in the order
+  // private < supervisors < sponsors < public; an audience sees preferences only
+  // when it is no wider than the visibility the owner chose.
   const owner = audience === "private";
-  const canSeePrefs = owner || (audience !== "private" && rank >= prefRank && prefRank > 0);
+  const canSeePrefs = owner || rank <= prefRank;
   return {
     ...base,
     ...(canSeePrefs ? { interests: profile.interests, preferredRoles: profile.preferredRoles, availabilityHours: profile.availabilityHours } : {}),
