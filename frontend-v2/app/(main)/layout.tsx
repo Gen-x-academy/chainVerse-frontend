@@ -60,6 +60,30 @@ const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     permission: 'workspace.reviews.read',
     description: 'Independent proposal reviews',
   },
+  {
+    href: '/workspace/reviews/blinded',
+    label: 'Blinded Reviews',
+    permission: 'workspace.reviews.blinded.read',
+    description: 'Reviews with participant and reviewer identities hidden',
+  },
+  {
+    href: '/workspace/rubrics',
+    label: 'Review Rubrics',
+    permission: 'workspace.rubrics.read',
+    description: 'Versioned review criteria, weights, and aggregation rules',
+  },
+  {
+    href: '/workspace/projects/:projectId/notes',
+    label: 'Collaborative Notes',
+    permission: 'workspace.notes.read',
+    description: 'Shared project notes with revision history',
+  },
+  {
+    href: '/workspace/projects/:projectId/activity',
+    label: 'Activity',
+    permission: 'workspace.activity.read',
+    description: 'Permission-filtered project activity feed',
+  },
 ];
 
 function isActivePath(pathname: string | null, href: string): boolean {

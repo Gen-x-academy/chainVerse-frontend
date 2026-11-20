@@ -11,33 +11,67 @@ must be read alongside it:
 
 | Work item | Capability | Frontend source | Route |
 | --- | --- | --- | --- |
+| CAPSTONE-066 (#1492) | Collaborative project notes | `src/features/workspace/notes/` | `/workspace/projects/:projectId/notes` |
 | CAPSTONE-067 (#1493) | Private researcher notes | `src/features/workspace/notes/` | `/workspace/projects/:projectId/notes` |
 | CAPSTONE-069 (#1495) | Project discussion threads | `src/features/workspace/discussions/` | `/workspace/projects/:projectId/discussions` |
+| CAPSTONE-072 (#1498) | Project activity feed | `src/features/workspace/activity/` | `/workspace/projects/:projectId/activity` |
+| CAPSTONE-074 (#1500) | Configurable review rubrics | `src/features/workspace/rubrics/` | `/workspace/rubrics` |
+| CAPSTONE-076 (#1502) | Blinded review modes | `src/features/workspace/reviews/blinded/` | `/workspace/reviews/blinded` |
 | CAPSTONE-077 (#1503) | Fair review aggregation | `src/features/workspace/reviews/aggregation/` | `/workspace/projects/:projectId/reviews` |
 | CAPSTONE-078 (#1504) | Proposal revision requests | `src/features/workspace/reviews/revisions/` | `/workspace/projects/:projectId/reviews/revisions` |
 
 Each capability is delivered in the other repositories under the same shared
-work item id (CAPSTONE-067 / 069 / 077 / 078). The backend owns persistence,
-authorization enforcement, and the audit chain; this repository owns the
-responsive, accessible UI, typed API clients, and role-aware navigation. Do not
-ship a frontend capability ahead of its backend contract — the client treats a
-missing or unauthorized endpoint as an error state, never as empty data.
+work item id (CAPSTONE-066 / 067 / 069 / 072 / 074 / 076 / 077 / 078). The
+backend owns persistence, authorization enforcement, and the audit chain; this
+repository owns the responsive, accessible UI, typed API clients, and role-aware
+navigation. Do not ship a frontend capability ahead of its backend contract —
+the client treats a missing or unauthorized endpoint as an error state, never as
+empty data.
+
+### Cross-repository coordination
+
+- **CAPSTONE-066 (collaborative project notes)** shares the notes route with
+  CAPSTONE-067. Shared notes are project- and tenant-scoped and visible to
+  authorized members; private researcher notes stay owner-only. The backend
+  contract must distinguish the two visibility scopes before either ships.
+- **CAPSTONE-072 (activity feed)** aggregates permission-filtered changes from
+  the other workspace capabilities. It depends on the audit/event contract of
+  every producer (notes, discussions, rubrics, reviews, revisions); a producer
+  that emits private payloads would leak through the feed, so the feed only
+  renders ids, actor, type, time, and deep links.
+- **CAPSTONE-074 (review rubrics)** is versioned configuration consumed by
+  CAPSTONE-076/077/078. Rubric versions are immutable once used for a review;
+  the frontend never edits a published version in place.
+- **CAPSTONE-076 (blinded review modes)** is a projection concern: the backend
+  returns blinded projections and the frontend must not reconstruct hidden
+  identities from other fields, caches, or analytics.
+- Coordinate contract changes with the backend, identity, audit, and
+  notification repositories under the same work item ids before enabling a
+  route in any tenant.
 
 ### Dependencies
 
-- **Backend API** for notes, threads, review aggregation, and revision requests,
-  including deny-by-default authorization and tenant scoping. The frontend never
-  infers permission from a hidden control; every action is re-checked server-side.
-- **Identity/roles** for owner-only notes and reviewer/author roles. Role-aware
-  navigation hides unavailable routes but is not the authorization boundary.
+- **Backend API** for collaborative and private notes, threads, activity feed,
+  rubrics, blinded review projections, review aggregation, and revision
+  requests, including deny-by-default authorization and tenant scoping. The
+  frontend never infers permission from a hidden control; every action is
+  re-checked server-side.
+- **Identity/roles** for owner-only notes, project membership, rubric
+  administration, and reviewer/author roles. Role-aware navigation hides
+  unavailable routes but is not the authorization boundary.
 - **Audit service** for lifecycle transitions. Audit records carry ids, actor,
-  action, and timestamps only — never note bodies, thread content, review
-  comments, or revision text.
-- **Notification service** for mentions, revision deadlines, and review
-  outcomes. Notifications reference ids, not private payloads.
+  action, and timestamps only — never note bodies, thread content, rubric
+  guidance text, review comments, revision text, or blinded identities.
+- **Notification service** for mentions, revision deadlines, review outcomes,
+  and rubric publication. Notifications reference ids, not private payloads.
 
 ### Privacy boundaries
 
+- **Collaborative project notes (CAPSTONE-066)** are visible only to authorized
+  project members within the tenant. Note bodies, links, and revision history
+  are never sent to analytics, logs, or exports; only event names and opaque ids
+  are emitted. Rendering is sanitized — stored markup is treated as untrusted.
+  Archived notes are retained per policy, not deleted on archive.
 - **Private researcher notes (CAPSTONE-067)** are owner-only. They are excluded
   from team views, review screens, analytics content, exports, and general logs.
   The client never sends note bodies to analytics; only event names and opaque
@@ -46,6 +80,22 @@ missing or unauthorized endpoint as an error state, never as empty data.
   Mentions resolve to display names only; attachments are referenced by id and
   fetched through an authorized endpoint. Moderation hooks record the action, not
   the removed content.
+- **Activity feed (CAPSTONE-072)** is permission-filtered per viewer and never
+  copies private content. Entries carry actor, type, time, and a deep link; the
+  feed does not embed note bodies, thread text, rubric guidance, or review
+  comments. Read state is per-user and stored server-side; retention follows the
+  project's retention class, and expired entries are swept, not archived into
+  the feed.
+- **Review rubrics (CAPSTONE-074)** define versioned criteria, weights,
+  guidance, score ranges, required comments, visibility, and aggregation rules.
+  Guidance text is configuration, not private content, but is still excluded
+  from analytics and logs. Published versions are immutable; edits create a new
+  version so past reviews remain explainable.
+- **Blinded review modes (CAPSTONE-076)** hide configured participant or
+  reviewer identity fields consistently across queues, exports, notifications,
+  and audit-safe projections. The frontend renders only the blinded projection
+  the backend returns and must not infer hidden identities from ordering,
+  counts, or cached data. Blinded identities are never emitted to analytics.
 - **Review aggregation (CAPSTONE-077)** exposes explainable outcomes (quorum,
   missing-review handling, calibration, tie treatment) but not individual
   reviewer identities or private comments. Scores are never silently mutated;
@@ -61,8 +111,17 @@ missing or unauthorized endpoint as an error state, never as empty data.
 
 - Notes and threads follow the `RetentionPolicy` above. A class with no rule is
   protected, never deleted. Legal holds block erasure of covered records first.
+- Collaborative notes (CAPSTONE-066) retain their revision history for the
+  project's retention window; archiving is a lifecycle state, not deletion.
 - Thread retention is governed by the project's retention class; resolved
   threads are retained for the window and then expire under the same sweep.
+- Activity feed entries (CAPSTONE-072) are retained per the project's retention
+  class and swept on expiry. Read state is per-user metadata and is removed with
+  the entry; it never outlives the entry it describes.
+- Rubric versions (CAPSTONE-074) are retained with the reviews that used them so
+  a decision can be explained after the fact. Blinded review projections
+  (CAPSTONE-076) are retained in their blinded form; unblinding, where allowed,
+  is an explicit audited action.
 - Moderation actions (hide, lock, remove) are audited with actor and reason code.
   Removed content is retained per policy for review, not hard-deleted on action.
 - Review aggregation snapshots and revision requests are retained with their
@@ -71,18 +130,25 @@ missing or unauthorized endpoint as an error state, never as empty data.
 ### Rollout and rollback
 
 - **Rollout:** publish backend contracts first, then enable routes behind the
-  role-aware navigation flag per tenant. Start with notes and threads in a single
-  pilot tenant, verify audit records contain no private payloads, then widen.
-  Enable review aggregation and revision requests only after the review lifecycle
-  is validated end to end.
+  role-aware navigation flag per tenant. Start with collaborative notes and
+  threads in a single pilot tenant, verify audit records contain no private
+  payloads, then widen. Enable the activity feed only after its producer
+  contracts are live. Enable review rubrics before blinded modes, aggregation,
+  and revision requests, since those consume rubric versions. Validate the
+  review lifecycle end to end before enabling blinded modes in a tenant.
 - **Rollback:** each capability is additive and independently flaggable. Disable
   the navigation flag to hide a route; the backend remains the source of truth
   and no data is deleted by rolling back the frontend. Never roll back by
-  deleting records — use the retention sweep and legal holds.
+  deleting records — use the retention sweep and legal holds. Rolling back
+  blinded modes must not reveal previously hidden identities in exports or
+  notifications; keep the blinded projection until the backend unblinds.
 - **Idempotency:** concurrent requests and retries must not duplicate notes,
-  threads, mentions, revision requests, review decisions, or notifications. The
-  client sends idempotency keys and surfaces conflicts as stable, actionable
-  errors rather than retrying blindly.
+  note revisions, threads, mentions, feed entries, rubric versions, review
+  decisions, revision requests, or notifications. The client sends idempotency
+  keys and surfaces conflicts as stable, actionable errors rather than retrying
+  blindly. Stale transitions (editing an archived note, publishing over an
+  existing rubric version, submitting against a superseded rubric) are rejected
+  with actionable errors, never silently merged.
 =======
 
 ## What this is

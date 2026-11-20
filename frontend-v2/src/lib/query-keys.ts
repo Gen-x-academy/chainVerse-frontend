@@ -65,36 +65,43 @@ export const queryKeys = {
   reviewsForSubmission: (identity: Identity, submissionVersionId: string) =>
     ['reviewsForSubmission', ...identityScope(identity), submissionVersionId] as const,
 
-  // CAPSTONE-063: project timeline and roadmap
-  timeline: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
-    ['timeline', ...identityScope(identity), projectId, filters] as const,
+  // CAPSTONE-066: collaborative project notes
+  notes: (identity: Identity, projectId: string) =>
+    ['notes', ...identityScope(identity), projectId] as const,
 
-  // CAPSTONE-065: project collaboration workspace
-  workspaceOverview: (identity: Identity, projectId: string) =>
-    ['workspaceOverview', ...identityScope(identity), projectId] as const,
+  note: (identity: Identity, noteId: string) =>
+    ['note', ...identityScope(identity), noteId] as const,
 
-  projectMembers: (identity: Identity, projectId: string) =>
-    ['projectMembers', ...identityScope(identity), projectId] as const,
+  noteRevisions: (identity: Identity, noteId: string) =>
+    ['noteRevisions', ...identityScope(identity), noteId] as const,
 
-  projectObjectives: (identity: Identity, projectId: string) =>
-    ['projectObjectives', ...identityScope(identity), projectId] as const,
+  // CAPSTONE-072: project activity feed
+  activity: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
+    ['activity', ...identityScope(identity), projectId, filters] as const,
 
-  projectMilestones: (identity: Identity, projectId: string) =>
-    ['projectMilestones', ...identityScope(identity), projectId] as const,
+  activityReadState: (identity: Identity, projectId: string) =>
+    ['activityReadState', ...identityScope(identity), projectId] as const,
 
-  projectActivity: (identity: Identity, projectId: string) =>
-    ['projectActivity', ...identityScope(identity), projectId] as const,
+  // CAPSTONE-074: configurable review rubrics
+  rubrics: (identity: Identity, projectId: string) =>
+    ['rubrics', ...identityScope(identity), projectId] as const,
 
-  projectNextActions: (identity: Identity, projectId: string) =>
-    ['projectNextActions', ...identityScope(identity), projectId] as const,
+  rubric: (identity: Identity, rubricId: string) =>
+    ['rubric', ...identityScope(identity), rubricId] as const,
 
-  // CAPSTONE-068: project resource library
-  projectResources: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
-    ['projectResources', ...identityScope(identity), projectId, filters] as const,
+  rubricVersions: (identity: Identity, rubricId: string) =>
+    ['rubricVersions', ...identityScope(identity), rubricId] as const,
 
-  projectResource: (identity: Identity, projectId: string, resourceId: string) =>
-    ['projectResource', ...identityScope(identity), projectId, resourceId] as const,
+  // CAPSTONE-076: blinded review modes
+  blindingConfig: (identity: Identity, projectId: string) =>
+    ['blindingConfig', ...identityScope(identity), projectId] as const,
 
-  projectResourceVersions: (identity: Identity, projectId: string, resourceId: string) =>
-    ['projectResourceVersions', ...identityScope(identity), projectId, resourceId] as const,
+  blindedReviewQueue: (
+    identity: Identity,
+    projectId: string,
+    filters: Record<string, unknown> = {},
+  ) => ['blindedReviewQueue', ...identityScope(identity), projectId, filters] as const,
+
+  blindedReviewExport: (identity: Identity, projectId: string) =>
+    ['blindedReviewExport', ...identityScope(identity), projectId] as const,
 };

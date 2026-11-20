@@ -181,305 +181,272 @@ export type WorkspaceCapability =
   | 'workspace.reviewQueue.declareConflict'
   | 'workspace.reviews.read'
   | 'workspace.reviews.submit'
-  | 'projects.timeline.read'
-  | 'projects.timeline.write'
-  | 'projects.workspace.read'
-  | 'projects.members.read'
-  | 'projects.members.write'
-  | 'projects.resources.read'
-  | 'projects.resources.write';
+  | 'workspace.notes.read'
+  | 'workspace.notes.write'
+  | 'workspace.notes.archive'
+  | 'workspace.activity.read'
+  | 'workspace.rubrics.read'
+  | 'workspace.rubrics.write'
+  | 'workspace.rubrics.publish'
+  | 'workspace.reviews.blinded.read'
+  | 'workspace.reviews.blinded.export';
 
-// ─── Projects: shared primitives (CAPSTONE-063/065/068) ───────────────────────
+// ─── Collaborative project notes (CAPSTONE-066) ──────────────────────────────
 
 /**
- * Lifecycle states a project moves through. Transitions are validated by the
+ * Lifecycle states for a shared project note. Transitions are validated by the
  * backend; the frontend only renders the states it is allowed to see.
  */
-export type ProjectLifecycleState =
-  | 'draft'
-  | 'proposed'
-  | 'active'
-  | 'paused'
-  | 'completed'
-  | 'archived';
+export type NoteStatus = 'draft' | 'active' | 'archived';
+
+/** Visibility of a note within the tenant. Never crosses tenant boundaries. */
+export type NoteVisibility = 'project' | 'private';
+
+/** Kind of resource a note links to. Links carry ids only, never payloads. */
+export type NoteLinkKind = 'decision' | 'review' | 'sourceControl' | 'note';
 
 /**
- * Roles a member can hold inside a single project. Deny-by-default: unknown
- * roles grant no capability.
+ * A link from a note to another workspace resource. Only the target id and kind
+ * are stored so private content is never duplicated into the note graph.
  */
-export type ProjectMemberRole = 'owner' | 'lead' | 'contributor' | 'reviewer' | 'observer';
+export interface NoteLink {
+  id: string;
+  kind: NoteLinkKind;
+  targetId: string;
+  createdAt: string;
+}
 
 /**
- * Optimistic-concurrency token. Every mutation must echo the version it was
- * based on so stale writes are rejected with a stable conflict error.
+ * A single revision of a note. `body` is only present when the caller is
+ * authorized to read note content; audit-safe projections omit it entirely.
  */
-export interface ProjectVersionRef {
-  version: number;
+export interface NoteRevision {
+  id: string;
+  noteId: string;
+  revision: number;
+  title: string;
+  body?: string;
+  authorId: string;
+  createdAt: string;
+  /** Optimistic-concurrency token used to reject stale edits. */
   etag: string;
 }
 
-/** Stable, actionable error codes surfaced by project endpoints. */
-export type ProjectErrorCode =
-  | 'project.not_found'
-  | 'project.forbidden'
-  | 'project.lifecycle_invalid'
-  | 'project.version_conflict'
-  | 'project.membership_duplicate'
-  | 'project.resource_duplicate'
-  | 'project.resource_integrity_failed'
-  | 'project.resource_access_denied';
-
-export interface ProjectError {
-  code: ProjectErrorCode;
-  message: string;
-  /** Correlation id for support; never contains private payloads. */
-  requestId?: string;
+/**
+ * A collaborative project note. The list projection omits `body`; the detail
+ * projection includes the latest revision when authorized.
+ */
+export interface Note {
+  id: string;
+  projectId: string;
+  title: string;
+  status: NoteStatus;
+  visibility: NoteVisibility;
+  currentRevision: number;
+  links: NoteLink[];
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  archivedAt?: string;
+  /** Present only on the detail projection for authorized readers. */
+  latestRevision?: NoteRevision;
 }
 
-// ─── Projects: timeline & roadmap (CAPSTONE-063) ──────────────────────────────
+export interface CreateNotePayload {
+  projectId: string;
+  title: string;
+  body: string;
+  visibility: NoteVisibility;
+  links?: Array<Pick<NoteLink, 'kind' | 'targetId'>>;
+}
 
-export type TimelineEntryKind =
-  | 'objective'
-  | 'task'
-  | 'milestone'
-  | 'decision'
-  | 'review'
-  | 'funding'
-  | 'charter_change';
+export interface UpdateNotePayload {
+  title?: string;
+  body?: string;
+  visibility?: NoteVisibility;
+  links?: Array<Pick<NoteLink, 'kind' | 'targetId'>>;
+  /** Required to detect stale edits; mismatches surface a NoteConflict. */
+  expectedRevision: number;
+}
 
-export type TimelineEntryStatus =
-  | 'planned'
-  | 'in_progress'
-  | 'blocked'
-  | 'completed'
-  | 'cancelled';
+export interface ArchiveNotePayload {
+  expectedRevision: number;
+  reason?: string;
+}
 
 /**
- * A single timeline/roadmap entry. Sensitive fields (funding amounts, private
- * decision bodies, reviewer identities) are intentionally omitted; only the
- * minimized summary is exposed.
+ * Stable, actionable conflict surfaced when a note edit is based on a stale
+ * revision. Contains no note body so it is safe to log and display.
  */
-export interface TimelineEntry {
+export interface NoteConflict {
+  code: 'NOTE_STALE_REVISION' | 'NOTE_ARCHIVED' | 'NOTE_NOT_FOUND';
+  message: string;
+  noteId: string;
+  expectedRevision: number;
+  currentRevision: number;
+}
+
+// ─── Project activity feed (CAPSTONE-072) ────────────────────────────────────
+
+/**
+ * Activity event types. Each maps to a permission-filtered projection; private
+ * payloads are never copied into the feed.
+ */
+export type ActivityEventType =
+  | 'note.created'
+  | 'note.updated'
+  | 'note.archived'
+  | 'decision.created'
+  | 'decision.superseded'
+  | 'review.assigned'
+  | 'review.submitted'
+  | 'rubric.published';
+
+/**
+ * A single activity event. `summary` is a short, privacy-safe description; it
+ * never contains note bodies, reviewer identities, or private comments.
+ */
+export interface ActivityEvent {
   id: string;
-  projectId: string;
-  kind: TimelineEntryKind;
-  title: string;
-  summary?: string;
-  status: TimelineEntryStatus;
-  /** ISO-8601 timestamp; used for stable chronological ordering. */
-  startsAt?: string;
-  dueAt?: string;
-  completedAt?: string;
-  /** Monotonic ordering key so equal timestamps render deterministically. */
-  order: number;
-  version: number;
-  /** Reference to the underlying record (decision, review, etc.). */
-  sourceRef?: string;
-  updatedAt: string;
-}
-
-export interface TimelineResponse {
-  projectId: string;
-  entries: TimelineEntry[];
-  /** Version of the whole timeline; used to detect stale renders. */
-  timelineVersion: number;
-  generatedAt: string;
-}
-
-export interface TimelineFilters {
-  kinds?: TimelineEntryKind[];
-  statuses?: TimelineEntryStatus[];
-  from?: string;
-  to?: string;
-}
-
-// ─── Projects: collaboration workspace (CAPSTONE-065) ─────────────────────────
-
-export interface ProjectOverview {
-  id: string;
-  name: string;
-  description?: string;
-  lifecycleState: ProjectLifecycleState;
-  /** Role of the requesting user within this project. */
-  viewerRole: ProjectMemberRole;
-  version: number;
-  updatedAt: string;
-}
-
-export interface ProjectMember {
-  id: string;
-  projectId: string;
-  /** Opaque user reference; email/identity fields are not exposed here. */
-  userId: string;
-  displayName: string;
-  role: ProjectMemberRole;
-  joinedAt: string;
-  version: number;
-}
-
-export interface ProjectObjective {
-  id: string;
-  projectId: string;
-  title: string;
-  description?: string;
-  status: TimelineEntryStatus;
-  order: number;
-  version: number;
-}
-
-export interface ProjectMilestone {
-  id: string;
-  projectId: string;
-  title: string;
-  dueAt?: string;
-  status: TimelineEntryStatus;
-  order: number;
-  version: number;
-}
-
-export interface ProjectActivityItem {
-  id: string;
-  projectId: string;
-  /** Coarse event type only; no private payload is included. */
-  eventType:
-    | 'member_joined'
-    | 'member_role_changed'
-    | 'objective_updated'
-    | 'milestone_updated'
-    | 'resource_added'
-    | 'decision_recorded'
-    | 'review_submitted';
-  actorDisplayName?: string;
+  type: ActivityEventType;
+  /** Actor id only; display names are resolved separately when authorized. */
+  actorId: string;
   occurredAt: string;
+  summary: string;
+  /** Deep link into the workspace route for the affected resource. */
+  deepLink: string;
+  resourceId: string;
+  isRead: boolean;
 }
 
-export interface ProjectNextAction {
+/** Cursor-paginated activity page. Cursors are opaque and stable. */
+export interface ActivityPage {
+  data: ActivityEvent[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export interface ActivityReadState {
+  lastReadAt: string;
+  unreadCount: number;
+}
+
+export interface ActivityFilters {
+  types?: ActivityEventType[];
+  actorId?: string;
+  since?: string;
+  until?: string;
+  unreadOnly?: boolean;
+}
+
+// ─── Configurable review rubrics (CAPSTONE-074) ──────────────────────────────
+
+export type RubricVisibility = 'reviewers' | 'authors' | 'public';
+
+export type RubricAggregationRule = 'weightedMean' | 'weightedSum' | 'median';
+
+export interface RubricScoreRange {
+  min: number;
+  max: number;
+  step: number;
+}
+
+/**
+ * A single rubric criterion. `guidance` is reviewer-facing and is never copied
+ * into audit records.
+ */
+export interface RubricCriterion {
   id: string;
-  projectId: string;
   label: string;
-  /** Route hint the UI may navigate to; never contains secrets. */
-  targetRoute?: string;
-  dueAt?: string;
-  priority: 'low' | 'normal' | 'high';
+  weight: number;
+  guidance?: string;
+  scoreRange: RubricScoreRange;
+  requiredComment: boolean;
 }
 
-export interface ProjectWorkspaceResponse {
-  overview: ProjectOverview;
-  members: ProjectMember[];
-  objectives: ProjectObjective[];
-  milestones: ProjectMilestone[];
-  /** Resource summaries only; full library is fetched separately. */
-  resourceCount: number;
-  activity: ProjectActivityItem[];
-  nextActions: ProjectNextAction[];
-  generatedAt: string;
-}
-
-export interface AddProjectMemberPayload {
-  userId: string;
-  role: ProjectMemberRole;
-  /** Idempotency key so retries cannot duplicate membership. */
-  idempotencyKey: string;
-}
-
-export interface UpdateProjectMemberRolePayload {
-  role: ProjectMemberRole;
-  expectedVersion: number;
-  idempotencyKey: string;
-}
-
-export interface RemoveProjectMemberPayload {
-  expectedVersion: number;
-  idempotencyKey: string;
-}
-
-// ─── Projects: resource library (CAPSTONE-068) ────────────────────────────────
-
-export type ProjectResourceKind = 'file' | 'dataset' | 'link' | 'citation';
-
-export type ProjectResourceAccessPolicy = 'project_members' | 'project_reviewers' | 'project_leads';
-
-export interface ProjectResourceIntegrity {
-  /** Lowercase hex digest; algorithm identifies the hash family. */
-  digest: string;
-  algorithm: 'sha256' | 'sha512';
-  /** ISO-8601 timestamp of the last successful verification. */
-  verifiedAt?: string;
-  verified: boolean;
-}
-
-export interface ProjectResourceVersion {
-  version: number;
-  createdAt: string;
-  /** Opaque storage reference; never a signed URL or credential. */
-  storageRef: string;
-  sizeBytes?: number;
-  integrity: ProjectResourceIntegrity;
-}
-
-export interface ProjectResourceLicense {
+/**
+ * An immutable, versioned rubric snapshot. Editing a rubric creates a new
+ * version; published versions are read-only.
+ */
+export interface RubricVersion {
   id: string;
-  name: string;
-  /** SPDX identifier when available. */
-  spdxId?: string;
-  url?: string;
+  rubricId: string;
+  version: number;
+  criteria: RubricCriterion[];
+  aggregationRule: RubricAggregationRule;
+  visibility: RubricVisibility;
+  publishedAt?: string;
+  createdAt: string;
 }
 
-export interface ProjectResourceCitation {
-  title: string;
-  authors?: string[];
-  year?: number;
-  doi?: string;
-  url?: string;
-}
-
-export interface ProjectResource {
+export interface Rubric {
   id: string;
   projectId: string;
-  kind: ProjectResourceKind;
-  title: string;
-  description?: string;
-  /** External URL for link resources; omitted for private files. */
-  url?: string;
-  license?: ProjectResourceLicense;
-  citation?: ProjectResourceCitation;
-  accessPolicy: ProjectResourceAccessPolicy;
-  currentVersion: ProjectResourceVersion;
-  version: number;
+  name: string;
+  currentVersion: number;
+  versions: RubricVersion[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ProjectResourceListResponse {
+export interface CreateRubricPayload {
   projectId: string;
-  resources: ProjectResource[];
-  total: number;
-  page: number;
-  limit: number;
+  name: string;
+  criteria: Array<Omit<RubricCriterion, 'id'>>;
+  aggregationRule: RubricAggregationRule;
+  visibility: RubricVisibility;
 }
 
-export interface ProjectResourceFilters {
-  kinds?: ProjectResourceKind[];
-  accessPolicies?: ProjectResourceAccessPolicy[];
-  query?: string;
-}
-
-export interface CreateProjectResourcePayload {
-  kind: ProjectResourceKind;
-  title: string;
-  description?: string;
-  url?: string;
-  licenseId?: string;
-  citation?: ProjectResourceCitation;
-  accessPolicy: ProjectResourceAccessPolicy;
-  /** Idempotency key so retries cannot duplicate resources. */
-  idempotencyKey: string;
-}
-
-export interface AddProjectResourceVersionPayload {
-  storageRef: string;
-  sizeBytes?: number;
-  integrity: ProjectResourceIntegrity;
+export interface PublishRubricPayload {
+  /** Required to detect stale publishes against a newer draft. */
   expectedVersion: number;
-  idempotencyKey: string;
+}
+
+// ─── Blinded review modes (CAPSTONE-076) ─────────────────────────────────────
+
+export type BlindingMode = 'none' | 'singleBlind' | 'doubleBlind';
+
+/**
+ * Configuration controlling which identity fields are hidden. Deny-by-default:
+ * any field not explicitly listed as visible is hidden.
+ */
+export interface BlindingConfig {
+  mode: BlindingMode;
+  /** Fields that remain visible to the caller; everything else is hidden. */
+  visibleFields: Array<'reviewerId' | 'authorId' | 'reviewerName'>;
+  enabledAt: string;
+}
+
+/**
+ * A privacy-safe label standing in for a hidden identity. Deterministic per
+ * project so the same hidden actor is stable within a project.
+ */
+export interface BlindedIdentityLabel {
+  label: string;
+  /** True when the underlying identity is hidden from the caller. */
+  isBlinded: boolean;
+}
+
+/**
+ * A blinded projection of a review. Identity fields are replaced with
+ * BlindedIdentityLabel values and private comments are omitted entirely.
+ */
+export interface BlindedReviewProjection {
+  id: string;
+  projectId: string;
+  reviewer: BlindedIdentityLabel;
+  author: BlindedIdentityLabel;
+  recommendation: string;
+  submittedAt: string;
+  /** Private reviewer comments are never included in blinded projections. */
+}
+
+/**
+ * Request payload for a blinded export. Exports contain only blinded
+ * projections and are audit-safe by construction.
+ */
+export interface BlindedExportPayload {
+  projectId: string;
+  format: 'csv' | 'json';
+  includeComments: false;
 }

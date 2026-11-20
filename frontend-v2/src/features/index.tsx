@@ -21,5 +21,6 @@ export * from './students';
 // Workspace track (CAPSTONE-067, CAPSTONE-069, CAPSTONE-077, CAPSTONE-078)
 export * from './workspace';
 
-// Projects track (CAPSTONE-063, CAPSTONE-065, CAPSTONE-068)
-export * from './projects';
+// Workspace track — collaborative notes, activity feed, review rubrics, blinded reviews
+// (CAPSTONE-066, CAPSTONE-072, CAPSTONE-074, CAPSTONE-076)
+export * from './workspaceNotes';
