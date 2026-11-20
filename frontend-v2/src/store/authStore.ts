@@ -125,6 +125,98 @@ interface AuthState {
 const ACCESS_TOKEN_KEY = "accessToken";
 const USER_KEY = "auth_user";
 
+/**
+ * Workspace capability flags (CAPSTONE-067/069/077/078).
+ *
+ * Deny-by-default: every flag is `false` unless the session, tenant and role
+ * checks below all pass. Private researcher notes are owner-only and never
+ * exposed to moderators, reviewers or team members.
+ */
+export interface WorkspacePermissions {
+  canViewNotes: boolean;
+  canModerateDiscussions: boolean;
+  canAggregateReviews: boolean;
+  canRequestRevisions: boolean;
+}
+
+const DENIED: WorkspacePermissions = {
+  canViewNotes: false,
+  canModerateDiscussions: false,
+  canAggregateReviews: false,
+  canRequestRevisions: false,
+};
+
+const MODERATOR_ROLES: ReadonlyArray<NonNullable<AuthUser["role"]>> = [
+  "admin",
+  "administrator",
+  "moderator",
+  "instructor",
+  "mentor",
+  "tutor",
+];
+
+const REVIEWER_ROLES: ReadonlyArray<NonNullable<AuthUser["role"]>> = [
+  "admin",
+  "administrator",
+  "moderator",
+  "instructor",
+  "mentor",
+];
+
+export interface WorkspaceAccessInput {
+  isAuthenticated?: boolean;
+  user?: AuthUser | null;
+  /** Tenant the route/component is scoped to, if any. */
+  tenantId?: string | null;
+  /** Owner id of the private note being viewed, if any. */
+  noteOwnerId?: string | null;
+}
+
+/**
+ * Derive workspace permissions from the current session. Returns all-false
+ * when the session, tenant or user identity is missing, or when the caller
+ * asks for a tenant other than the one the user belongs to.
+ */
+export function resolveWorkspacePermissions({
+  isAuthenticated,
+  user,
+  tenantId,
+  noteOwnerId,
+}: WorkspaceAccessInput): WorkspacePermissions {
+  if (!isAuthenticated || !user || !user.id) return DENIED;
+  // Tenant boundary: a user without a tenant cannot reach workspace routes,
+  // and a route scoped to a different tenant is rejected outright.
+  if (!user.tenantId) return DENIED;
+  if (tenantId && tenantId !== user.tenantId) return DENIED;
+
+  const role = user.role;
+  const isModerator = !!role && MODERATOR_ROLES.includes(role);
+  const isReviewer = !!role && REVIEWER_ROLES.includes(role);
+
+  return {
+    // Private notes are strictly owner-only — moderators and reviewers are
+    // excluded even though they can moderate or aggregate.
+    canViewNotes: noteOwnerId ? noteOwnerId === user.id : true,
+    canModerateDiscussions: isModerator,
+    canAggregateReviews: isReviewer,
+    canRequestRevisions: isReviewer,
+  };
+}
+
+/** Read the persisted session without subscribing (safe outside React). */
+export function getWorkspacePermissions(
+  tenantId?: string | null,
+  noteOwnerId?: string | null,
+): WorkspacePermissions {
+  const state = useAuthStore.getState();
+  return resolveWorkspacePermissions({
+    isAuthenticated: state.isAuthenticated,
+    user: state.user,
+    tenantId,
+    noteOwnerId,
+  });
+}
+
 function getStoredUser(): AuthUser | null {
   if (typeof window === "undefined") return null;
   try {
@@ -212,3 +304,21 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 );
+
+/**
+ * React hook exposing deny-by-default workspace permissions for the current
+ * session. Re-renders when identity, tenant or role changes.
+ */
+export function useWorkspacePermissions(
+  tenantId?: string | null,
+  noteOwnerId?: string | null,
+): WorkspacePermissions {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
+  return resolveWorkspacePermissions({
+    isAuthenticated,
+    user,
+    tenantId,
+    noteOwnerId,
+  });
+}

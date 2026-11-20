@@ -3,6 +3,88 @@
 Closes #1153. Source: `src/features/scholarships/retention/`.
 Route: `/scholarships/retention`.
 
+## Related workspace capabilities
+
+This policy is the retention reference for the capstone and research-project
+workspace. The following frontend-v2 work items share its privacy boundaries and
+must be read alongside it:
+
+| Work item | Capability | Frontend source | Route |
+| --- | --- | --- | --- |
+| CAPSTONE-067 (#1493) | Private researcher notes | `src/features/workspace/notes/` | `/workspace/projects/:projectId/notes` |
+| CAPSTONE-069 (#1495) | Project discussion threads | `src/features/workspace/discussions/` | `/workspace/projects/:projectId/discussions` |
+| CAPSTONE-077 (#1503) | Fair review aggregation | `src/features/workspace/reviews/aggregation/` | `/workspace/projects/:projectId/reviews` |
+| CAPSTONE-078 (#1504) | Proposal revision requests | `src/features/workspace/reviews/revisions/` | `/workspace/projects/:projectId/reviews/revisions` |
+
+Each capability is delivered in the other repositories under the same shared
+work item id (CAPSTONE-067 / 069 / 077 / 078). The backend owns persistence,
+authorization enforcement, and the audit chain; this repository owns the
+responsive, accessible UI, typed API clients, and role-aware navigation. Do not
+ship a frontend capability ahead of its backend contract — the client treats a
+missing or unauthorized endpoint as an error state, never as empty data.
+
+### Dependencies
+
+- **Backend API** for notes, threads, review aggregation, and revision requests,
+  including deny-by-default authorization and tenant scoping. The frontend never
+  infers permission from a hidden control; every action is re-checked server-side.
+- **Identity/roles** for owner-only notes and reviewer/author roles. Role-aware
+  navigation hides unavailable routes but is not the authorization boundary.
+- **Audit service** for lifecycle transitions. Audit records carry ids, actor,
+  action, and timestamps only — never note bodies, thread content, review
+  comments, or revision text.
+- **Notification service** for mentions, revision deadlines, and review
+  outcomes. Notifications reference ids, not private payloads.
+
+### Privacy boundaries
+
+- **Private researcher notes (CAPSTONE-067)** are owner-only. They are excluded
+  from team views, review screens, analytics content, exports, and general logs.
+  The client never sends note bodies to analytics; only event names and opaque
+  ids are emitted. Notes are not written to any public ledger.
+- **Discussion threads (CAPSTONE-069)** are scoped to a project and tenant.
+  Mentions resolve to display names only; attachments are referenced by id and
+  fetched through an authorized endpoint. Moderation hooks record the action, not
+  the removed content.
+- **Review aggregation (CAPSTONE-077)** exposes explainable outcomes (quorum,
+  missing-review handling, calibration, tie treatment) but not individual
+  reviewer identities or private comments. Scores are never silently mutated;
+  recalculation is an explicit, audited action.
+- **Revision requests (CAPSTONE-078)** are tied to an exact proposal version.
+  Deadlines, response status, and resubmission rules are visible to the author
+  and reviewers; the request text is not copied into logs or analytics.
+- **Logging and analytics** must never emit private proposal, research, identity,
+  safety, or financial content. Analytics events are privacy-safe: event name,
+  route, role, and opaque ids only.
+
+### Retention and moderation
+
+- Notes and threads follow the `RetentionPolicy` above. A class with no rule is
+  protected, never deleted. Legal holds block erasure of covered records first.
+- Thread retention is governed by the project's retention class; resolved
+  threads are retained for the window and then expire under the same sweep.
+- Moderation actions (hide, lock, remove) are audited with actor and reason code.
+  Removed content is retained per policy for review, not hard-deleted on action.
+- Review aggregation snapshots and revision requests are retained with their
+  proposal version so a decision can be explained after the fact.
+
+### Rollout and rollback
+
+- **Rollout:** publish backend contracts first, then enable routes behind the
+  role-aware navigation flag per tenant. Start with notes and threads in a single
+  pilot tenant, verify audit records contain no private payloads, then widen.
+  Enable review aggregation and revision requests only after the review lifecycle
+  is validated end to end.
+- **Rollback:** each capability is additive and independently flaggable. Disable
+  the navigation flag to hide a route; the backend remains the source of truth
+  and no data is deleted by rolling back the frontend. Never roll back by
+  deleting records — use the retention sweep and legal holds.
+- **Idempotency:** concurrent requests and retries must not duplicate notes,
+  threads, mentions, revision requests, review decisions, or notifications. The
+  client sends idempotency keys and surfaces conflicts as stable, actionable
+  errors rather than retrying blindly.
+=======
+
 ## What this is
 
 A classified retention policy for scholarship records, with an erasure planner

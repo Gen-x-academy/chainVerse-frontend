@@ -228,4 +228,21 @@ export const apiClient = {
     request<T>(path, { ...options, method: "DELETE" }),
 };
 
+/**
+ * Generates a client-side idempotency key for a mutating request. Callers
+ * should create the key once per user intent (not per retry) and reuse it
+ * across retries so the server can deduplicate side effects.
+ */
+export function createIdempotencyKey(): string {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return `idem-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+}
+
 export const authedClient = apiClient;

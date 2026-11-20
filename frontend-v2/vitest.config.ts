@@ -15,7 +15,6 @@ export default defineConfig({
       "components/**/__tests__/**/*.{ts,tsx}",
       "src/features/workspace/__tests__/**/*.{ts,tsx}",
     ],
-    exclude: ["node_modules", ".next", "e2e"],
     coverage: {
       provider: "v8",
       thresholds: {
@@ -23,7 +22,18 @@ export default defineConfig({
         functions: 40,
         branches: 30,
       },
-      exclude: ["node_modules", ".next", "e2e", "test/api"],
+      exclude: [
+        "node_modules",
+        ".next",
+        "e2e",
+        "**/e2e/**",
+        "test/api",
+        "src/test/fixtures/**",
+        "**/*.e2e.{ts,tsx}",
+        "**/*.journey.{ts,tsx}",
+        "**/*.a11y.{ts,tsx}",
+        "**/*.responsive.{ts,tsx}",
+      ],
     },
   },
   resolve: {
