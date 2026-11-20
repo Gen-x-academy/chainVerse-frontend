@@ -61,6 +61,12 @@ const INTEGRITY_NAV_ITEMS: WorkspaceNavItem[] = [
     permission: 'integrity:reports:read',
     description: 'Report and triage integrity concerns',
   },
+  {
+    href: '/integrity/disputes',
+    label: 'Disputes',
+    permission: 'integrity:disputes:read',
+    description: 'Claims, appeals and remedies',
+  },
 ];
 
 function isActivePath(pathname: string | null, href: string): boolean {

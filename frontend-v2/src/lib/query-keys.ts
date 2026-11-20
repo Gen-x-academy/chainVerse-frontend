@@ -76,4 +76,8 @@ export const queryKeys = {
   // CAPSTONE-099: integrity concern reports
   integrityReports: (identity: Identity, projectId: string) =>
     ['integrityReports', ...identityScope(identity), projectId] as const,
+
+  // CAPSTONE-102: project disputes
+  projectDisputes: (identity: Identity, projectId: string) =>
+    ['projectDisputes', ...identityScope(identity), projectId] as const,
 };
