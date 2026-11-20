@@ -3,7 +3,75 @@ import { persist } from "zustand/middleware";
 import { clearUserScopedCache } from "@/src/lib/clear-user-query-cache";
 import { queryClient } from "@/src/lib/query-client";
 
+/**
+ * Roles a user can hold inside a capstone / research workspace
+ * (CAPSTONE-070, -071, -073, -075). Navigation and action affordances are
+ * derived from these roles, never from client-side guesses.
+ */
+export type WorkspaceRole =
+  | "owner"
+  | "manager"
+  | "contributor"
+  | "reviewer"
+  | "approver"
+  | "observer";
+
+/**
+ * Capabilities the workspace UI gates on. Deny-by-default: an unknown
+ * capability or a missing tenant resolves to `false`.
+ */
+export type WorkspaceCapability =
+  | "workspace:view"
+  | "workspace:manage"
+  | "decision:record"
+  | "decision:supersede"
+  | "source-control:connect"
+  | "source-control:revoke"
+  | "review-queue:view"
+  | "review-queue:assign"
+  | "review:submit";
+
+const ROLE_CAPABILITIES: Record<WorkspaceRole, readonly WorkspaceCapability[]> =
+  {
+    owner: [
+      "workspace:view",
+      "workspace:manage",
+      "decision:record",
+      "decision:supersede",
+      "source-control:connect",
+      "source-control:revoke",
+      "review-queue:view",
+      "review-queue:assign",
+      "review:submit",
+    ],
+    manager: [
+      "workspace:view",
+      "workspace:manage",
+      "decision:record",
+      "decision:supersede",
+      "source-control:connect",
+      "source-control:revoke",
+      "review-queue:view",
+      "review-queue:assign",
+    ],
+    contributor: [
+      "workspace:view",
+      "decision:record",
+      "source-control:connect",
+      "review-queue:view",
+    ],
+    reviewer: ["workspace:view", "review-queue:view", "review:submit"],
+    approver: [
+      "workspace:view",
+      "decision:record",
+      "decision:supersede",
+      "review-queue:view",
+    ],
+    observer: ["workspace:view"],
+  };
+
 interface AuthUser {
+=======
   id?: string;
   email?: string;
   firstName?: string;
@@ -30,6 +98,17 @@ interface AuthState {
   isAuthenticated: boolean;
   user: AuthUser | null;
   token: string | null;
+  /**
+   * Workspace roles for the current identity (CAPSTONE-070/-071/-073/-075).
+   * Cleared on every identity change so stale capabilities cannot survive a
+   * sign-out or account switch.
+   */
+  workspaceRoles: WorkspaceRole[];
+  /**
+   * Returns `true` only when the user is authenticated, has a tenant, and at
+   * least one of their workspace roles grants the capability.
+   */
+  hasWorkspaceCapability: (capability: WorkspaceCapability) => boolean;
   /**
    * Stellar public key currently connected via the wallet (issue #694).
    * Mirrored from WalletContext so enrollment / payment flows can read it
@@ -154,6 +233,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       user: null,
       token: null,
+      workspaceRoles: [],
       walletPublicKey: null,
       login: (user, token) => {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -164,7 +244,8 @@ export const useAuthStore = create<AuthState>()(
         if (get().isAuthenticated || get().user) {
           void clearUserScopedCache(queryClient);
         }
-        set({ isAuthenticated: true, user, token });
+        // Roles are re-fetched for the new identity; never carry them over.
+        set({ isAuthenticated: true, user, token, workspaceRoles: [] });
       },
       logout: () => {
         localStorage.removeItem(USER_KEY);
@@ -175,6 +256,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           user: null,
           token: null,
+          workspaceRoles: [],
           walletPublicKey: null,
         });
         // Issue #1227: drop identity-scoped query data so the next session
@@ -185,8 +267,24 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () => {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        set({ isAuthenticated: false, user: null, token: null });
+        set({
+          isAuthenticated: false,
+          user: null,
+          token: null,
+          workspaceRoles: [],
+        });
         void clearUserScopedCache(queryClient);
+      },
+      hasWorkspaceCapability: (capability) => {
+        const { isAuthenticated, user, workspaceRoles } = get();
+        // Deny-by-default: no session, no tenant, or no roles means no access.
+        if (!isAuthenticated || !user?.tenantId) return false;
+        if (!Array.isArray(workspaceRoles) || workspaceRoles.length === 0) {
+          return false;
+        }
+        return workspaceRoles.some((role) =>
+          ROLE_CAPABILITIES[role]?.includes(capability),
+        );
       },
       setWalletPublicKey: (key) => set({ walletPublicKey: key }),
     }),
@@ -196,8 +294,12 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
         user: state.user,
         token: state.token,
+        // tenantId lives on `user`, which is persisted above, so role-aware
+        // navigation survives a reload without persisting anything extra.
         // walletPublicKey is intentionally NOT persisted: the wallet
         // extension is the source of truth and re-syncs on mount.
+        // workspaceRoles is intentionally NOT persisted: it is re-fetched
+        // per session so a stale capability can never outlive an identity.
       }),
     },
   ),

@@ -14,81 +14,81 @@ export type RequestOptions = Omit<RequestInit, "body"> & {
   token?: string;
   body?: unknown;
   /**
-   * Idempotency key for mutating requests. When provided it is sent as the
-   * `Idempotency-Key` header so concurrent/retried mutations cannot duplicate
-   * side effects (notes, discussion posts, review finalization, revisions).
+   * Stable key sent as the `Idempotency-Key` header on mutating requests
+   * (POST/PUT/PATCH/DELETE) so retries cannot duplicate side effects.
    */
   idempotencyKey?: string;
+  /**
+   * Expected resource version sent as `If-Match` for optimistic concurrency.
+   * A mismatch surfaces as an {@link ApiConflictError}.
+   */
+  expectedVersion?: string | number;
 };
 
 export class ApiClientError extends Error {
+  /** Stable, actionable error code from the server when available. */
+  public readonly code?: string;
+
   constructor(
     public readonly status: number,
     message: string,
-    /** Stable machine-readable error code from the server, when available. */
-    public readonly code?: string,
+    code?: string,
   ) {
     super(message);
     this.name = "ApiClientError";
+    this.code = code;
   }
 }
 
 /**
- * Raised on 409 responses. Carries the server's stable error code and the
- * current server-side version so callers can render actionable conflict
- * states (e.g. "this proposal was updated, reload and retry").
+ * Raised for optimistic-concurrency failures (HTTP 409 or 412).
+ * Carries the server's current version so callers can render a conflict state
+ * and offer a refresh/merge path.
  */
 export class ApiConflictError extends ApiClientError {
   constructor(
+    status: number,
     message: string,
-    public readonly code: string,
-    /** Current version of the resource on the server, when provided. */
-    public readonly currentVersion?: number | string,
-    /** Optional structured conflict details (never contains private payloads). */
-    public readonly details?: Record<string, unknown>,
+    public readonly currentVersion?: string | number,
+    code?: string,
   ) {
-    super(409, message, code);
+    super(status, message, code);
     this.name = "ApiConflictError";
   }
 }
 
-/** Parses an error response body into a message, code and conflict metadata. */
-async function parseErrorBody(
-  response: Response,
-): Promise<{
-  message: string;
-  code?: string;
-  currentVersion?: number | string;
-  details?: Record<string, unknown>;
-}> {
-  const text = await response.text().catch(() => "");
-  if (!text) {
-    return { message: `Request failed with status ${response.status}` };
+/** Generates a stable idempotency key, falling back when crypto is unavailable. */
+export function newIdempotencyKey(): string {
+  if (
+    typeof globalThis !== "undefined" &&
+    typeof globalThis.crypto?.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
   }
+  // Fallback: RFC 4122 v4-shaped key from Math.random (non-cryptographic).
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+type ParsedErrorBody = {
+  message?: string;
+  code?: string;
+  currentVersion?: string | number;
+  version?: string | number;
+};
+
+/** Parses a JSON error body, tolerating non-JSON responses. */
+async function parseErrorBody(response: Response): Promise<ParsedErrorBody> {
+  const text = await response.text().catch(() => "");
+  if (!text) return {};
   try {
-    const parsed = JSON.parse(text) as Record<string, unknown>;
-    const message =
-      typeof parsed.message === "string"
-        ? parsed.message
-        : typeof parsed.error === "string"
-          ? parsed.error
-          : text;
-    const code =
-      typeof parsed.code === "string"
-        ? parsed.code
-        : typeof parsed.errorCode === "string"
-          ? parsed.errorCode
-          : undefined;
-    const rawVersion = parsed.currentVersion ?? parsed.version;
-    const currentVersion =
-      typeof rawVersion === "number" || typeof rawVersion === "string"
-        ? rawVersion
-        : undefined;
-    const details =
-      parsed.details && typeof parsed.details === "object"
-        ? (parsed.details as Record<string, unknown>)
-        : undefined;
-    return { message, code, currentVersion, details };
+    const parsed = JSON.parse(text) as ParsedErrorBody;
+    return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
     return { message: text };
   }
@@ -135,6 +135,7 @@ async function request<T>(
     body,
     headers: extraHeaders,
     idempotencyKey,
+    expectedVersion,
     ...init
   } = options;
 
@@ -145,11 +146,19 @@ async function request<T>(
       : null;
   const bearerToken = token ?? storedToken ?? undefined;
 
+  const method = (init.method ?? "GET").toUpperCase();
+  const isMutating = MUTATING_METHODS.has(method);
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(extraHeaders as Record<string, string> | undefined),
     ...(bearerToken ? { Authorization: `Bearer ${bearerToken}` } : {}),
-    ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
+    ...(isMutating && idempotencyKey
+      ? { "Idempotency-Key": idempotencyKey }
+      : {}),
+    ...(expectedVersion !== undefined && expectedVersion !== null
+      ? { "If-Match": String(expectedVersion) }
+      : {}),
   };
 
   const controller = new AbortController();
@@ -182,17 +191,18 @@ async function request<T>(
     }
 
     if (!response.ok) {
-      const { message, code, currentVersion, details } =
-        await parseErrorBody(response);
-      if (response.status === 409) {
+      const parsed = await parseErrorBody(response);
+      const message =
+        parsed.message || `Request failed with status ${response.status}`;
+      if (response.status === 409 || response.status === 412) {
         throw new ApiConflictError(
+          response.status,
           message,
-          code ?? "CONFLICT",
-          currentVersion,
-          details,
+          parsed.currentVersion ?? parsed.version,
+          parsed.code,
         );
       }
-      throw new ApiClientError(response.status, message, code);
+      throw new ApiClientError(response.status, message, parsed.code);
     }
 
     return response.json() as Promise<T>;

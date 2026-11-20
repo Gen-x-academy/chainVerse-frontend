@@ -229,6 +229,30 @@ visual coverage.
 
 ---
 
+## Workspace: capstone & research projects
+
+The workspace track adds capstone and research-project collaboration on top of
+the existing course experience. The frontend pieces are documented in
+[`docs/workspace-capstone.md`](docs/workspace-capstone.md), which covers:
+
+* **CAPSTONE-070** — recording project decisions (statement, context,
+  alternatives, approvers, effective date, linked evidence, superseding
+  decisions).
+* **CAPSTONE-071** — source-control references (repositories, branches, commits,
+  releases, contribution metadata) via revocable provider connections and safe
+  webhooks.
+* **CAPSTONE-073** — proposal review queues (assignment, expertise fit, priority,
+  conflict declaration, due date, workload).
+* **CAPSTONE-075** — independent proposal reviews (criterion scores, comments,
+  confidence, recommendation, conflicts, immutable submission-version linkage).
+
+That document also records the tenant/role model, privacy boundaries, the
+idempotency and optimistic-concurrency strategy, rollout/rollback notes, the
+privacy-safe analytics event catalogue, and cross-repo coordination with the
+backend and contract repositories.
+
+---
+
 ## Contributing
 
 1. Create a feature branch from `main`: `git checkout -b fix/<scope>-<issue-number>-<slug>`
