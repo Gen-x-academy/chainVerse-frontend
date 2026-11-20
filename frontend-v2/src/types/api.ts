@@ -122,3 +122,62 @@ export interface ApiError {
   statusCode: number;
   error?: string;
 }
+
+// ─── Workspace (CAPSTONE-070/071/073/075) ─────────────────────────────────────
+
+export type {
+  Decision,
+  DecisionApprover,
+  DecisionEvidenceLink,
+  DecisionStatus,
+  DecisionSupersession,
+  CreateDecisionPayload,
+  SupersedeDecisionPayload,
+  SourceControlConnection,
+  SourceControlProvider,
+  SourceControlConnectionStatus,
+  SourceControlReference,
+  SourceControlReferenceKind,
+  CreateSourceControlConnectionPayload,
+  LinkSourceControlReferencePayload,
+  ReviewQueueItem,
+  ReviewQueueFilters,
+  ReviewQueuePriority,
+  ReviewAssignment,
+  ReviewConflictDeclaration,
+  IndependentReview,
+  ReviewCriterionScore,
+  ReviewRecommendation,
+  ReviewConfidence,
+  ReviewSubmissionLink,
+  SubmitIndependentReviewPayload,
+  WorkspaceErrorCode,
+  WorkspaceError,
+  WorkspacePaginatedEnvelope,
+  WorkspacePageMeta,
+} from './workspaceContracts';
+
+/**
+ * Roles recognised by the workspace surfaces. Authorization is deny-by-default:
+ * any capability not explicitly granted to a role is refused by the navigation
+ * guard and by the API layer.
+ */
+export type WorkspaceRole = 'reviewer' | 'approver' | 'admin';
+
+/**
+ * Capabilities checked by the role-aware navigation guard. Each maps to one or
+ * more workspace routes; unknown capabilities are treated as denied.
+ */
+export type WorkspaceCapability =
+  | 'workspace.decisions.read'
+  | 'workspace.decisions.write'
+  | 'workspace.decisions.approve'
+  | 'workspace.decisions.supersede'
+  | 'workspace.sourceControl.read'
+  | 'workspace.sourceControl.connect'
+  | 'workspace.sourceControl.revoke'
+  | 'workspace.reviewQueue.read'
+  | 'workspace.reviewQueue.assign'
+  | 'workspace.reviewQueue.declareConflict'
+  | 'workspace.reviews.read'
+  | 'workspace.reviews.submit';
