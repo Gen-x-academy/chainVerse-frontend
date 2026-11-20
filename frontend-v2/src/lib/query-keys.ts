@@ -64,4 +64,44 @@ export const queryKeys = {
 
   reviewsForSubmission: (identity: Identity, submissionVersionId: string) =>
     ['reviewsForSubmission', ...identityScope(identity), submissionVersionId] as const,
+
+  // CAPSTONE-066: collaborative project notes
+  notes: (identity: Identity, projectId: string) =>
+    ['notes', ...identityScope(identity), projectId] as const,
+
+  note: (identity: Identity, noteId: string) =>
+    ['note', ...identityScope(identity), noteId] as const,
+
+  noteRevisions: (identity: Identity, noteId: string) =>
+    ['noteRevisions', ...identityScope(identity), noteId] as const,
+
+  // CAPSTONE-072: project activity feed
+  activity: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
+    ['activity', ...identityScope(identity), projectId, filters] as const,
+
+  activityReadState: (identity: Identity, projectId: string) =>
+    ['activityReadState', ...identityScope(identity), projectId] as const,
+
+  // CAPSTONE-074: configurable review rubrics
+  rubrics: (identity: Identity, projectId: string) =>
+    ['rubrics', ...identityScope(identity), projectId] as const,
+
+  rubric: (identity: Identity, rubricId: string) =>
+    ['rubric', ...identityScope(identity), rubricId] as const,
+
+  rubricVersions: (identity: Identity, rubricId: string) =>
+    ['rubricVersions', ...identityScope(identity), rubricId] as const,
+
+  // CAPSTONE-076: blinded review modes
+  blindingConfig: (identity: Identity, projectId: string) =>
+    ['blindingConfig', ...identityScope(identity), projectId] as const,
+
+  blindedReviewQueue: (
+    identity: Identity,
+    projectId: string,
+    filters: Record<string, unknown> = {},
+  ) => ['blindedReviewQueue', ...identityScope(identity), projectId, filters] as const,
+
+  blindedReviewExport: (identity: Identity, projectId: string) =>
+    ['blindedReviewExport', ...identityScope(identity), projectId] as const,
 };
