@@ -9,6 +9,11 @@ import { defineConfig, devices } from "@playwright/test"
  * `./e2e/workspace.spec.ts` and intercept all API calls via `page.route`,
  * so they do not require a live backend. The `webServer` block below only
  * boots the Next.js dev server for rendering.
+ *
+ * Project user-journey specs (CAPSTONE-063/065/068 — timeline/roadmap,
+ * collaboration workspace, resource library) live in
+ * `./e2e/projects.spec.ts` and likewise intercept all API calls via
+ * `page.route`, so no live backend is required.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -48,6 +53,26 @@ export default defineConfig({
       // Responsive checks: mobile viewport for the workspace journeys.
       name: "workspace-mobile",
       testMatch: /workspace\.spec\.ts/,
+      use: {
+        ...devices["iPhone 13"],
+        reducedMotion: "reduce",
+      },
+    },
+    {
+      // Keyboard-only + screen-reader assertions for the project journeys
+      // (timeline/roadmap, collaboration workspace, resource library).
+      name: "projects-a11y",
+      testMatch: /projects\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        // Force reduced motion so live-region announcements are deterministic.
+        reducedMotion: "reduce",
+      },
+    },
+    {
+      // Responsive checks: mobile viewport for the project journeys.
+      name: "projects-mobile",
+      testMatch: /projects\.spec\.ts/,
       use: {
         ...devices["iPhone 13"],
         reducedMotion: "reduce",

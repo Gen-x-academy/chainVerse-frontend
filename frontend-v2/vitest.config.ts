@@ -14,6 +14,7 @@ export default defineConfig({
       "test/**/*.{ts,tsx}",
       "components/**/__tests__/**/*.{ts,tsx}",
       "src/features/workspace/__tests__/**/*.{ts,tsx}",
+      "src/features/projects/__tests__/**/*.{ts,tsx}",
     ],
     coverage: {
       provider: "v8",
@@ -29,6 +30,7 @@ export default defineConfig({
         "**/e2e/**",
         "test/api",
         "src/test/fixtures/**",
+        "src/features/projects/fixtures/**",
         "**/*.e2e.{ts,tsx}",
         "**/*.journey.{ts,tsx}",
         "**/*.a11y.{ts,tsx}",

@@ -64,4 +64,37 @@ export const queryKeys = {
 
   reviewsForSubmission: (identity: Identity, submissionVersionId: string) =>
     ['reviewsForSubmission', ...identityScope(identity), submissionVersionId] as const,
+
+  // CAPSTONE-063: project timeline and roadmap
+  timeline: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
+    ['timeline', ...identityScope(identity), projectId, filters] as const,
+
+  // CAPSTONE-065: project collaboration workspace
+  workspaceOverview: (identity: Identity, projectId: string) =>
+    ['workspaceOverview', ...identityScope(identity), projectId] as const,
+
+  projectMembers: (identity: Identity, projectId: string) =>
+    ['projectMembers', ...identityScope(identity), projectId] as const,
+
+  projectObjectives: (identity: Identity, projectId: string) =>
+    ['projectObjectives', ...identityScope(identity), projectId] as const,
+
+  projectMilestones: (identity: Identity, projectId: string) =>
+    ['projectMilestones', ...identityScope(identity), projectId] as const,
+
+  projectActivity: (identity: Identity, projectId: string) =>
+    ['projectActivity', ...identityScope(identity), projectId] as const,
+
+  projectNextActions: (identity: Identity, projectId: string) =>
+    ['projectNextActions', ...identityScope(identity), projectId] as const,
+
+  // CAPSTONE-068: project resource library
+  projectResources: (identity: Identity, projectId: string, filters: Record<string, unknown> = {}) =>
+    ['projectResources', ...identityScope(identity), projectId, filters] as const,
+
+  projectResource: (identity: Identity, projectId: string, resourceId: string) =>
+    ['projectResource', ...identityScope(identity), projectId, resourceId] as const,
+
+  projectResourceVersions: (identity: Identity, projectId: string, resourceId: string) =>
+    ['projectResourceVersions', ...identityScope(identity), projectId, resourceId] as const,
 };

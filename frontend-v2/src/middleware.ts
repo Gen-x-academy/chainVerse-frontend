@@ -8,7 +8,9 @@ const PUBLIC_PATHS = new Set<string>([
 ])
 
 // Routes that require both a session and a tenant context.
-const TENANT_SCOPED_PREFIXES = ['/workspace'] as const
+// '/projects' covers the project timeline/roadmap, collaboration workspace,
+// and resource library routes (CAPSTONE-063/065/068).
+const TENANT_SCOPED_PREFIXES = ['/workspace', '/projects'] as const
 
 function isTenantScopedPath(pathname: string): boolean {
   return TENANT_SCOPED_PREFIXES.some(
