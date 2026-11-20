@@ -64,4 +64,8 @@ export const queryKeys = {
 
   reviewsForSubmission: (identity: Identity, submissionVersionId: string) =>
     ['reviewsForSubmission', ...identityScope(identity), submissionVersionId] as const,
+
+  // CAPSTONE-097: consent-aware originality checks
+  integrityChecks: (identity: Identity, projectId: string) =>
+    ['integrityChecks', ...identityScope(identity), projectId] as const,
 };
