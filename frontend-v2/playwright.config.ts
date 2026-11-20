@@ -58,6 +58,26 @@ export default defineConfig({
         reducedMotion: "reduce",
       },
     },
+    {
+      // Keyboard-only + screen-reader assertions for the project journeys
+      // (timeline/roadmap, collaboration workspace, resource library).
+      name: "projects-a11y",
+      testMatch: /projects\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        // Force reduced motion so live-region announcements are deterministic.
+        reducedMotion: "reduce",
+      },
+    },
+    {
+      // Responsive checks: mobile viewport for the project journeys.
+      name: "projects-mobile",
+      testMatch: /projects\.spec\.ts/,
+      use: {
+        ...devices["iPhone 13"],
+        reducedMotion: "reduce",
+      },
+    },
   ],
   webServer: {
     command: "npm run dev",

@@ -251,6 +251,93 @@ idempotency and optimistic-concurrency strategy, rollout/rollback notes, the
 privacy-safe analytics event catalogue, and cross-repo coordination with the
 backend and contract repositories.
 
+### Project timeline, workspace & resources (CAPSTONE-063 / 065 / 068)
+
+Each active project gets a scoped, permission-aware home under
+`app/(main)/projects/[projectId]/`:
+
+| Route | Work item | Purpose |
+| ----- | --------- | ------- |
+| `/projects/[projectId]/timeline` | CAPSTONE-063 | Stable, permission-aware timeline of objectives, tasks, milestones, decisions, reviews, funding, and charter changes. |
+| `/projects/[projectId]/workspace` | CAPSTONE-065 | Project collaboration home: overview, members, objectives, milestones, resources, activity, and next actions. |
+| `/projects/[projectId]/resources` | CAPSTONE-068 | Resource library: approved files, datasets, links, citations, licenses, versions, integrity metadata, and access policy. |
+
+All three routes share the project layout (`app/(main)/projects/[projectId]/layout.tsx`),
+which resolves the project, enforces tenant scoping, and renders role-aware
+navigation (tabs the viewer cannot access are not rendered). Every route
+implements explicit **loading**, **empty**, **error**, **conflict**, and
+**success** states; invalid or stale lifecycle transitions surface a stable,
+actionable error rather than a generic failure.
+
+#### Typed service dependencies
+
+Data access goes through typed services in `src/features/projects/services/`
+(`project.service.ts`, `timeline.service.ts`, `workspace.service.ts`,
+`resources.service.ts`), which wrap `@/src/lib/api-client` and TanStack Query
+hooks in `src/features/projects/hooks/`. Response and request types live in
+`src/features/projects/types/`. Never call `fetch` directly from these routes.
+
+#### Authorization & tenant boundaries
+
+* **Deny-by-default capabilities** — the UI renders actions only when the
+  server-issued capability set for the project grants them; absence of a
+  capability hides the action and the API rejects it regardless.
+* **Tenant boundaries** — every request is scoped by `projectId`; the layout
+  rejects projects outside the caller's tenant and never leaks cross-tenant
+  identifiers in URLs, errors, or analytics.
+* **Sensitive field minimization** — list and timeline payloads omit private
+  proposal, research, identity, safety, and financial fields; detail views
+  request only the fields the viewer is entitled to.
+
+#### Privacy boundaries
+
+Private proposal, research, identity, safety, and financial content must never
+be written to logs, analytics, error reports, or public ledgers. Analytics
+events carry only opaque project/entity IDs, capability names, and outcome
+codes — never titles, member identities, amounts, or file contents.
+
+#### Idempotency & optimistic concurrency
+
+Mutations (membership, reservations, decisions, resource versions, and other
+side-effecting actions) send an `Idempotency-Key` so retries and concurrent
+requests cannot duplicate side effects. Updates send the entity's version /
+`If-Match` token; a stale write returns `409` and the UI shows a conflict state
+with a refresh-and-retry path instead of silently overwriting.
+
+#### Deterministic fixtures & tests
+
+Fixtures in `src/features/projects/__tests__/fixtures/` are deterministic
+(fixed IDs, timestamps, and capability sets) and shared by component and
+user-journey tests. Coverage includes keyboard navigation, screen-reader
+labels/landmarks, responsive layouts (desktop and mobile), and the
+loading/empty/error/conflict/success states.
+
+```bash
+npm test                                   # unit + component tests
+npx vitest run src/features/projects        # project workspace tests only
+npm run test:e2e                           # user-journey specs in e2e/
+npm run test:e2e:visual                    # responsive visual checks
+```
+
+#### Rollout & rollback
+
+Ship behind the `projects_workspace` feature flag so the routes can be enabled
+per tenant. Rollout order: backend read endpoints → frontend read-only views →
+mutations. Rollback is disabling the flag (routes fall back to a "not
+available" state) — no data migration is required, and idempotency keys make
+re-enabling safe.
+
+#### Cross-repo coordination
+
+| Work item | Frontend (this repo) | Backend | Contracts |
+| --------- | -------------------- | ------- | --------- |
+| CAPSTONE-063 | Timeline route, typed timeline service, capability-aware rendering | Timeline read model + lifecycle transition validation | — |
+| CAPSTONE-065 | Workspace route, members/objectives/milestones/activity, idempotent membership mutations | Project workspace API, tenant scoping, capability issuance | — |
+| CAPSTONE-068 | Resource library route, versions/integrity metadata/access policy | Resource metadata & access-policy API, signed upload/download | Integrity/version anchoring where applicable |
+
+Coordinate API contracts and capability names with the backend and contract
+repositories before enabling the flag.
+
 ---
 
 ## Contributing
