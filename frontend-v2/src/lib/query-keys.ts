@@ -68,4 +68,12 @@ export const queryKeys = {
   // CAPSTONE-097: consent-aware originality checks
   integrityChecks: (identity: Identity, projectId: string) =>
     ['integrityChecks', ...identityScope(identity), projectId] as const,
+
+  // CAPSTONE-098: ethics screenings
+  ethicsScreenings: (identity: Identity, projectId: string) =>
+    ['ethicsScreenings', ...identityScope(identity), projectId] as const,
+
+  // CAPSTONE-099: integrity concern reports
+  integrityReports: (identity: Identity, projectId: string) =>
+    ['integrityReports', ...identityScope(identity), projectId] as const,
 };

@@ -49,6 +49,18 @@ const INTEGRITY_NAV_ITEMS: WorkspaceNavItem[] = [
     permission: 'integrity:checks:read',
     description: 'Consent-aware similarity and citation checks',
   },
+  {
+    href: '/integrity/screening',
+    label: 'Ethics Screening',
+    permission: 'integrity:screening:read',
+    description: 'Research ethics approval pathways',
+  },
+  {
+    href: '/integrity/reports',
+    label: 'Concerns',
+    permission: 'integrity:reports:read',
+    description: 'Report and triage integrity concerns',
+  },
 ];
 
 function isActivePath(pathname: string | null, href: string): boolean {
