@@ -6,6 +6,7 @@ import { useId, useState } from 'react';
 import { Header } from '@/src/components/common/Header';
 import { Footer } from '@/src/components/common/Footer';
 import { useSession } from '@/src/hooks/useSession';
+import { useIntegritySession, type IntegrityCapability } from '@/src/features/capstone/integrity/useIntegritySession';
 
 type WorkspaceNavItem = {
   href: string;
@@ -86,6 +87,33 @@ const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
   },
 ];
 
+const INTEGRITY_NAV_ITEMS: WorkspaceNavItem[] = [
+  {
+    href: '/integrity/originality',
+    label: 'Originality',
+    permission: 'integrity:checks:read',
+    description: 'Consent-aware similarity and citation checks',
+  },
+  {
+    href: '/integrity/screening',
+    label: 'Ethics Screening',
+    permission: 'integrity:screening:read',
+    description: 'Research ethics approval pathways',
+  },
+  {
+    href: '/integrity/reports',
+    label: 'Concerns',
+    permission: 'integrity:reports:read',
+    description: 'Report and triage integrity concerns',
+  },
+  {
+    href: '/integrity/disputes',
+    label: 'Disputes',
+    permission: 'integrity:disputes:read',
+    description: 'Claims, appeals and remedies',
+  },
+];
+
 function isActivePath(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -106,6 +134,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const { can } = useSession();
+  const { can: canIntegrity } = useIntegritySession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuId = useId();
   const contentHeadingId = useId();
