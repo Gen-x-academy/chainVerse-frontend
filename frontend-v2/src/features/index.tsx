@@ -20,3 +20,7 @@ export * from './students';
 
 // Workspace track (CAPSTONE-067, CAPSTONE-069, CAPSTONE-077, CAPSTONE-078)
 export * from './workspace';
+
+// Workspace track — collaborative notes, activity feed, review rubrics, blinded reviews
+// (CAPSTONE-066, CAPSTONE-072, CAPSTONE-074, CAPSTONE-076)
+export * from './workspaceNotes';

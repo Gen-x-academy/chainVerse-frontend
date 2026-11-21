@@ -8,7 +8,14 @@ const PUBLIC_PATHS = new Set<string>([
 ])
 
 // Routes that require both a session and a tenant context.
-const TENANT_SCOPED_PREFIXES = ['/workspace'] as const
+// Deny-by-default: any new workspace surface must be listed here (or nested
+// under an existing prefix) so it inherits the session + tenant gate.
+const TENANT_SCOPED_PREFIXES = [
+  '/workspace',
+  '/workspace/projects',
+  '/workspace/rubrics',
+  '/workspace/reviews/blinded',
+] as const
 
 function isTenantScopedPath(pathname: string): boolean {
   return TENANT_SCOPED_PREFIXES.some(

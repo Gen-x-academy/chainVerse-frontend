@@ -15,6 +15,27 @@ type WorkspaceNavItem = {
   description: string;
 };
 
+const PROJECT_NAV_ITEMS: WorkspaceNavItem[] = [
+  {
+    href: '/projects/[projectId]/timeline',
+    label: 'Timeline',
+    permission: 'projects.timeline.read',
+    description: 'Project timeline and roadmap',
+  },
+  {
+    href: '/projects/[projectId]/workspace',
+    label: 'Workspace',
+    permission: 'projects.workspace.read',
+    description: 'Project collaboration workspace',
+  },
+  {
+    href: '/projects/[projectId]/resources',
+    label: 'Resources',
+    permission: 'projects.resources.read',
+    description: 'Project resource library',
+  },
+];
+
 const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
   {
     href: '/workspace/decisions',
@@ -39,6 +60,30 @@ const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     label: 'Reviews',
     permission: 'workspace.reviews.read',
     description: 'Independent proposal reviews',
+  },
+  {
+    href: '/workspace/reviews/blinded',
+    label: 'Blinded Reviews',
+    permission: 'workspace.reviews.blinded.read',
+    description: 'Reviews with participant and reviewer identities hidden',
+  },
+  {
+    href: '/workspace/rubrics',
+    label: 'Review Rubrics',
+    permission: 'workspace.rubrics.read',
+    description: 'Versioned review criteria, weights, and aggregation rules',
+  },
+  {
+    href: '/workspace/projects/:projectId/notes',
+    label: 'Collaborative Notes',
+    permission: 'workspace.notes.read',
+    description: 'Shared project notes with revision history',
+  },
+  {
+    href: '/workspace/projects/:projectId/activity',
+    label: 'Activity',
+    permission: 'workspace.activity.read',
+    description: 'Permission-filtered project activity feed',
   },
 ];
 
@@ -74,6 +119,14 @@ function isActivePath(pathname: string | null, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function resolveHref(href: string, pathname: string | null): string {
+  if (!href.includes('[projectId]')) return href;
+  const match = pathname?.match(/^\/projects\/([^/]+)/);
+  const projectId = match?.[1];
+  if (!projectId) return href;
+  return href.replace('[projectId]', projectId);
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -86,15 +139,14 @@ export default function RootLayout({
   const menuId = useId();
   const contentHeadingId = useId();
 
-  const visibleItems = [...WORKSPACE_NAV_ITEMS, ...INTEGRITY_NAV_ITEMS].filter(
-    (item) => can(item.permission) || canIntegrity(item.permission as IntegrityCapability),
-  );
+  const visibleProjectItems = PROJECT_NAV_ITEMS.filter((item) => can(item.permission));
+  const visibleItems = WORKSPACE_NAV_ITEMS.filter((item) => can(item.permission));
 
   return (
     <>
       <Header />
       <main className="min-h-screen">
-        {visibleItems.length > 0 && (
+        {(visibleProjectItems.length > 0 || visibleItems.length > 0) && (
           <nav
             aria-label="Workspace"
             className="border-b border-gray-200 bg-white"
@@ -117,6 +169,27 @@ export default function RootLayout({
                   hidden={!isMenuOpen}
                   className="space-y-1 pb-3"
                 >
+                  {visibleProjectItems.map((item) => {
+                    const href = resolveHref(item.href, pathname);
+                    const active = isActivePath(pathname, href);
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={href}
+                          aria-current={active ? 'page' : undefined}
+                          aria-label={item.description}
+                          className={`block rounded px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                            active
+                              ? 'bg-blue-50 font-semibold text-blue-700'
+                              : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
                   {visibleItems.map((item) => {
                     const active = isActivePath(pathname, item.href);
                     return (
@@ -142,6 +215,26 @@ export default function RootLayout({
 
               {/* Desktop horizontal nav */}
               <ul className="hidden md:flex md:space-x-1 md:py-2">
+                {visibleProjectItems.map((item) => {
+                  const href = resolveHref(item.href, pathname);
+                  const active = isActivePath(pathname, href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={href}
+                        aria-current={active ? 'page' : undefined}
+                        aria-label={item.description}
+                        className={`inline-block rounded px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                          active
+                            ? 'bg-blue-50 font-semibold text-blue-700'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
                 {visibleItems.map((item) => {
                   const active = isActivePath(pathname, item.href);
                   return (
