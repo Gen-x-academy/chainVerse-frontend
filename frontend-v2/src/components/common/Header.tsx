@@ -23,11 +23,13 @@ export const Header: React.FC = () => {
     ? user?.role === 'instructor'
       ? [
           { label: 'Instructor Dashboard', href: '/instructors/dashboard' },
+          { label: 'Projects', href: '/projects/dashboard' },
           { label: 'Courses', href: '/courses' },
           { label: 'Mentorship', href: '/mentorship' },
         ]
       : [
           { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Projects', href: '/projects/dashboard' },
           { label: 'Courses', href: '/courses' },
           { label: 'Wallet', href: '/wallet' },
           { label: 'Scholarships', href: '/scholarships' },

@@ -1,5 +1,5 @@
 import { MutationCache, QueryClient } from '@tanstack/react-query';
-import { ApiConflictError } from '@/lib/api-errors';
+import { ApiConflictError } from '@/src/lib/api-client';
 
 type ErrorHandler = (message: string) => void;
 

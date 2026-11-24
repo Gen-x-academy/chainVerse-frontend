@@ -71,7 +71,6 @@ const ROLE_CAPABILITIES: Record<WorkspaceRole, readonly WorkspaceCapability[]> =
   };
 
 interface AuthUser {
-=======
   id?: string;
   email?: string;
   firstName?: string;
