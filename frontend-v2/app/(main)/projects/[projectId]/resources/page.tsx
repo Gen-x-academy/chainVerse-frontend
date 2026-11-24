@@ -1169,3 +1169,13 @@ function RegisterDialog({
             <button
               type="submit"
               className="rv-btn rv-btn--primary"
+              disabled={submitting}
+            >
+              {submitting ? 'Saving…' : 'Save changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

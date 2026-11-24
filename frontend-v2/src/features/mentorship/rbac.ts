@@ -260,7 +260,7 @@ export type MentorshipArea =
   | 'credentials'
   | 'trust'
   | 'programs'
-  | 'disputes';
+  | 'disputes'
   | 'sessions';
 
 const AREA_ACCESS: Record<MentorshipArea, readonly MentorshipRole[]> = {

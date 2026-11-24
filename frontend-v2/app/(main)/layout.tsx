@@ -34,9 +34,33 @@ const PROJECT_NAV_ITEMS: WorkspaceNavItem[] = [
     permission: 'projects.resources.read',
     description: 'Project resource library',
   },
+  {
+    href: '/projects/[projectId]/consent',
+    label: 'Consent',
+    permission: 'projects.consent.read',
+    description: 'Purpose-specific capstone consent ledger',
+  },
+  {
+    href: '/projects/[projectId]/privacy',
+    label: 'Privacy',
+    permission: 'projects.privacy.read',
+    description: 'Project field-level privacy controls',
+  },
+  {
+    href: '/projects/[projectId]/secrets',
+    label: 'Secrets',
+    permission: 'projects.secrets.read',
+    description: 'Project secrets and sensitive-field protection',
+  },
 ];
 
 const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
+  {
+    href: '/projects/dashboard',
+    label: 'Participant Dashboard',
+    permission: 'projects.dashboard.read',
+    description: 'Centralized participant project and operational dashboard',
+  },
   {
     href: '/workspace/decisions',
     label: 'Decisions',

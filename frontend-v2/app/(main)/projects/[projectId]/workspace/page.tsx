@@ -527,7 +527,16 @@ function WorkspaceHeader({
           <span>Updated {formatDate(overview.updatedAt)}</span>
         </div>
       </div>
-      <div className="flex shrink-0 gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/projects/${snapshot.overview.id}/consent`}>Consent</Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/projects/${snapshot.overview.id}/privacy`}>Privacy</Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/projects/${snapshot.overview.id}/secrets`}>Secrets</Link>
+        </Button>
         <Button variant="outline" size="sm" onClick={onRefresh} aria-label="Refresh workspace">
           <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
           Refresh
@@ -1008,4 +1017,15 @@ function WorkspaceLoadingSkeleton({ projectId }: { projectId: string }) {
     >
       <div className="flex items-center justify-between border-b pb-4">
         <div className="space-y-2">
-          <Skeleton className="h-7
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <Skeleton className="h-9 w-24" />
+      </div>
+      <div className="mt-6 space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    </main>
+  );
+}

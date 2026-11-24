@@ -179,6 +179,3 @@ export const useProjectUiStore = create<ProjectUiStore>((set) => ({
 export function resetProjectUiOnTenantChange(): void {
   useProjectUiStore.getState().resetProjectUi();
 }
-</｜｜DSML｜｜ parameter>
-</｜｜DSML｜｜ invoke>
-</｜｜DSML｜｜ calls>
