@@ -156,4 +156,3 @@ export function releaseContext(release: string, environment: string) {
     tracesSampleRate: environment === 'production' ? 0.1 : 1,
   };
 }
-</｜｜DSML｜｜ parameter>
